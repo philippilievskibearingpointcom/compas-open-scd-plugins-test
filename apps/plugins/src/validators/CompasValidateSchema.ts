@@ -5,9 +5,9 @@ import { newIssueEvent } from '@openscd/core/foundation/deprecated/history.js';
 import {
   CompasSclValidatorService,
   SVS_NAMESPACE,
-} from '../../compas-open-scd/src/compas-services/CompasValidatorService.js';
-import { createLogEvent } from '../../compas-open-scd/src/compas-services/foundation.js';
-import { getTypeFromDocName } from '../../compas-open-scd/src/compas/foundation.js';
+} from '../compas-services/CompasValidatorService.js';
+import { createLogEvent } from '../compas-services/foundation.js';
+import { getTypeFromDocName } from '../compas/foundation.js';
 
 export default class CompasValidateSchema extends LitElement {
   @property({ attribute: false })

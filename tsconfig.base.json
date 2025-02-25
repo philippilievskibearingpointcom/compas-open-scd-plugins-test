@@ -16,7 +16,15 @@
     "sourceMap": true,
     "inlineSources": true,
     "resolveJsonModule": true,
-    "rootDir": "./apps/plugins/src"
+    "rootDir": ".",
+    "baseUrl": "./",
+    "paths": {
+      "@openscd/core/*": ["submodules/openscd/packages/core/*"],
+      "@openscd/open-scd/*": ["submodules/openscd/packages/openscd/*"],
+      "@openscd/xml": ["submodules/openscd/packages/xml"],
+      "@openscd/core": ["submodules/openscd/packages/core"],
+      "@openscd/plugins/*": ["submodules/openscd/packages/oscd-official-plugins/apps/plugins/*"]
+    }
   },
   "include": ["./apps/plugins/src/**/*.ts"]
 }

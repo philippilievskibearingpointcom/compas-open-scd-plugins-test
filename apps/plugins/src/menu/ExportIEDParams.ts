@@ -274,7 +274,7 @@ export default class ExportIEDParamsPlugin extends LitElement {
    * Read the configuration file.
    */
   async getConfiguration(): Promise<Configuration> {
-    return await import('../../compas-open-scd/public/conf/export-ied-params.json').then(
+    return await import('../../public/conf/export-ied-params.json').then(
       module => module.default
     );
   }

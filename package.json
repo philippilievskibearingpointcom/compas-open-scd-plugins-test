@@ -1,7 +1,7 @@
 {
   "name": "@compas-openscd/plugins",
   "version": "0.0.1",
-  "repository": "https://github.com/openscd/open-scd.git",
+  "repository": "https://github.com/david-monichi/compas-open-scd-plugins",
   "directory": "packages/plugins",
   "description": "The official plug-ins of CoMPAS OpenSCD.",
   "keywords": [
@@ -33,10 +33,12 @@
     "@material/mwc-switch": "0.22.1",
     "@material/mwc-textarea": "0.22.1",
     "@material/mwc-textfield": "0.22.1",
+    "@material/mwc-drawer": "0.22.1",
     "cytoscape": "^3.30.2",
     "lit": "^2.2.7",
     "lit-translate": "^1.2.1",
-    "marked": "^4.0.10"
+    "marked": "^4.0.10",
+    "csv-stringify": "^6.2.0"
   },
   "scripts": {
     "clean": "rimraf dist",
