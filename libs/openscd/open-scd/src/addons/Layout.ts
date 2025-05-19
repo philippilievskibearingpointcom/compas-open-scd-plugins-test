@@ -16,21 +16,35 @@ import {
   Validator,
   MenuPlugin,
   pluginIcons,
-} from '@openscd/open-scd/src/open-scd.js';
+  newResetPluginsEvent,
+  newAddExternalPluginEvent,
+  newSetPluginsEvent,
+} from '../open-scd.js';
+
 import {
+  MenuPosition,
   Plugin,
-} from '@openscd/open-scd/src/plugin.js'
+  menuPosition,
+  PluginKind,
+} from "../plugin.js"
+
 import {
+  HistoryState,
   HistoryUIKind,
   newEmptyIssuesEvent,
   newHistoryUIEvent,
   newRedoEvent,
   newUndoEvent,
-} from '@openscd/open-scd/src/addons/History.js';
+} from './History.js';
 import type { Drawer } from '@material/mwc-drawer';
 import type { ActionDetail } from '@material/mwc-list';
 import { List } from '@material/mwc-list';
 import type { ListItem } from '@material/mwc-list/mwc-list-item';
+import type { Dialog } from '@material/mwc-dialog';
+import type { MultiSelectedEvent } from '@material/mwc-list/mwc-list-foundation.js';
+import type { Select } from '@material/mwc-select';
+import type { Switch } from '@material/mwc-switch';
+import type { TextField } from '@material/mwc-textfield';
 
 import '@material/mwc-drawer';
 import '@material/mwc-list';
@@ -38,21 +52,17 @@ import '@material/mwc-dialog';
 import '@material/mwc-switch';
 import '@material/mwc-select';
 import '@material/mwc-textfield';
-import type { UserInfoEvent } from '../compas/foundation';
-import { HistoryState } from '@openscd/open-scd/src/addons/History.js';
-import { OscdPluginManager } from '@openscd/open-scd/src/addons/plugin-manager/plugin-manager';
-import '@openscd/open-scd/src/addons/plugin-manager/plugin-manager';
-import { OscdCustomPluginDialog } from '@openscd/open-scd/src/addons/plugin-manager/custom-plugin-dialog';
-import '@openscd/open-scd/src/addons/plugin-manager/custom-plugin-dialog';
 import { nothing } from 'lit';
 
-// TODO: What happens with this?
-export function compasOpenMenuEvent(): CustomEvent<void> {
-  return new CustomEvent<void>('open-drawer', { bubbles: true, composed: true });
-}
+import {OscdPluginManager} from "./plugin-manager/plugin-manager.js";
+import "./plugin-manager/plugin-manager.js";
+import {OscdCustomPluginDialog} from "./plugin-manager/custom-plugin-dialog.js";
+import "./plugin-manager/custom-plugin-dialog.js";
 
-@customElement('compas-layout')
-export class CompasLayout extends LitElement {
+
+@customElement('oscd-layout')
+export class OscdLayout extends LitElement {
+
   /** The `XMLDocument` to be edited */
   @property({ attribute: false }) doc: XMLDocument | null = null;
   /** The name of the current [[`doc`]] */
@@ -70,16 +80,14 @@ export class CompasLayout extends LitElement {
 
   @property({ type: Object }) historyState!: HistoryState;
 
-  @property({ type: String }) username: string | undefined;
-
   @state() validated: Promise<void> = Promise.resolve();
-
   @state() shouldValidate = false;
 
   @query('#menu') menuUI!: Drawer;
   @query('#pluginManager') pluginUI!: OscdPluginManager;
   @query('#pluginList') pluginList!: List;
   @query('#pluginAdd') pluginDownloadUI!: OscdCustomPluginDialog;
+
 
   render(): TemplateResult {
     return html`
@@ -94,6 +102,7 @@ export class CompasLayout extends LitElement {
       </div>
     `;
   }
+
 
   private renderPlugging(): TemplateResult {
     return html` ${this.renderPluginUI()} ${this.renderDownloadUI()} `;
@@ -137,7 +146,9 @@ export class CompasLayout extends LitElement {
     return this.menuEntries.filter(plugin => plugin.position === 'bottom');
   }
 
+
   get menu(): (MenuItem | 'divider')[] {
+
     const topMenu = this.generateMenu(this.topMenu, 'top');
     const middleMenu = this.generateMenu(this.middleMenu, 'middle');
     const bottomMenu = this.generateMenu(this.bottomMenu, 'bottom');
@@ -253,9 +264,6 @@ export class CompasLayout extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.host.addEventListener('open-drawer', () => {
-      this.menuUI.open = true;
-    })
     this.host.addEventListener('close-drawer', async () => {
       this.menuUI.open = false;
     });
@@ -283,10 +291,8 @@ export class CompasLayout extends LitElement {
     document.addEventListener("open-plugin-download", () => {
       this.pluginDownloadUI.show();
     });
-
-    this.onUserInfo = this.onUserInfo.bind(this);
-    this.host.addEventListener('userinfo', this.onUserInfo);
   }
+
 
   private generateMenu(plugins:Plugin[], kind: 'top' | 'middle' | 'bottom'): (MenuItem | 'divider')[]{
     return plugins.map(plugin => {
@@ -339,10 +345,6 @@ export class CompasLayout extends LitElement {
     });
   }
 
-  private onUserInfo(event: UserInfoEvent) {
-    this.username = event.detail.name;
-  }
-
   private renderMenuItem(me: MenuItem | 'divider'): TemplateResult {
     const hasActionItem = me !== 'divider' && me.actionItem;
 
@@ -369,13 +371,13 @@ export class CompasLayout extends LitElement {
     if(me === 'divider' || !me.actionItem){ return html`` }
 
     return html`
-      <mwc-icon-button
-        slot="actionItems"
-        icon="${me.icon}"
-        label="${me.name}"
-        ?disabled=${me.disabled?.() || !me.action}
-        @click=${me.action}
-      ></mwc-icon-button>`;
+    <mwc-icon-button
+      slot="actionItems"
+      icon="${me.icon}"
+      label="${me.name}"
+      ?disabled=${me.disabled?.() || !me.action}
+      @click=${me.action}
+    ></mwc-icon-button>`;
   }
 
   private renderEditorTab({ name, icon }: Plugin): TemplateResult {
@@ -392,16 +394,6 @@ export class CompasLayout extends LitElement {
         @click=${() => (this.menuUI.open = true)}
       ></mwc-icon-button>
       <div slot="title" id="title">${this.docName}</div>
-      ${this.username != undefined
-              ? html`<span
-                  id="userField"
-                  slot="actionItems"
-                  style="font-family:Roboto"
-                  >${get('userinfo.loggedInAs', {
-                    name: this.username,
-                  })}</span
-                >`
-              : ``}
       ${this.menu.map(this.renderActionItem)}
     </mwc-top-app-bar-fixed>`;
   }
@@ -411,10 +403,11 @@ export class CompasLayout extends LitElement {
    * settings, help, scl history and plug-ins management
    */
   protected renderAside(): TemplateResult {
+
     return html`
       <mwc-drawer class="mdc-theme--surface" hasheader type="modal" id="menu">
         <span slot="title">${get('menu.title')}</span>
-        ${renderTitle(this.docName)}
+          ${renderTitle(this.docName)}
         <mwc-list
           wrapFocus
           @action=${makeListAction(this.menu)}
@@ -442,6 +435,8 @@ export class CompasLayout extends LitElement {
           ))?.action?.(ae);
       }
     }
+
+
   }
 
   private calcActiveEditors(){
@@ -458,6 +453,7 @@ export class CompasLayout extends LitElement {
 
   /** Renders the enabled editor plugins and a tab bar to switch between them*/
   protected renderContent(): TemplateResult {
+
     const activeEditors = this.calcActiveEditors()
       .map(this.renderEditorTab)
 
@@ -555,7 +551,10 @@ export class CompasLayout extends LitElement {
           }
 
       }
-  }
+    }
+
+
+
 
   static styles = css`
     mwc-drawer {
