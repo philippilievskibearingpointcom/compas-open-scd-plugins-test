@@ -11,6 +11,8 @@ import {
 } from '../compas-services/CompasCimMappingService.js';
 import { createLogEvent } from '../compas-services/foundation.js';
 
+import '@openscd/open-scd/src/translations/i18n-config';
+
 export default class OpenProjectPlugin extends LitElement {
   @query('#cim-mapping-input') pluginFileUI!: HTMLInputElement;
 

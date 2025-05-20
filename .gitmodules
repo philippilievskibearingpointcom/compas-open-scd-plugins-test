@@ -1,4 +1,0 @@
-[submodule "openscd"]
-	path = submodules/openscd
-	url = git@github.com:david-monichi/open-scd.git
-	branch = feat/extract-plugins

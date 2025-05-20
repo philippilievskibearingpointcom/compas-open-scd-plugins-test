@@ -8,6 +8,8 @@ import { DocRetrievedEvent } from '../compas/CompasOpen.js';
 
 import '../compas/CompasOpen.js';
 
+import '@openscd/open-scd/src/translations/i18n-config';
+
 export default class CompasMergeMenuPlugin extends LitElement {
   doc!: XMLDocument;
   parent!: HTMLElement;

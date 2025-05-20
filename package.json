@@ -22,6 +22,7 @@
   "dependencies": {
     "@lit-labs/context": "^0.5.1",
     "@material/mwc-dialog": "0.22.1",
+    "@material/mwc-drawer": "0.22.1",
     "@material/mwc-fab": "0.22.1",
     "@material/mwc-formfield": "0.22.1",
     "@material/mwc-icon": "0.22.1",
@@ -30,15 +31,15 @@
     "@material/mwc-list": "0.22.1",
     "@material/mwc-menu": "0.22.1",
     "@material/mwc-select": "0.22.1",
+    "@material/mwc-snackbar": "0.22.1",
     "@material/mwc-switch": "0.22.1",
     "@material/mwc-textarea": "0.22.1",
     "@material/mwc-textfield": "0.22.1",
-    "@material/mwc-drawer": "0.22.1",
+    "csv-stringify": "^6.2.0",
     "cytoscape": "^3.30.2",
     "lit": "^2.2.7",
     "lit-translate": "^1.2.1",
-    "marked": "^4.0.10",
-    "csv-stringify": "^6.2.0"
+    "marked": "^4.0.10"
   },
   "scripts": {
     "clean": "rimraf dist",
@@ -63,7 +64,8 @@
     "release:patch": "standard-version --release-as patch",
     "release:major": "standard-version --release-as major",
     "build": "npm run doc && npm run bundle",
-    "bundle": "tsc"
+    "bundle": "tsc",
+    "build:plugins": "ts-node build-plugins.js"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.1.0",
@@ -72,13 +74,14 @@
     "@open-wc/semantic-dom-diff": "^0.19.5",
     "@open-wc/testing": "^2.5.33",
     "@snowpack/plugin-typescript": "^1.2.1",
-	"@types/cytoscape": "^3.21.8",
+    "@types/cytoscape": "^3.21.8",
     "@types/marked": "^2.0.4",
     "@types/node": "^16.6.1",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "@web/dev-server-esbuild": "^0.2.16",
     "@web/test-runner": "^0.13.22",
+    "ace-custom-element": "^1.6.5",
     "concurrently": "^6.2.1",
     "deepmerge": "^4.2.2",
     "es-dev-server": "^2.1.0",
@@ -98,6 +101,7 @@
     "typedoc": "^0.23.8",
     "typedoc-plugin-markdown": "3.12.0",
     "typescript": "^4.7.4",
+    "vite": "^6.3.4",
     "web-component-analyzer": "^1.1.6",
     "workbox-cli": "^6.2.4"
   },

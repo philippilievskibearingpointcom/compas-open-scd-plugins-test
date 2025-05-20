@@ -7,6 +7,8 @@ import { CompasSettingsElement } from '../compas/CompasSettings.js';
 
 import '../compas/CompasSettings.js';
 
+import '@openscd/open-scd/src/translations/i18n-config';
+
 export default class CompasSettingsMenuPlugin extends LitElement {
   async run(): Promise<void> {
     this.dispatchEvent(newWizardEvent(compasSettingWizard()));

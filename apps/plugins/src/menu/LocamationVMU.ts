@@ -7,6 +7,8 @@ import "../locamation/LocamationIEDList.js";
 
 import {locamationIEDListWizard} from "../locamation/LocamationIEDList.js";
 
+import '@openscd/open-scd/src/translations/i18n-config';
+
 export default class LocamationVMUMenuPlugin extends LitElement {
   doc!: XMLDocument;
   nsdoc!: Nsdoc;

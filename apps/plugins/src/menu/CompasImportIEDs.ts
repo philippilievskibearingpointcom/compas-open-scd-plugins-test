@@ -7,6 +7,8 @@ import ImportingIedPlugin from '@openscd/plugins/src/menu/ImportIEDs.js';
 import '../compas/CompasOpen.js';
 import { Dialog } from '@material/mwc-dialog';
 
+import '@openscd/open-scd/src/translations/i18n-config';
+
 export default class CompasImportIEDSMenuPlugin extends ImportingIedPlugin {
   doc!: XMLDocument;
   parent!: HTMLElement;

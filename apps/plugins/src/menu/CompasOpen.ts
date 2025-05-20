@@ -17,6 +17,8 @@ import { updateDocumentInOpenSCD } from '../compas/foundation.js';
 import '../compas/CompasOpen.js';
 import { compasOpenMenuEvent } from '../addons/CompasLayout.js';
 
+import '@openscd/open-scd/src/translations/i18n-config';
+
 export default class CompasOpenMenuPlugin extends LitElement {
   @query('mwc-dialog#compas-open-dlg')
   dialog!: Dialog;

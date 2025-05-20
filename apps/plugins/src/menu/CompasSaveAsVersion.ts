@@ -28,6 +28,8 @@ import {
   getPrivate,
 } from '../compas/private.js';
 
+import '@openscd/open-scd/src/translations/i18n-config';
+
 export default class CompasSaveAsVersionMenuPlugin extends LitElement {
   @property()
   doc!: XMLDocument;
