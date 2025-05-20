@@ -7,6 +7,8 @@ import { newWizardEvent, Wizard } from '@openscd/open-scd/src/foundation.js';
 
 import '../compas/CompasImportFromApi.js';
 
+import '@openscd/open-scd/src/translations/i18n-config';
+
 export default class ImportFromApiPlugin extends LitElement {
   private importFromApiWizard(): Wizard {
     return [

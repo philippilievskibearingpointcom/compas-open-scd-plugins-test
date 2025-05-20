@@ -1,7 +1,7 @@
 export const officialPlugins = [
   {
     name: 'CoMPAS Versions',
-    src: '/src/compas-editors/CompasVersions.js',
+    src: '/src/editors/CompasVersions.js',
     icon: 'copy_all',
     default: true,
     kind: 'editor',
@@ -141,14 +141,14 @@ export const officialPlugins = [
   },
   {
     name: 'Sitipe',
-    src: '/src/compas-editors/Sitipe.js',
+    src: '/src/editors/Sitipe.js',
     icon: 'precision_manufacturing',
     default: true,
     kind: 'editor',
   },
   {
     name: 'Autogen Substation',
-    src: '/src/compas-editors/autogen-substation.js',
+    src: '/src/editors/autogen-substation.js',
     icon: 'playlist_add_circle',
     default: true,
     kind: 'menu',

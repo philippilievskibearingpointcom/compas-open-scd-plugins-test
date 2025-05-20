@@ -6,6 +6,8 @@ import { DocRetrievedEvent } from '../compas/CompasOpen.js';
 
 import CompareIEDPlugin from '@openscd/plugins/src/menu/CompareIED.js';
 
+import '@openscd/open-scd/src/translations/i18n-config';
+
 export default class CompasCompareIEDPlugin extends CompareIEDPlugin {
   /**
    * Overwriting the render function for opening the template project.
