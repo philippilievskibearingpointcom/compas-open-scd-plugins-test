@@ -1,5 +1,5 @@
 import { css, html, LitElement, query, TemplateResult } from 'lit-element';
-import { translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import '@material/mwc-button';
 import '@material/mwc-dialog';
@@ -53,7 +53,7 @@ export default class CompasOpenMenuPlugin extends LitElement {
   render(): TemplateResult {
     return html`<mwc-dialog
       id="compas-open-dlg"
-      heading="${translate('compas.open.title')}"
+      heading="${get('compas.open.title')}"
     >
       <compas-open
         @doc-retrieved=${(event: DocRetrievedEvent) => {
@@ -64,7 +64,7 @@ export default class CompasOpenMenuPlugin extends LitElement {
       <mwc-button
         slot="secondaryAction"
         icon=""
-        label="${translate('close')}"
+        label="${get('close')}"
         dialogAction="close"
         style="--mdc-theme-primary: var(--mdc-theme-error)"
       >
