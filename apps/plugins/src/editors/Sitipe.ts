@@ -4,7 +4,8 @@ import { translate } from 'lit-translate';
 import './sitipe/sitipe-substation.js';
 import { isPublic } from '@openscd/open-scd/src/foundation.js';
 
-import '@openscd/open-scd/src/translations/i18n-config';
+import '@openscd/compas-open-scd/src/translations/i18n-config';
+
 
 /** An editor [[`plugin`]] for Sitipe based configuration */
 export default class SitipePlugin extends LitElement {

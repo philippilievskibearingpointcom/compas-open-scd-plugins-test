@@ -20,6 +20,7 @@
     "baseUrl": "./",
     "paths": {
       "@openscd/open-scd/*": ["libs/openscd/open-scd/*"],
+      "@openscd/compas-open-scd/*": ["libs/compas-open-scd/*"],
       "@openscd/core/*": ["libs/openscd/core/*"],
       "@openscd/core": ["libs/openscd/core/index.ts"],
       "@openscd/xml": ["libs/openscd/xml/src/index.ts"],
