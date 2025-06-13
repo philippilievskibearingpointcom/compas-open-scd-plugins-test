@@ -6,7 +6,7 @@ import {
   property,
   TemplateResult,
 } from 'lit-element';
-import { translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import '@material/mwc-textfield';
 import '@material/mwc-button';
@@ -180,7 +180,7 @@ export class CompasSettingsElement extends LitElement {
     return html` <mwc-textfield
         dialogInitialFocus
         id="sclDataServiceUrl"
-        label="${translate('compas.settings.sclDataServiceUrl')}"
+        label="${get('compas.settings.sclDataServiceUrl')}"
         value="${this.compasSettings.sclDataServiceUrl}"
         required
       >
@@ -188,33 +188,33 @@ export class CompasSettingsElement extends LitElement {
       <mwc-textfield
         dialogInitialFocus
         id="sclValidatorServiceUrl"
-        label="${translate('compas.settings.sclValidatorServiceUrl')}"
+        label="${get('compas.settings.sclValidatorServiceUrl')}"
         value="${this.compasSettings.sclValidatorServiceUrl}"
         required
       >
       </mwc-textfield>
       <mwc-textfield
         id="cimMappingServiceUrl"
-        label="${translate('compas.settings.cimMappingServiceUrl')}"
+        label="${get('compas.settings.cimMappingServiceUrl')}"
         value="${this.compasSettings.cimMappingServiceUrl}"
         required
       >
       </mwc-textfield>
       <mwc-textfield
         id="sclAutoAlignmentServiceUrl"
-        label="${translate('compas.settings.sclAutoAlignmentServiceUrl')}"
+        label="${get('compas.settings.sclAutoAlignmentServiceUrl')}"
         value="${this.compasSettings.sclAutoAlignmentServiceUrl}"
         required
       >
       </mwc-textfield>
       <mwc-textfield
         id="sitipeServiceUrl"
-        label="${translate('compas.settings.sitipeServiceUrl')}"
+        label="${get('compas.settings.sitipeServiceUrl')}"
         value="${this.compasSettings.sitipeServiceUrl}"
         required
       >
       </mwc-textfield>
-      <mwc-formfield label="${translate('compas.settings.useWebsockets')}">
+      <mwc-formfield label="${get('compas.settings.useWebsockets')}">
         <mwc-switch
           id="useWebsockets"
           ?checked=${this.compasSettings.useWebsockets === 'on'}
@@ -229,7 +229,7 @@ export class CompasSettingsElement extends LitElement {
           }
         }}
       >
-        ${translate('reset')}
+        ${get('reset')}
       </mwc-button>`;
   }
 

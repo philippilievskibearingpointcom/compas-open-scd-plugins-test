@@ -6,7 +6,7 @@ import {
   property,
   TemplateResult,
 } from 'lit-element';
-import { translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-list-item';
@@ -56,13 +56,13 @@ export class CompasSclTypeSelect extends LitElement {
 
     if (this.sclTypes.length <= 0) {
       return html` <mwc-list>
-        <mwc-list-item><i>${translate('compas.noSclTypes')}</i></mwc-list-item>
+        <mwc-list-item><i>${get('compas.noSclTypes')}</i></mwc-list-item>
       </mwc-list>`;
     }
     return html` <mwc-select
       fixedMenuPosition
       naturalMenuWidth="true"
-      label="${translate('compas.sclType')}"
+      label="${get('compas.sclType')}"
     >
       ${repeat(
         this.sclTypes,

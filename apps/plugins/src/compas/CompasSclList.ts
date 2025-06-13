@@ -8,7 +8,7 @@ import {
   state,
   TemplateResult,
 } from 'lit-element';
-import { translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import '@material/mwc-icon';
 import '@material/mwc-list';
@@ -114,18 +114,18 @@ export class CompasSclList extends LitElement {
     }
     if (this.items?.length <= 0) {
       return html` <mwc-list>
-        <mwc-list-item><i>${translate('compas.noScls')}</i></mwc-list-item>
+        <mwc-list-item><i>${get('compas.noScls')}</i></mwc-list-item>
       </mwc-list>`;
     }
     const filteredItems = this.filteredItems;
     return html`
       <div class="filters">
-        <span>${translate('compas.sclFilter')}</span>
+        <span>${get('compas.sclFilter')}</span>
         <oscd-filter-button
           id="labelsFilter"
           multi="true"
           ?disabled="${this.labels.length <= 0}"
-          .header=${translate('compas.label.selectLabels')}
+          .header=${get('compas.label.selectLabels')}
           @selected-items-changed="${(e: SelectedItemsChangedEvent) => {
             this.selectedLabels = e.detail.selectedItems;
             this.requestUpdate('items');
@@ -175,7 +175,7 @@ export class CompasSclList extends LitElement {
           </filtered-list>`
         : html` <mwc-list>
             <mwc-list-item>
-              <i>${translate('compas.noFilteredScls')}</i>
+              <i>${get('compas.noFilteredScls')}</i>
             </mwc-list-item>
           </mwc-list>`}
     `;

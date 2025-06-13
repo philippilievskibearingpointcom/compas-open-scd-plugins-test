@@ -8,7 +8,7 @@ import {
   state,
   TemplateResult,
 } from 'lit-element';
-import { get, translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import '@material/mwc-dialog';
 import '@material/mwc-fab';
@@ -141,7 +141,7 @@ export default class CompasVersionsPlugin extends LitElement {
         },
         content: [
           html`<span
-            >${translate('compas.versions.confirmRestore', {
+            >${get('compas.versions.confirmRestore', {
               version: version,
             })}</span
           >`,
@@ -190,7 +190,7 @@ export default class CompasVersionsPlugin extends LitElement {
           action: deleteScl(this),
         },
         content: [
-          html`<span>${translate('compas.versions.confirmDelete')}</span>`,
+          html`<span>${get('compas.versions.confirmDelete')}</span>`,
         ],
       },
     ];
@@ -234,7 +234,7 @@ export default class CompasVersionsPlugin extends LitElement {
         },
         content: [
           html`<span
-            >${translate('compas.versions.confirmDeleteVersion', {
+            >${get('compas.versions.confirmDeleteVersion', {
               version: version,
             })}</span
           >`,
@@ -348,7 +348,7 @@ export default class CompasVersionsPlugin extends LitElement {
       <mwc-button
         slot="secondaryAction"
         dialogAction="close"
-        label="${translate('close')}"
+        label="${get('close')}"
         style="--mdc-theme-primary: var(--mdc-theme-error)"
       ></mwc-button>
     </mwc-dialog>`;
@@ -421,18 +421,18 @@ export default class CompasVersionsPlugin extends LitElement {
     if (this.historyItem.length <= 0) {
       return html` <mwc-list>
         <mwc-list-item id="no-scl-versions">
-          <span>${translate('compas.noSclVersions')}</span>
+          <span>${get('compas.noSclVersions')}</span>
         </mwc-list-item>
       </mwc-list>`;
     }
 
     return html` <h1>
-        ${translate('compas.versions.sclInfo', {
+        ${get('compas.versions.sclInfo', {
           name: this.getCurrentName(),
           version: this.getCurrentVersion(),
         })}
         <nav>
-          <abbr title="${translate('compas.versions.addVersionButton')}">
+          <abbr title="${get('compas.versions.addVersionButton')}">
             <mwc-icon-button
               icon="playlist_add"
               @click=${() => {
@@ -442,7 +442,7 @@ export default class CompasVersionsPlugin extends LitElement {
           </abbr>
         </nav>
         <nav>
-          <abbr title="${translate('compas.versions.deleteProjectButton')}">
+          <abbr title="${get('compas.versions.deleteProjectButton')}">
             <mwc-icon-button
               icon="delete_forever"
               @click=${() => {
@@ -454,7 +454,7 @@ export default class CompasVersionsPlugin extends LitElement {
           </abbr>
         </nav>
         <nav>
-          <abbr title="${translate('edit')}">
+          <abbr title="${get('edit')}">
             <mwc-icon-button
               icon="edit"
               @click=${() => this.openEditWizard()}
@@ -464,7 +464,7 @@ export default class CompasVersionsPlugin extends LitElement {
       </h1>
       <div id="containerCompasVersions">
         <section tabindex="0">
-          <h1>${translate('compas.versions.title')}</h1>
+          <h1>${get('compas.versions.title')}</h1>
           <mwc-list
             multi
             @selected=${(evt: MultiSelectedEvent) => {
@@ -537,13 +537,13 @@ export default class CompasVersionsPlugin extends LitElement {
         <mwc-fab
           extended
           icon="compare"
-          label="${translate('compas.versions.compareCurrentButton')}"
+          label="${get('compas.versions.compareCurrentButton')}"
           @click=${this.compareCurrentVersion}
         ></mwc-fab>
         <mwc-fab
           extended
           icon="compare"
-          label="${translate('compas.versions.compareButton')}"
+          label="${get('compas.versions.compareButton')}"
           @click=${this.compareVersions}
         ></mwc-fab>
       </div>

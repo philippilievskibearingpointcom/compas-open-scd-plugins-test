@@ -1,5 +1,5 @@
 import {css, customElement, html, LitElement, property, TemplateResult} from 'lit-element';
-import {get, translate} from "lit-translate";
+import {get} from "lit-translate";
 
 import { patterns } from "@openscd/open-scd/src/foundation.js";
 import { ComplexAction } from "@openscd/core/foundation/deprecated/editor.js";
@@ -93,28 +93,28 @@ export class LocamationVMUEditElement extends LitElement {
     }
 
     return html `
-      <wizard-textfield label="${translate('locamation.vmu.ied.name')}"
+      <wizard-textfield label="${get('locamation.vmu.ied.name')}"
                         .maybeValue=${iedHeader(ied)}
                         disabled>
       </wizard-textfield>
-      <wizard-textfield label="${translate('locamation.vmu.ldevice.name')}"
+      <wizard-textfield label="${get('locamation.vmu.ldevice.name')}"
                         .maybeValue=${lDeviceHeader(lDevice)}
                         disabled>
       </wizard-textfield>
-      <wizard-textfield label="${translate('locamation.vmu.ln.name')}"
+      <wizard-textfield label="${get('locamation.vmu.ln.name')}"
                         .maybeValue=${lnHeader(this.logicalNode, this.nsdoc)}
                         disabled>
       </wizard-textfield>
 
-      <wizard-textfield label="${translate('locamation.vmu.version')}"
+      <wizard-textfield label="${get('locamation.vmu.version')}"
                         .maybeValue=${getPrivateTextValue(locamationPrivate, 'VERSION')}
                         disabled>
       </wizard-textfield>
 
       <wizard-textfield id="identifier"
-                        label="${translate('locamation.vmu.identifier')}"
+                        label="${get('locamation.vmu.identifier')}"
                         .maybeValue=${getPrivateTextValue(locamationPrivate, 'IDENTIFIER')}
-                        helper="${translate('locamation.vmu.identifierHelper')}"
+                        helper="${get('locamation.vmu.identifierHelper')}"
                         placeholder="134.12.213"
                         pattern="^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.(?!$)|$)){3}$"
                         required
@@ -123,9 +123,9 @@ export class LocamationVMUEditElement extends LitElement {
 
       ${hasPrivateElement(locamationPrivate, 'SUM') ?
         html `<wizard-textfield id="sum"
-                                label="${translate('locamation.vmu.sum')}"
+                                label="${get('locamation.vmu.sum')}"
                                 .maybeValue=${getPrivateTextValue(locamationPrivate, 'SUM')}
-                                helper="${translate('locamation.vmu.sumHelper')}"
+                                helper="${get('locamation.vmu.sumHelper')}"
                                 placeholder="0,1,2"
                                 pattern="${sumPattern}"
                                 required>
@@ -133,25 +133,25 @@ export class LocamationVMUEditElement extends LitElement {
       }
       ${hasPrivateElement(locamationPrivate, 'CHANNEL') ?
         html `<wizard-textfield id="channel"
-                                label="${translate('locamation.vmu.channel')}"
+                                label="${get('locamation.vmu.channel')}"
                                 .maybeValue=${getPrivateTextValue(locamationPrivate, 'CHANNEL')}
-                                helper="${translate('locamation.vmu.channelHelper')}"
+                                helper="${get('locamation.vmu.channelHelper')}"
                                 pattern="${channelPattern}"
                                 required>
         </wizard-textfield>` : html ``
       }
 
       <wizard-textfield id="transformPrimary"
-                        label="${translate('locamation.vmu.transformPrimary')}"
+                        label="${get('locamation.vmu.transformPrimary')}"
                         .maybeValue=${getPrivateTextValue(locamationPrivate, 'TRANSFORM-PRIMARY')}
-                        helper="${translate('locamation.vmu.transformPrimaryHelper')}"
+                        helper="${get('locamation.vmu.transformPrimaryHelper')}"
                         pattern="${patterns.unsigned}"
                         required>
       </wizard-textfield>
       <wizard-textfield id="transformSecondary"
-                        label="${translate('locamation.vmu.transformSecondary')}"
+                        label="${get('locamation.vmu.transformSecondary')}"
                         .maybeValue=${getPrivateTextValue(locamationPrivate, 'TRANSFORM-SECONDARY')}
-                        helper="${translate('locamation.vmu.transformSecondaryHelper')}"
+                        helper="${get('locamation.vmu.transformSecondaryHelper')}"
                         pattern="${patterns.unsigned}"
                         required>
       </wizard-textfield>

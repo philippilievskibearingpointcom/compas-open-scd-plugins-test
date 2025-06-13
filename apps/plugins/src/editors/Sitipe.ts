@@ -1,5 +1,5 @@
 import { css, html, LitElement, property, TemplateResult } from 'lit-element';
-import { translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import './sitipe/sitipe-substation.js';
 import { isPublic } from '@openscd/open-scd/src/foundation.js';
@@ -37,7 +37,7 @@ export default class SitipePlugin extends LitElement {
         </section>`
       : html`<h1>
           <span style="color: var(--base1)"
-            >${translate('substation.missing')}</span
+            >${get('substation.missing')}</span
           >
         </h1>`}`;
   }

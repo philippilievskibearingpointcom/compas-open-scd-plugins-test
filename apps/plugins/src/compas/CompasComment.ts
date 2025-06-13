@@ -6,7 +6,7 @@ import {
   TemplateResult,
 } from 'lit-element';
 import { WizardTextField } from "@openscd/open-scd/src/wizard-textfield.js";
-import { translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import "@openscd/open-scd/src/wizard-textfield.js";
 
@@ -36,7 +36,7 @@ export class CompasCommentElement extends LitElement {
     return html`
       <wizard-textfield
         id="comment"
-        label="${translate('compas.comment')}"
+        label="${get('compas.comment')}"
         .maybeValue=${null}
         nullable
       >

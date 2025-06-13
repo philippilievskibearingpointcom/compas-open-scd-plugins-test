@@ -7,7 +7,7 @@ import {
   state,
   TemplateResult,
 } from 'lit-element';
-import { translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import '@material/mwc-button';
 import '@material/mwc-dialog';
@@ -93,7 +93,7 @@ export default class CompasSaveAsVersionMenuPlugin extends LitElement {
   render(): TemplateResult {
     return html` <mwc-dialog
       id="compas-save-as-version-dlg"
-      heading="${translate('compas.save.saveAsVersionTitle')}"
+      heading="${get('compas.save.saveAsVersionTitle')}"
     >
       ${!this.doc || !this.docName
         ? html` <compas-loading></compas-loading>`
@@ -123,7 +123,7 @@ export default class CompasSaveAsVersionMenuPlugin extends LitElement {
               slot="primaryAction"
               icon="save"
               trailingIcon
-              label="${translate('save')}"
+              label="${get('save')}"
               @click=${() => {
                 if (this.compasSaveElement && this.compasSaveElement.valid()) {
                   this.dispatchEvent(
@@ -135,7 +135,7 @@ export default class CompasSaveAsVersionMenuPlugin extends LitElement {
       <mwc-button
         slot="secondaryAction"
         icon=""
-        label="${translate('close')}"
+        label="${get('close')}"
         dialogAction="close"
         style="--mdc-theme-primary: var(--mdc-theme-error)"
       >

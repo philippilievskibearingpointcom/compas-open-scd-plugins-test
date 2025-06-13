@@ -8,7 +8,7 @@ import {
   state,
   TemplateResult,
 } from 'lit-element';
-import { translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-list-item';
@@ -94,7 +94,7 @@ export class CompasLabelsFieldElement extends LitElement {
         <div style="flex: auto;">
           <wizard-textfield
             id="newLabel"
-            label="${translate('compas.newLabel')}"
+            label="${get('compas.newLabel')}"
             ?disabled="${labels.length >= COMPAS_LABELS_MAXIMUM}"
             .maybeValue=${null}
             pattern="[A-Za-z][0-9A-Za-z_-]*"

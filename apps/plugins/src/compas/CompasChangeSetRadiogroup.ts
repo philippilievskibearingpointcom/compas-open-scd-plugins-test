@@ -1,6 +1,6 @@
 import {customElement, html, LitElement, TemplateResult} from "lit-element";
 import {ListItemBase} from "@material/mwc-list/mwc-list-item-base";
-import {translate} from "lit-translate";
+import {get} from "lit-translate";
 
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-radio-list-item';
@@ -40,7 +40,7 @@ export class CompasChangeSetRadiogroup extends LitElement {
         ${Object.values(ChangeSet)
                 .map((key) =>
                   html `<mwc-radio-list-item value="${key}" left>
-                          ${translate(changeSetDetails.get(key)!.translationKey)}
+                          ${get(changeSetDetails.get(key)!.translationKey)}
                         </mwc-radio-list-item>`
                 )}
       </mwc-list>

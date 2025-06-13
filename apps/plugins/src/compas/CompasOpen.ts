@@ -6,7 +6,7 @@ import {
   query,
   TemplateResult,
 } from 'lit-element';
-import { translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import '@material/mwc-button';
 
@@ -90,7 +90,7 @@ export default class CompasOpenElement extends LitElement {
       />
 
       <mwc-button
-        label="${translate('compas.open.selectFileButton')}"
+        label="${get('compas.open.selectFileButton')}"
         @click=${() => {
           this.sclFileUI.value = '';
           this.sclFileUI.click();
@@ -102,7 +102,7 @@ export default class CompasOpenElement extends LitElement {
 
   private renderSclTypeList(): TemplateResult {
     return html`
-      <p>${translate('compas.open.listSclTypes')}</p>
+      <p>${get('compas.open.listSclTypes')}</p>
       <compas-scltype-list
         @typeSelected=${(evt: TypeSelectedEvent) =>
           (this.selectedType = evt.detail.type)}
@@ -112,7 +112,7 @@ export default class CompasOpenElement extends LitElement {
 
   private renderSclList(): TemplateResult {
     return html`
-      <p>${translate('compas.open.listScls', {
+      <p>${get('compas.open.listScls', {
         type: this.selectedType ?? '',
       })}</p>
       <compas-scl-list .type=${this.selectedType}
@@ -124,7 +124,7 @@ export default class CompasOpenElement extends LitElement {
                          )}/>
       </compas-scl-list>
       <mwc-button id="reselect-type"
-                  label="${translate('compas.open.otherTypeButton')}"
+                  label="${get('compas.open.otherTypeButton')}"
                   icon="arrow_back"
                   @click=${() => {
                     this.selectedType = undefined;
@@ -138,13 +138,13 @@ export default class CompasOpenElement extends LitElement {
       ${this.allowLocalFile
         ? html`<wizard-divider></wizard-divider>
             <section>
-              <h3>${translate('compas.open.localTitle')}</h3>
+              <h3>${get('compas.open.localTitle')}</h3>
               ${this.renderFileSelect()}
             </section>`
         : nothing}
       <wizard-divider></wizard-divider>
       <section>
-        <h3>${translate('compas.open.compasTitle')}</h3>
+        <h3>${get('compas.open.compasTitle')}</h3>
         ${this.selectedType ? this.renderSclList() : this.renderSclTypeList()}
       </section>
     `;

@@ -1,5 +1,5 @@
 import { html, query, TemplateResult } from 'lit-element';
-import { translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import { DocRetrievedEvent } from '../compas/CompasOpen.js';
 import ImportingIedPlugin from '@openscd/plugins/src/menu/ImportIEDs.js';
@@ -19,7 +19,7 @@ export default class CompasImportIEDSMenuPlugin extends ImportingIedPlugin {
   renderInput(): TemplateResult {
     return html`<mwc-dialog
       id="compas-import-ieds-dlg"
-      heading="${translate('compas.open.title')}"
+      heading="${get('compas.open.title')}"
     >
       <compas-open
         @doc-retrieved=${(event: DocRetrievedEvent) => {
@@ -30,7 +30,7 @@ export default class CompasImportIEDSMenuPlugin extends ImportingIedPlugin {
       <mwc-button
         slot="secondaryAction"
         icon=""
-        label="${translate('close')}"
+        label="${get('close')}"
         dialogAction="close"
         style="--mdc-theme-primary: var(--mdc-theme-error)"
       >

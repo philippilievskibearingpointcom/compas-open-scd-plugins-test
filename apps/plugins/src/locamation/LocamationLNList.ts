@@ -1,5 +1,5 @@
 import {css, customElement, html, LitElement, property, TemplateResult} from 'lit-element';
-import {get, translate} from "lit-translate";
+import {get} from "lit-translate";
 
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-list-item';
@@ -38,12 +38,12 @@ export class LocamationLNodeListElement extends LitElement {
       return html `
         <wizard-textfield label="IED"
                           .maybeValue=${iedHeader(ied)}
-                          helper="${translate('locamation.vmu.ied.name')}"
+                          helper="${get('locamation.vmu.ied.name')}"
                           disabled>
         </wizard-textfield>
         <wizard-textfield label="Logical Device"
                           .maybeValue=${lDeviceHeader(this.lDevice)}
-                          helper="${translate('locamation.vmu.ldevice.name')}"
+                          helper="${get('locamation.vmu.ldevice.name')}"
                           disabled>
         </wizard-textfield>
         <mwc-list>
@@ -68,7 +68,7 @@ export class LocamationLNodeListElement extends LitElement {
     }
     return html `
       <mwc-list>
-        <mwc-list-item><i>${translate('locamation.vmu.ied.missing')}</i></mwc-list-item>
+        <mwc-list-item><i>${get('locamation.vmu.ied.missing')}</i></mwc-list-item>
       </mwc-list>
     `;
   }

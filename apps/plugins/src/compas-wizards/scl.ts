@@ -1,5 +1,5 @@
 import { html, TemplateResult } from 'lit-element';
-import { get, translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import {
   getValue,
@@ -87,14 +87,14 @@ export function renderCompasSCL(sclElement: Element): TemplateResult[] {
     html`<wizard-textfield
       label="filename"
       .maybeValue=${filename}
-      helper="${translate('compas.scl.filenameHelper')}"
+      helper="${get('compas.scl.filenameHelper')}"
       required
-      validationMessage="${translate('textfield.required')}"
+      validationMessage="${get('textfield.required')}"
       dialogInitialFocus
     >
     </wizard-textfield>`,
     html`<h3 style="color: var(--mdc-theme-on-surface);">
-        ${translate('compas.scl.labelsTitle')}
+        ${get('compas.scl.labelsTitle')}
       </h3>
       <compas-labels-field
         .privateElement="${privateElement}"

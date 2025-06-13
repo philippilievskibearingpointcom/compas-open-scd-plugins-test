@@ -1,5 +1,5 @@
 import {css, customElement, html, LitElement, property, TemplateResult} from 'lit-element';
-import {get, translate} from "lit-translate";
+import {get} from "lit-translate";
 
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-list-item';
@@ -54,7 +54,7 @@ export class LocamationIEDListElement extends LitElement {
     }
     return html `
       <mwc-list>
-        <mwc-list-item><i>${translate('locamation.vmu.ied.missing')}</i></mwc-list-item>
+        <mwc-list-item><i>${get('locamation.vmu.ied.missing')}</i></mwc-list-item>
       </mwc-list>
     `;
   }

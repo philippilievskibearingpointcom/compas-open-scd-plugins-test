@@ -6,7 +6,7 @@ import {
   property,
   TemplateResult,
 } from 'lit-element';
-import { get, translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-check-list-item';
@@ -99,7 +99,7 @@ export default class CompasAutoAlignmentElement extends LitElement {
           `
         : html`
             <section id="noSubstationsToAlign" tabindex="0">
-              <span>${translate('compas.autoAlignment.missing')}</span>
+              <span>${get('compas.autoAlignment.missing')}</span>
             </section>
           `}
     `;

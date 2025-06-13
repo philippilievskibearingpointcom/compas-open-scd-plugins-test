@@ -1,5 +1,5 @@
 import { customElement, html, LitElement, TemplateResult } from 'lit-element';
-import { get, translate } from 'lit-translate';
+import { get } from 'lit-translate';
 
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-list-item';
@@ -105,7 +105,7 @@ export class CompasUploadVersionElement extends CompasExistsIn(LitElement) {
     if (!this.existInCompas) {
       return html`
         <mwc-list>
-          <mwc-list-item>${translate('compas.notExists')}</mwc-list-item>
+          <mwc-list-item>${get('compas.notExists')}</mwc-list-item>
         </mwc-list>
       `;
     }
@@ -128,12 +128,12 @@ export class CompasUploadVersionElement extends CompasExistsIn(LitElement) {
         id="filename"
         required
         readonly
-        label="${translate('compas.uploadVersion.filename')}"
+        label="${get('compas.uploadVersion.filename')}"
       >
       </wizard-textfield>
 
       <mwc-button
-        label="${translate('compas.uploadVersion.selectButton')}"
+        label="${get('compas.uploadVersion.selectButton')}"
         @click=${() => {
           const input = <HTMLInputElement | null>(
             this.shadowRoot!.querySelector('#scl-file')

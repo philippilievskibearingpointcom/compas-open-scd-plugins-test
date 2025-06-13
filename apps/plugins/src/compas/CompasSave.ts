@@ -8,7 +8,7 @@ import {
   query,
   TemplateResult,
 } from 'lit-element';
-import { get, translate } from 'lit-translate';
+import { get } from 'lit-translate';
 import { TextFieldBase } from '@material/mwc-textfield/mwc-textfield-base';
 
 import '@material/mwc-textfield';
@@ -169,7 +169,7 @@ export default class CompasSaveElement extends CompasExistsIn(LitElement) {
   private renderSaveFilePart(): TemplateResult {
     return html`
       <mwc-button
-        label="${translate('compas.save.saveFileButton')}"
+        label="${get('compas.save.saveFileButton')}"
         @click=${() => {
           this.updateLabels();
           saveDocumentToFile(this.doc, this.docName);
@@ -192,7 +192,7 @@ export default class CompasSaveElement extends CompasExistsIn(LitElement) {
           <mwc-textfield
             dialogInitialFocus
             id="name"
-            label="${translate('scl.name')}"
+            label="${get('scl.name')}"
             value="${this.getCleanFileName()}"
             required
           >
@@ -231,18 +231,18 @@ export default class CompasSaveElement extends CompasExistsIn(LitElement) {
       ${this.allowLocalFile
         ? html` <wizard-divider></wizard-divider>
             <section>
-              <h3>${translate('compas.save.localTitle')}</h3>
+              <h3>${get('compas.save.localTitle')}</h3>
               ${this.renderSaveFilePart()}
             </section>`
         : nothing}
       <wizard-divider></wizard-divider>
       <section>
-        <h3>${translate('compas.save.compasTitle')}</h3>
+        <h3>${get('compas.save.compasTitle')}</h3>
         ${this.renderSaveCompasPart()}
       </section>
       <wizard-divider></wizard-divider>
       <section>
-        <h3>${translate('compas.save.labelsTitle')}</h3>
+        <h3>${get('compas.save.labelsTitle')}</h3>
         ${this.renderLabelsPart()}
       </section>
     `;
