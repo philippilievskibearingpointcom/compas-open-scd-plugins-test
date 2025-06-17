@@ -24,6 +24,8 @@ import './CompasSclList.js';
 import { nothing } from 'lit-html';
 import { buildDocName } from './foundation.js';
 
+import '@openscd/compas-open-scd/src/translations/i18n-config';
+
 /* Event that will be used when an SCL Document is retrieved. */
 export interface DocRetrievedDetail {
   localFile: boolean;

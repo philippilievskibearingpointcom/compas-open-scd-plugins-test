@@ -6,7 +6,6 @@ import { isPublic } from '@openscd/open-scd/src/foundation.js';
 
 import '@openscd/compas-open-scd/src/translations/i18n-config';
 
-
 /** An editor [[`plugin`]] for Sitipe based configuration */
 export default class SitipePlugin extends LitElement {
   @property({ attribute: false })

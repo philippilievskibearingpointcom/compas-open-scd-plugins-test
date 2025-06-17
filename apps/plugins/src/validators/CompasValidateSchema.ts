@@ -9,7 +9,7 @@ import {
 import { createLogEvent } from '../compas-services/foundation.js';
 import { getTypeFromDocName } from '../compas/foundation.js';
 
-import '@openscd/open-scd/src/translations/i18n-config';
+import '@openscd/compas-open-scd/src/translations/i18n-config';
 
 export default class CompasValidateSchema extends LitElement {
   @property({ attribute: false })
