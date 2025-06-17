@@ -6,7 +6,7 @@ import {
   query,
   TemplateResult,
 } from 'lit-element';
-import { get } from 'lit-translate';
+import { get, listenForLangChanged, translateConfig } from 'lit-translate';
 
 import '@material/mwc-button';
 
@@ -133,20 +133,51 @@ export default class CompasOpenElement extends LitElement {
     `;
   }
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    // fire once when the language actually loads
+    listenForLangChanged((e) => {
+      console.log('[i18n] lang-changed event detail →', e.strings);
+      console.log(
+        '[i18n] after lang-changed, localTitle →',
+        get('compas.open.localTitle')
+      );
+    }, { once: true });
+  }
+
+  updated(_changedProps: Map<string, unknown>) {
+    // after each update, when the DOM is in place:
+    this.updateComplete.then(() => {
+      console.log('[i18n] updated full translationCache →', translateConfig.translationCache);
+    });
+  }
+
+  firstUpdated(_changedProps: Map<string, unknown>) {
+    // runs exactly once, after the very first render
+    console.log('[i18n] firstUpdated full translationCache →', translateConfig.translationCache);
+  }
+
   render(): TemplateResult {
+    // Pull the translated string into a variable
+    const localTitle = get('compas.open.localTitle');
+
+    // Log it before the template is constructed
+    console.log('[i18n-check] render localTitle →', localTitle);
+
     return html`
-      ${this.allowLocalFile
-        ? html`<wizard-divider></wizard-divider>
-            <section>
-              <h3>${get('compas.open.localTitle')}</h3>
-              ${this.renderFileSelect()}
-            </section>`
-        : nothing}
-      <wizard-divider></wizard-divider>
-      <section>
-        <h3>${get('compas.open.compasTitle')}</h3>
-        ${this.selectedType ? this.renderSclList() : this.renderSclTypeList()}
-      </section>
-    `;
+    ${this.allowLocalFile
+      ? html`
+          <wizard-divider></wizard-divider>
+          <section>
+            <h3>${localTitle}</h3>
+            ${this.renderFileSelect()}
+          </section>`
+      : nothing}
+    <wizard-divider></wizard-divider>
+    <section>
+      <h3>${get('compas.open.compasTitle')}</h3>
+      ${this.selectedType ? this.renderSclList() : this.renderSclTypeList()}
+    </section>
+  `;
   }
 }

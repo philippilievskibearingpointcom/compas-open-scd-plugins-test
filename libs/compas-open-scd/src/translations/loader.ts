@@ -5,14 +5,36 @@ import { de as oscdDe } from '@openscd/open-scd/src/translations/de.js';
 import { en as oscdEn } from '@openscd/open-scd/src/translations/en.js';
 
 export type Language = 'en' | 'de';
-export const languages = {
-    en: { ...oscdEn, ...compasEn },
-    de: { ...oscdDe, ...compasDe },
+const rawLanguages: Record<Language, Record<string, any>> = {
+  en: { ...oscdEn, ...compasEn },
+  de: { ...oscdDe, ...compasDe },
 };
 
-export type Translations = typeof compasEn;
+function flatten(
+  obj: Record<string, any>,
+  prefix = '',
+  out: Record<string, string> = {}
+): Record<string, string> {
+  for (const [key, val] of Object.entries(obj)) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (typeof val === 'string') {
+      out[path] = val;
+    } else if (typeof val === 'object' && val !== null) {
+      flatten(val as Record<string, any>, path, out);
+    }
+  }
+  return out;
+}
 
 export async function loader(lang: string): Promise<Strings> {
-    if (Object.keys(languages).includes(lang)) return languages[<Language>lang];
-    else return {};
+  const primary = (lang.split('-')[0] as Language) || 'en';
+  const raw = rawLanguages[primary] ?? rawLanguages.en;
+
+  console.log(`[i18n] loader called with lang="${lang}" → using "${primary}" keys:`, Object.keys(raw));
+
+  const flat = flatten(raw);
+
+  console.log('[i18n] loader returning flattened translations:', flat);
+
+  return flat;
 }

@@ -7,6 +7,7 @@ export const languages = { en, de };
 export type Translations = typeof en;
 
 export async function loader(lang: string): Promise<Strings> {
+  console.log('open-scd loader');
   if (Object.keys(languages).includes(lang)) return languages[<Language>lang];
   else return {};
 }

@@ -7,6 +7,7 @@ const language = localStorage.getItem('language') || 'en';
 use(language);
 
 export function setLanguage(lang) {
+    console.log(`lang: ${lang}`);
     use(lang);
     localStorage.setItem('language', lang);
 }
