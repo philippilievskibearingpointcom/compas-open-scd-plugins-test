@@ -12,7 +12,7 @@ import CompasAutoAlignmentElement from '../compas/CompasAutoAlignment.js';
 
 import '../compas/CompasAutoAlignment.js';
 
-import '@openscd/open-scd/src/translations/i18n-config';
+import '@openscd/compas-open-scd/src/translations/i18n-config';
 
 export default class CompasAutoAlignmentMenuPlugin extends LitElement {
   doc!: XMLDocument;

@@ -8,7 +8,7 @@ import { mergeSubstation } from '@openscd/plugins/src/menu/UpdateSubstation.js';
 
 import '../compas/CompasOpen.js';
 
-import '@openscd/open-scd/src/translations/i18n-config';
+import '@openscd/compas-open-scd/src/translations/i18n-config';
 
 export default class CompasUpdateSubstationMenuPlugin extends LitElement {
   doc!: XMLDocument;

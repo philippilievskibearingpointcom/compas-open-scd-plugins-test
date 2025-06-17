@@ -18,7 +18,7 @@ import CompasSaveElement from '../compas/CompasSave.js';
 
 import '../compas/CompasSave.js';
 
-import '@openscd/open-scd/src/translations/i18n-config';
+import '@openscd/compas-open-scd/src/translations/i18n-config';
 
 export default class CompasSaveAsMenuPlugin extends LitElement {
   @property()

@@ -6,7 +6,7 @@ import { DocRetrievedEvent } from '../compas/CompasOpen.js';
 
 import CompareIEDPlugin from '@openscd/plugins/src/menu/CompareIED.js';
 
-import '@openscd/open-scd/src/translations/i18n-config';
+import '@openscd/compas-open-scd/src/translations/i18n-config';
 
 export default class CompasCompareIEDPlugin extends CompareIEDPlugin {
   /**

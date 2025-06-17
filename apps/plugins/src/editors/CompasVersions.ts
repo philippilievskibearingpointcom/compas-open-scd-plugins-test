@@ -45,7 +45,7 @@ import { addVersionToCompasWizard } from '../compas/CompasUploadVersion.js';
 import { getElementByName, styles } from '../compas-editors/foundation.js';
 import { editCompasSCLWizard } from "../compas-wizards/scl.js";
 
-import '@openscd/open-scd/src/translations/i18n-config';
+import '@openscd/compas-open-scd/src/translations/i18n-config';
 
 /** An editor [[`plugin`]] for selecting the `Substation` section. */
 export default class CompasVersionsPlugin extends LitElement {

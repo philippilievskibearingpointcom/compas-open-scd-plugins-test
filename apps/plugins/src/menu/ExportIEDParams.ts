@@ -7,7 +7,7 @@ import { compareNames } from '@openscd/open-scd/src/foundation.js';
 import { stripExtensionFromName } from '../compas/foundation.js';
 import { get } from 'lit-translate';
 
-import '@openscd/open-scd/src/translations/i18n-config';
+import '@openscd/compas-open-scd/src/translations/i18n-config';
 
 // Structure of the Configuration file defined by both types.
 type ColumnConfiguration = {

@@ -6,7 +6,7 @@ import { createElement } from '@openscd/xml';
 import { newLogEvent } from '@openscd/core/foundation/deprecated/history.js';
 import { get } from 'lit-translate';
 
-import '@openscd/open-scd/src/translations/i18n-config';
+import '@openscd/compas-open-scd/src/translations/i18n-config';
 
 let cbNum = 1;
 let dsNum = 1;
