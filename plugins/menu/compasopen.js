@@ -11882,2964 +11882,365 @@ qi([
 hi = qi([
   te("compas-scl-list")
 ], hi);
-var _u = Object.defineProperty, Su = Object.getOwnPropertyDescriptor, fr = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? Su(e, t) : e, a = i.length - 1, l; a >= 0; a--)
-    (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && _u(e, t, s), s;
-};
-function Xs(i, e, t, n) {
-  return new CustomEvent("doc-retrieved", {
-    bubbles: !0,
-    composed: !0,
-    detail: { localFile: i, doc: e, docName: t, docId: n }
-  });
-}
-let un = class extends ge {
-  constructor() {
-    super(...arguments), this.allowLocalFile = !0;
-  }
-  async getSclDocument(i) {
-    const e = await ts().getSclDocument(this, this.selectedType ?? "", i ?? "").catch((t) => su(this, t));
-    if (e instanceof Document) {
-      const t = Wa(e.documentElement);
-      this.dispatchEvent(Xs(!1, e, t, i));
-    }
-  }
-  async getSclFile(i) {
-    const e = i.target?.files?.item(0) ?? !1;
-    if (!e) return;
-    const t = await e.text(), n = e.name, s = new DOMParser().parseFromString(t, "application/xml");
-    this.dispatchEvent(Xs(!0, s, n));
-  }
-  renderFileSelect() {
-    return R`
-      <input
-        id="scl-file"
-        accept=".sed,.scd,.ssd,.isd,.iid,.cid,.icd"
-        type="file"
-        hidden
-        required
-        @change=${(i) => this.dispatchEvent(It(this.getSclFile(i)))}
-      />
-
-      <mwc-button
-        label="${G("compas.open.selectFileButton")}"
-        @click=${() => {
-      this.sclFileUI.value = "", this.sclFileUI.click();
-    }}
-      >
-      </mwc-button>
-    `;
-  }
-  renderSclTypeList() {
-    return R`
-      <p>${G("compas.open.listSclTypes")}</p>
-      <compas-scltype-list
-        @typeSelected=${(i) => this.selectedType = i.detail.type}
-      />
-    `;
-  }
-  renderSclList() {
-    return R`
-      <p>${G("compas.open.listScls", {
-      type: this.selectedType ?? ""
-    })}</p>
-      <compas-scl-list .type=${this.selectedType}
-                       @scl-selected=${(i) => this.dispatchEvent(
-      It(
-        this.getSclDocument(i.detail.docId)
-      )
-    )}/>
-      </compas-scl-list>
-      <mwc-button id="reselect-type"
-                  label="${G("compas.open.otherTypeButton")}"
-                  icon="arrow_back"
-                  @click=${() => {
-      this.selectedType = void 0;
-    }}>
-      </mwc-button>
-    `;
-  }
-  render() {
-    return R`
-      ${this.allowLocalFile ? R`<wizard-divider></wizard-divider>
-            <section>
-              <h3>${G("compas.open.localTitle")}</h3>
-              ${this.renderFileSelect()}
-            </section>` : Kt}
-      <wizard-divider></wizard-divider>
-      <section>
-        <h3>${G("compas.open.compasTitle")}</h3>
-        ${this.selectedType ? this.renderSclList() : this.renderSclTypeList()}
-      </section>
-    `;
-  }
-};
-fr([
-  D()
-], un.prototype, "selectedType", 2);
-fr([
-  D()
-], un.prototype, "allowLocalFile", 2);
-fr([
-  z("#scl-file")
-], un.prototype, "sclFileUI", 2);
-un = fr([
-  te("compas-open")
-], un);
-function Cu(i, e) {
-  return new CustomEvent("load-nsdoc", {
-    bubbles: !0,
-    composed: !0,
-    detail: { nsdoc: i, filename: e }
-  });
-}
-function pl(i, e) {
-  return new CustomEvent("oscd-settings", {
-    bubbles: !0,
-    composed: !0,
-    ...e,
-    detail: {
-      show: i,
-      ...e?.detail
-    }
-  });
-}
-class lt extends ge {
-  constructor() {
-    super(...arguments), this.indeterminate = !1, this.progress = 0, this.buffer = 1, this.reverse = !1, this.closed = !1, this.stylePrimaryHalf = "", this.stylePrimaryFull = "", this.styleSecondaryQuarter = "", this.styleSecondaryHalf = "", this.styleSecondaryFull = "", this.animationReady = !0, this.closedAnimationOff = !1, this.resizeObserver = null;
-  }
-  connectedCallback() {
-    super.connectedCallback(), this.rootEl && this.attachResizeObserver();
-  }
-  /**
-   * @soyTemplate
-   */
-  render() {
-    const e = {
-      "mdc-linear-progress--closed": this.closed,
-      "mdc-linear-progress--closed-animation-off": this.closedAnimationOff,
-      "mdc-linear-progress--indeterminate": this.indeterminate,
-      // needed for controller-less render
-      "mdc-linear-progress--animation-ready": this.animationReady
-    }, t = {
-      "--mdc-linear-progress-primary-half": this.stylePrimaryHalf,
-      "--mdc-linear-progress-primary-half-neg": this.stylePrimaryHalf !== "" ? `-${this.stylePrimaryHalf}` : "",
-      "--mdc-linear-progress-primary-full": this.stylePrimaryFull,
-      "--mdc-linear-progress-primary-full-neg": this.stylePrimaryFull !== "" ? `-${this.stylePrimaryFull}` : "",
-      "--mdc-linear-progress-secondary-quarter": this.styleSecondaryQuarter,
-      "--mdc-linear-progress-secondary-quarter-neg": this.styleSecondaryQuarter !== "" ? `-${this.styleSecondaryQuarter}` : "",
-      "--mdc-linear-progress-secondary-half": this.styleSecondaryHalf,
-      "--mdc-linear-progress-secondary-half-neg": this.styleSecondaryHalf !== "" ? `-${this.styleSecondaryHalf}` : "",
-      "--mdc-linear-progress-secondary-full": this.styleSecondaryFull,
-      "--mdc-linear-progress-secondary-full-neg": this.styleSecondaryFull !== "" ? `-${this.styleSecondaryFull}` : ""
-    }, n = {
-      "flex-basis": this.indeterminate ? "100%" : `${this.buffer * 100}%`
-    }, s = {
-      transform: this.indeterminate ? "scaleX(1)" : `scaleX(${this.progress})`
-    };
-    return R`
-      <div
-          role="progressbar"
-          class="mdc-linear-progress ${pe(e)}"
-          style="${an(t)}"
-          dir="${ee(this.reverse ? "rtl" : void 0)}"
-          aria-label="${ee(this.ariaLabel)}"
-          aria-valuemin="0"
-          aria-valuemax="1"
-          aria-valuenow="${ee(this.indeterminate ? void 0 : this.progress)}"
-        @transitionend="${this.syncClosedState}">
-        <div class="mdc-linear-progress__buffer">
-          <div
-            class="mdc-linear-progress__buffer-bar"
-            style=${an(n)}>
-          </div>
-          <div class="mdc-linear-progress__buffer-dots"></div>
-        </div>
-        <div
-            class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
-            style=${an(s)}>
-          <span class="mdc-linear-progress__bar-inner"></span>
-        </div>
-        <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
-          <span class="mdc-linear-progress__bar-inner"></span>
-        </div>
-      </div>`;
-  }
-  update(e) {
-    e.has("closed") && (!this.closed || e.get("closed") === void 0) && this.syncClosedState(), super.update(e);
-  }
-  async firstUpdated(e) {
-    super.firstUpdated(e), this.attachResizeObserver();
-  }
-  syncClosedState() {
-    this.closedAnimationOff = this.closed;
-  }
-  updated(e) {
-    !e.has("indeterminate") && e.has("reverse") && this.indeterminate && this.restartAnimation(), e.has("indeterminate") && e.get("indeterminate") !== void 0 && this.indeterminate && window.ResizeObserver && this.calculateAndSetAnimationDimensions(this.rootEl.offsetWidth), super.updated(e);
-  }
-  disconnectedCallback() {
-    this.resizeObserver && (this.resizeObserver.disconnect(), this.resizeObserver = null), super.disconnectedCallback();
-  }
-  attachResizeObserver() {
-    if (window.ResizeObserver) {
-      this.resizeObserver = new window.ResizeObserver((e) => {
-        if (this.indeterminate) {
-          for (const t of e)
-            if (t.contentRect) {
-              const n = t.contentRect.width;
-              this.calculateAndSetAnimationDimensions(n);
-            }
-        }
-      }), this.resizeObserver.observe(this.rootEl);
-      return;
-    }
-    this.resizeObserver = null;
-  }
-  calculateAndSetAnimationDimensions(e) {
-    const t = e * 0.8367142, n = e * 2.00611057, s = e * 0.37651913, a = e * 0.84386165, l = e * 1.60277782;
-    this.stylePrimaryHalf = `${t}px`, this.stylePrimaryFull = `${n}px`, this.styleSecondaryQuarter = `${s}px`, this.styleSecondaryHalf = `${a}px`, this.styleSecondaryFull = `${l}px`, this.restartAnimation();
-  }
-  async restartAnimation() {
-    this.animationReady = !1, await this.updateComplete, await new Promise(requestAnimationFrame), this.animationReady = !0, await this.updateComplete;
-  }
-  open() {
-    this.closed = !1;
-  }
-  close() {
-    this.closed = !0;
-  }
-}
-$([
-  z(".mdc-linear-progress")
-], lt.prototype, "rootEl", void 0);
-$([
-  D({ type: Boolean, reflect: !0 })
-], lt.prototype, "indeterminate", void 0);
-$([
-  D({ type: Number })
-], lt.prototype, "progress", void 0);
-$([
-  D({ type: Number })
-], lt.prototype, "buffer", void 0);
-$([
-  D({ type: Boolean, reflect: !0 })
-], lt.prototype, "reverse", void 0);
-$([
-  D({ type: Boolean, reflect: !0 })
-], lt.prototype, "closed", void 0);
-$([
-  Pt,
-  D({ attribute: "aria-label" })
-], lt.prototype, "ariaLabel", void 0);
-$([
-  j()
-], lt.prototype, "stylePrimaryHalf", void 0);
-$([
-  j()
-], lt.prototype, "stylePrimaryFull", void 0);
-$([
-  j()
-], lt.prototype, "styleSecondaryQuarter", void 0);
-$([
-  j()
-], lt.prototype, "styleSecondaryHalf", void 0);
-$([
-  j()
-], lt.prototype, "styleSecondaryFull", void 0);
-$([
-  j()
-], lt.prototype, "animationReady", void 0);
-$([
-  j()
-], lt.prototype, "closedAnimationOff", void 0);
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-LIcense-Identifier: Apache-2.0
- */
-const Eu = le`@keyframes mdc-linear-progress-primary-indeterminate-translate{0%{transform:translateX(0)}20%{animation-timing-function:cubic-bezier(0.5, 0, 0.701732, 0.495819);transform:translateX(0)}59.15%{animation-timing-function:cubic-bezier(0.302435, 0.381352, 0.55, 0.956352);transform:translateX(83.67142%);transform:translateX(var(--mdc-linear-progress-primary-half, 83.67142%))}100%{transform:translateX(200.611057%);transform:translateX(var(--mdc-linear-progress-primary-full, 200.611057%))}}@keyframes mdc-linear-progress-primary-indeterminate-scale{0%{transform:scaleX(0.08)}36.65%{animation-timing-function:cubic-bezier(0.334731, 0.12482, 0.785844, 1);transform:scaleX(0.08)}69.15%{animation-timing-function:cubic-bezier(0.06, 0.11, 0.6, 1);transform:scaleX(0.661479)}100%{transform:scaleX(0.08)}}@keyframes mdc-linear-progress-secondary-indeterminate-translate{0%{animation-timing-function:cubic-bezier(0.15, 0, 0.515058, 0.409685);transform:translateX(0)}25%{animation-timing-function:cubic-bezier(0.31033, 0.284058, 0.8, 0.733712);transform:translateX(37.651913%);transform:translateX(var(--mdc-linear-progress-secondary-quarter, 37.651913%))}48.35%{animation-timing-function:cubic-bezier(0.4, 0.627035, 0.6, 0.902026);transform:translateX(84.386165%);transform:translateX(var(--mdc-linear-progress-secondary-half, 84.386165%))}100%{transform:translateX(160.277782%);transform:translateX(var(--mdc-linear-progress-secondary-full, 160.277782%))}}@keyframes mdc-linear-progress-secondary-indeterminate-scale{0%{animation-timing-function:cubic-bezier(0.205028, 0.057051, 0.57661, 0.453971);transform:scaleX(0.08)}19.15%{animation-timing-function:cubic-bezier(0.152313, 0.196432, 0.648374, 1.004315);transform:scaleX(0.457104)}44.15%{animation-timing-function:cubic-bezier(0.257759, -0.003163, 0.211762, 1.38179);transform:scaleX(0.72796)}100%{transform:scaleX(0.08)}}@keyframes mdc-linear-progress-buffering{from{transform:rotate(180deg) translateX(-10px)}}@keyframes mdc-linear-progress-primary-indeterminate-translate-reverse{0%{transform:translateX(0)}20%{animation-timing-function:cubic-bezier(0.5, 0, 0.701732, 0.495819);transform:translateX(0)}59.15%{animation-timing-function:cubic-bezier(0.302435, 0.381352, 0.55, 0.956352);transform:translateX(-83.67142%);transform:translateX(var(--mdc-linear-progress-primary-half-neg, -83.67142%))}100%{transform:translateX(-200.611057%);transform:translateX(var(--mdc-linear-progress-primary-full-neg, -200.611057%))}}@keyframes mdc-linear-progress-secondary-indeterminate-translate-reverse{0%{animation-timing-function:cubic-bezier(0.15, 0, 0.515058, 0.409685);transform:translateX(0)}25%{animation-timing-function:cubic-bezier(0.31033, 0.284058, 0.8, 0.733712);transform:translateX(-37.651913%);transform:translateX(var(--mdc-linear-progress-secondary-quarter-neg, -37.651913%))}48.35%{animation-timing-function:cubic-bezier(0.4, 0.627035, 0.6, 0.902026);transform:translateX(-84.386165%);transform:translateX(var(--mdc-linear-progress-secondary-half-neg, -84.386165%))}100%{transform:translateX(-160.277782%);transform:translateX(var(--mdc-linear-progress-secondary-full-neg, -160.277782%))}}@keyframes mdc-linear-progress-buffering-reverse{from{transform:translateX(-10px)}}.mdc-linear-progress{position:relative;width:100%;height:4px;transform:translateZ(0);outline:1px solid transparent;overflow:hidden;transition:opacity 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-linear-progress__bar{position:absolute;width:100%;height:100%;animation:none;transform-origin:top left;transition:transform 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-linear-progress__bar-inner{display:inline-block;position:absolute;width:100%;animation:none;border-top:4px solid}.mdc-linear-progress__buffer{display:flex;position:absolute;width:100%;height:100%}.mdc-linear-progress__buffer-dots{background-repeat:repeat-x;background-size:10px 4px;flex:auto;transform:rotate(180deg);animation:mdc-linear-progress-buffering 250ms infinite linear}.mdc-linear-progress__buffer-bar{flex:0 1 100%;transition:flex-basis 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-linear-progress__primary-bar{transform:scaleX(0)}.mdc-linear-progress__secondary-bar{display:none}.mdc-linear-progress--indeterminate .mdc-linear-progress__bar{transition:none}.mdc-linear-progress--indeterminate .mdc-linear-progress__primary-bar{left:-145.166611%}.mdc-linear-progress--indeterminate .mdc-linear-progress__secondary-bar{left:-54.888891%;display:block}.mdc-linear-progress--indeterminate.mdc-linear-progress--animation-ready .mdc-linear-progress__primary-bar{animation:mdc-linear-progress-primary-indeterminate-translate 2s infinite linear}.mdc-linear-progress--indeterminate.mdc-linear-progress--animation-ready .mdc-linear-progress__primary-bar>.mdc-linear-progress__bar-inner{animation:mdc-linear-progress-primary-indeterminate-scale 2s infinite linear}.mdc-linear-progress--indeterminate.mdc-linear-progress--animation-ready .mdc-linear-progress__secondary-bar{animation:mdc-linear-progress-secondary-indeterminate-translate 2s infinite linear}.mdc-linear-progress--indeterminate.mdc-linear-progress--animation-ready .mdc-linear-progress__secondary-bar>.mdc-linear-progress__bar-inner{animation:mdc-linear-progress-secondary-indeterminate-scale 2s infinite linear}[dir=rtl] .mdc-linear-progress:not([dir=ltr]) .mdc-linear-progress__bar,.mdc-linear-progress[dir=rtl]:not([dir=ltr]) .mdc-linear-progress__bar{right:0;-webkit-transform-origin:center right;transform-origin:center right}[dir=rtl] .mdc-linear-progress:not([dir=ltr]).mdc-linear-progress--animation-ready .mdc-linear-progress__primary-bar,.mdc-linear-progress[dir=rtl]:not([dir=ltr]).mdc-linear-progress--animation-ready .mdc-linear-progress__primary-bar{animation-name:mdc-linear-progress-primary-indeterminate-translate-reverse}[dir=rtl] .mdc-linear-progress:not([dir=ltr]).mdc-linear-progress--animation-ready .mdc-linear-progress__secondary-bar,.mdc-linear-progress[dir=rtl]:not([dir=ltr]).mdc-linear-progress--animation-ready .mdc-linear-progress__secondary-bar{animation-name:mdc-linear-progress-secondary-indeterminate-translate-reverse}[dir=rtl] .mdc-linear-progress:not([dir=ltr]) .mdc-linear-progress__buffer-dots,.mdc-linear-progress[dir=rtl]:not([dir=ltr]) .mdc-linear-progress__buffer-dots{animation:mdc-linear-progress-buffering-reverse 250ms infinite linear;transform:rotate(0)}[dir=rtl] .mdc-linear-progress:not([dir=ltr]).mdc-linear-progress--indeterminate .mdc-linear-progress__primary-bar,.mdc-linear-progress[dir=rtl]:not([dir=ltr]).mdc-linear-progress--indeterminate .mdc-linear-progress__primary-bar{right:-145.166611%;left:auto}[dir=rtl] .mdc-linear-progress:not([dir=ltr]).mdc-linear-progress--indeterminate .mdc-linear-progress__secondary-bar,.mdc-linear-progress[dir=rtl]:not([dir=ltr]).mdc-linear-progress--indeterminate .mdc-linear-progress__secondary-bar{right:-54.888891%;left:auto}.mdc-linear-progress--closed{opacity:0}.mdc-linear-progress--closed-animation-off .mdc-linear-progress__buffer-dots{animation:none}.mdc-linear-progress--closed-animation-off.mdc-linear-progress--indeterminate .mdc-linear-progress__bar,.mdc-linear-progress--closed-animation-off.mdc-linear-progress--indeterminate .mdc-linear-progress__bar .mdc-linear-progress__bar-inner{animation:none}.mdc-linear-progress__bar-inner{border-color:#6200ee;border-color:var(--mdc-theme-primary, #6200ee)}.mdc-linear-progress__buffer-dots{background-image:url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' enable-background='new 0 0 5 2' xml:space='preserve' viewBox='0 0 5 2' preserveAspectRatio='none slice'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23e6e6e6'/%3E%3C/svg%3E")}.mdc-linear-progress__buffer-bar{background-color:#e6e6e6}:host{display:block}.mdc-linear-progress__buffer-bar{background-color:#e6e6e6;background-color:var(--mdc-linear-progress-buffer-color, #e6e6e6)}.mdc-linear-progress__buffer-dots{background-image:url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' enable-background='new 0 0 5 2' xml:space='preserve' viewBox='0 0 5 2' preserveAspectRatio='none slice'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23e6e6e6'/%3E%3C/svg%3E");background-image:var(--mdc-linear-progress-buffering-dots-image, url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' enable-background='new 0 0 5 2' xml:space='preserve' viewBox='0 0 5 2' preserveAspectRatio='none slice'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23e6e6e6'/%3E%3C/svg%3E"))}`;
-let wo = class extends lt {
-};
-wo.styles = [Eu];
-wo = $([
-  te("mwc-linear-progress")
-], wo);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Au = {
-  ACTIVE: "mdc-tab-indicator--active",
-  FADE: "mdc-tab-indicator--fade",
-  NO_TRANSITION: "mdc-tab-indicator--no-transition"
-}, ku = {
-  CONTENT_SELECTOR: ".mdc-tab-indicator__content"
-};
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var jt = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e(t) {
-      return i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
-    }
-    return Object.defineProperty(e, "cssClasses", {
-      get: function() {
-        return Au;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "strings", {
-      get: function() {
-        return ku;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "defaultAdapter", {
-      get: function() {
-        return {
-          addClass: function() {
-          },
-          removeClass: function() {
-          },
-          computeContentClientRect: function() {
-            return { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
-          },
-          setContentStyleProperty: function() {
-          }
-        };
-      },
-      enumerable: !1,
-      configurable: !0
-    }), e.prototype.computeContentClientRect = function() {
-      return this.adapter.computeContentClientRect();
-    }, e;
-  }(Fe)
-);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var $u = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e() {
-      return i !== null && i.apply(this, arguments) || this;
-    }
-    return e.prototype.activate = function() {
-      this.adapter.addClass(jt.cssClasses.ACTIVE);
-    }, e.prototype.deactivate = function() {
-      this.adapter.removeClass(jt.cssClasses.ACTIVE);
-    }, e;
-  }(jt)
-);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Tu = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e() {
-      return i !== null && i.apply(this, arguments) || this;
-    }
-    return e.prototype.activate = function(t) {
-      if (!t) {
-        this.adapter.addClass(jt.cssClasses.ACTIVE);
-        return;
+const _u = {
+  userinfo: {
+    loggedInAs: "???"
+  },
+  compas: {
+    loading: "???",
+    comment: "???",
+    newLabel: "???",
+    notExists: "???",
+    noSclTypes: "???",
+    noScls: "???",
+    sclFilter: "???:",
+    noFilteredScls: "???",
+    noSclVersions: "???",
+    sclType: "???",
+    error: {
+      type: "???",
+      server: "???",
+      serverDetails: "{{type}}: {{message}}"
+    },
+    warning: {
+      nsdoc: "NSDoc-Datei konnte nicht geladen werden",
+      nsdocDetails: "Die {{url}} kann nicht geladen werden"
+    },
+    changeset: {
+      major: "???",
+      minor: "???",
+      patch: "???"
+    },
+    import: {
+      title: "???"
+    },
+    label: {
+      selectLabels: "???"
+    },
+    open: {
+      title: "???",
+      localTitle: "???",
+      selectFileButton: "???",
+      compasTitle: "CoMPAS",
+      listSclTypes: "???",
+      listScls: "??? ({{ type }})",
+      otherTypeButton: "???"
+    },
+    save: {
+      saveTitle: "???",
+      saveAsTitle: "???",
+      saveAsVersionTitle: "???",
+      localTitle: "???",
+      saveFileButton: "???",
+      compasTitle: "CoMPAS",
+      labelsTitle: "CoMPAS ???",
+      addSuccess: "???",
+      updateSuccess: "???"
+    },
+    updateSubstation: {
+      title: "???"
+    },
+    importIEDS: {
+      title: "???"
+    },
+    merge: {
+      title: "???"
+    },
+    autoAlignment: {
+      title: "???",
+      button: "???",
+      missing: "???",
+      success: "???"
+    },
+    uploadVersion: {
+      title: "???",
+      selectButton: "???...",
+      filename: "???",
+      updateSuccess: "???"
+    },
+    versions: {
+      title: "???",
+      sclInfo: "???: {{name}}, ???: {{version}}",
+      addVersionButton: "???",
+      confirmRestoreTitle: "???",
+      confirmRestore: "??? {{version}}?",
+      restoreVersionSuccess: "??? {{version}}",
+      deleteProjectButton: "???",
+      confirmDeleteTitle: "???",
+      confirmDelete: "???",
+      deleteSuccess: "???",
+      confirmDeleteVersionTitle: "???",
+      confirmDeleteVersion: "??? {{version}}?",
+      deleteVersionSuccess: "??? {{version}}",
+      confirmButton: "???",
+      compareButton: "???",
+      selectTwoVersionsTitle: "???",
+      selectTwoVersionsMessage: "???",
+      compareCurrentButton: "???",
+      selectOneVersionsTitle: "???",
+      selectOneVersionsMessage: "???"
+    },
+    scl: {
+      wizardTitle: "???",
+      filenameHelper: "???",
+      labelsTitle: "CoMPAS ???",
+      updateAction: "???"
+    },
+    compare: {
+      title: "???",
+      titleCurrent: "???",
+      noDiff: "???",
+      attributes: "Attribute",
+      children: "Kindelemente"
+    },
+    settings: {
+      title: "CoMPAS Einstellungen",
+      sclDataServiceUrl: "CoMPAS SCL Data Service URL",
+      sclValidatorServiceUrl: "CoMPAS SCL Validator Service URL",
+      cimMappingServiceUrl: "CoMPAS CIM Mapping Service URL",
+      sclAutoAlignmentServiceUrl: "CoMPAS SCL Auto Alignment Service URL",
+      useWebsockets: "???"
+    },
+    exportIEDParams: {
+      noIEDs: "Keine IEDs in Projekt"
+    },
+    session: {
+      headingExpiring: "???",
+      explainExpiring: "???",
+      continue: "???",
+      headingExpired: "???",
+      explainExpiredWithProject: "???",
+      explainExpiredWithoutProject: "???",
+      saveProject: "???"
+    },
+    autogensubstation: {
+      substationAmount: "???",
+      voltagelevelAmount: "???",
+      bayAmount: "???",
+      substationGen: "???"
+    },
+    export104: {
+      noSignalsFound: "Export 104 hat keine Signale gefunden",
+      invalidSignalWarning: "Export 104 hat ein ungültiges Signal gefunden",
+      errors: {
+        tiOrIoaInvalid: 'ti or ioa fehlen oder ioa hat weniger als 4 Zeichen, ti: "{{ ti }}", ioa: "{{ ioa }}"',
+        unknownSignalType: 'Unbekannter Signaltyp für ti: "{{ ti }}", ioa: "{{ ioa }}"',
+        noDoi: 'Es wurde kein Eltern DOI Element gefunden für ioa: "{{ ioa }}"',
+        noBay: 'Es wurde kein Bay Element mit dem Namen "{{ bayName }}" für ioa: "{{ ioa }}" gefunden',
+        noVoltageLevel: 'Es wurde kein VoltageLevel Element für Bay "{{ bayName }}" gefunden für ioa "{{ ioa }}"',
+        noSubstation: 'Es wurde kein Substation Element gefunden für VoltageLevel "{{ voltageLevelName }}" für ioa "{{ ioa }}"'
       }
-      var n = this.computeContentClientRect(), s = t.width / n.width, a = t.left - n.left;
-      this.adapter.addClass(jt.cssClasses.NO_TRANSITION), this.adapter.setContentStyleProperty("transform", "translateX(" + a + "px) scaleX(" + s + ")"), this.computeContentClientRect(), this.adapter.removeClass(jt.cssClasses.NO_TRANSITION), this.adapter.addClass(jt.cssClasses.ACTIVE), this.adapter.setContentStyleProperty("transform", "");
-    }, e.prototype.deactivate = function() {
-      this.adapter.removeClass(jt.cssClasses.ACTIVE);
-    }, e;
-  }(jt)
-);
-class wn extends ot {
-  constructor() {
-    super(...arguments), this.icon = "", this.fade = !1;
-  }
-  get mdcFoundationClass() {
-    return this.fade ? $u : Tu;
-  }
-  render() {
-    const e = {
-      "mdc-tab-indicator__content--icon": this.icon,
-      "material-icons": this.icon,
-      "mdc-tab-indicator__content--underline": !this.icon
-    };
-    return R`
-      <span class="mdc-tab-indicator ${pe({
-      "mdc-tab-indicator--fade": this.fade
-    })}">
-        <span class="mdc-tab-indicator__content ${pe(e)}">${this.icon}</span>
-      </span>
-      `;
-  }
-  updated(e) {
-    e.has("fade") && this.createFoundation();
-  }
-  createAdapter() {
-    return Object.assign(Object.assign({}, At(this.mdcRoot)), { computeContentClientRect: () => this.contentElement.getBoundingClientRect(), setContentStyleProperty: (e, t) => this.contentElement.style.setProperty(e, t) });
-  }
-  computeContentClientRect() {
-    return this.mdcFoundation.computeContentClientRect();
-  }
-  activate(e) {
-    this.mdcFoundation.activate(e);
-  }
-  deactivate() {
-    this.mdcFoundation.deactivate();
-  }
-}
-$([
-  z(".mdc-tab-indicator")
-], wn.prototype, "mdcRoot", void 0);
-$([
-  z(".mdc-tab-indicator__content")
-], wn.prototype, "contentElement", void 0);
-$([
-  D()
-], wn.prototype, "icon", void 0);
-$([
-  D({ type: Boolean })
-], wn.prototype, "fade", void 0);
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-LIcense-Identifier: Apache-2.0
- */
-const Iu = le`.material-icons{font-family:var(--mdc-icon-font, "Material Icons");font-weight:normal;font-style:normal;font-size:var(--mdc-icon-size, 24px);line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;-moz-osx-font-smoothing:grayscale;font-feature-settings:"liga"}.mdc-tab-indicator .mdc-tab-indicator__content--underline{border-color:#6200ee;border-color:var(--mdc-theme-primary, #6200ee)}.mdc-tab-indicator .mdc-tab-indicator__content--icon{color:#018786;color:var(--mdc-theme-secondary, #018786)}.mdc-tab-indicator .mdc-tab-indicator__content--underline{border-top-width:2px}.mdc-tab-indicator .mdc-tab-indicator__content--icon{height:34px;font-size:34px}.mdc-tab-indicator{display:flex;position:absolute;top:0;left:0;justify-content:center;width:100%;height:100%;pointer-events:none;z-index:1}.mdc-tab-indicator__content{transform-origin:left;opacity:0}.mdc-tab-indicator__content--underline{align-self:flex-end;box-sizing:border-box;width:100%;border-top-style:solid}.mdc-tab-indicator__content--icon{align-self:center;margin:0 auto}.mdc-tab-indicator--active .mdc-tab-indicator__content{opacity:1}.mdc-tab-indicator .mdc-tab-indicator__content{transition:250ms transform cubic-bezier(0.4, 0, 0.2, 1)}.mdc-tab-indicator--no-transition .mdc-tab-indicator__content{transition:none}.mdc-tab-indicator--fade .mdc-tab-indicator__content{transition:150ms opacity linear}.mdc-tab-indicator--active.mdc-tab-indicator--fade .mdc-tab-indicator__content{transition-delay:100ms}`;
-let _o = class extends wn {
-};
-_o.styles = [Iu];
-_o = $([
-  te("mwc-tab-indicator")
-], _o);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var zn = {
-  ACTIVE: "mdc-tab--active"
-}, en = {
-  ARIA_SELECTED: "aria-selected",
-  CONTENT_SELECTOR: ".mdc-tab__content",
-  INTERACTED_EVENT: "MDCTab:interacted",
-  RIPPLE_SELECTOR: ".mdc-tab__ripple",
-  TABINDEX: "tabIndex",
-  TAB_INDICATOR_SELECTOR: ".mdc-tab-indicator"
-};
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Ys = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e(t) {
-      var n = i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
-      return n.focusOnActivate = !0, n;
     }
-    return Object.defineProperty(e, "cssClasses", {
-      get: function() {
-        return zn;
+  },
+  locamation: {
+    vmu: {
+      ied: {
+        title: "???",
+        missing: "???",
+        name: "???"
       },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "strings", {
-      get: function() {
-        return en;
+      ldevice: {
+        name: "???"
       },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "defaultAdapter", {
-      get: function() {
-        return {
-          addClass: function() {
-          },
-          removeClass: function() {
-          },
-          hasClass: function() {
-            return !1;
-          },
-          setAttr: function() {
-          },
-          activateIndicator: function() {
-          },
-          deactivateIndicator: function() {
-          },
-          notifyInteracted: function() {
-          },
-          getOffsetLeft: function() {
-            return 0;
-          },
-          getOffsetWidth: function() {
-            return 0;
-          },
-          getContentOffsetLeft: function() {
-            return 0;
-          },
-          getContentOffsetWidth: function() {
-            return 0;
-          },
-          focus: function() {
-          }
-        };
+      ln: {
+        title: "???",
+        editTitle: "???",
+        name: "???"
       },
-      enumerable: !1,
-      configurable: !0
-    }), e.prototype.handleClick = function() {
-      this.adapter.notifyInteracted();
-    }, e.prototype.isActive = function() {
-      return this.adapter.hasClass(zn.ACTIVE);
-    }, e.prototype.setFocusOnActivate = function(t) {
-      this.focusOnActivate = t;
-    }, e.prototype.activate = function(t) {
-      this.adapter.addClass(zn.ACTIVE), this.adapter.setAttr(en.ARIA_SELECTED, "true"), this.adapter.setAttr(en.TABINDEX, "0"), this.adapter.activateIndicator(t), this.focusOnActivate && this.adapter.focus();
-    }, e.prototype.deactivate = function() {
-      this.isActive() && (this.adapter.removeClass(zn.ACTIVE), this.adapter.setAttr(en.ARIA_SELECTED, "false"), this.adapter.setAttr(en.TABINDEX, "-1"), this.adapter.deactivateIndicator());
-    }, e.prototype.computeDimensions = function() {
-      var t = this.adapter.getOffsetWidth(), n = this.adapter.getOffsetLeft(), s = this.adapter.getContentOffsetWidth(), a = this.adapter.getContentOffsetLeft();
-      return {
-        contentLeft: n + a,
-        contentRight: n + a + s,
-        rootLeft: n,
-        rootRight: n + t
-      };
-    }, e;
-  }(Fe)
-);
-let Lu = 0;
-class Ke extends ot {
-  constructor() {
-    super(...arguments), this.mdcFoundationClass = Ys, this.label = "", this.icon = "", this.hasImageIcon = !1, this.isFadingIndicator = !1, this.minWidth = !1, this.isMinWidthIndicator = !1, this.indicatorIcon = "", this.stacked = !1, this.focusOnActivate = !0, this._active = !1, this.initFocus = !1, this.shouldRenderRipple = !1, this.rippleElement = null, this.rippleHandlers = new pi(() => (this.shouldRenderRipple = !0, this.ripple.then((e) => this.rippleElement = e), this.ripple));
-  }
-  get active() {
-    return this._active;
-  }
-  connectedCallback() {
-    this.dir = document.dir, super.connectedCallback();
-  }
-  firstUpdated() {
-    super.firstUpdated(), this.id = this.id || `mdc-tab-${++Lu}`;
-  }
-  render() {
-    const e = {
-      "mdc-tab--min-width": this.minWidth,
-      "mdc-tab--stacked": this.stacked
-    };
-    let t = R``;
-    (this.hasImageIcon || this.icon) && (t = R`
-        <span class="mdc-tab__icon material-icons"><slot name="icon">${this.icon}</slot></span>`);
-    let n = R``;
-    return this.label && (n = R`
-        <span class="mdc-tab__text-label">${this.label}</span>`), R`
-      <button
-        @click="${this.handleClick}"
-        class="mdc-tab ${pe(e)}"
-        role="tab"
-        aria-selected="false"
-        tabindex="-1"
-        @focus="${this.focus}"
-        @blur="${this.handleBlur}"
-        @mousedown="${this.handleRippleMouseDown}"
-        @mouseenter="${this.handleRippleMouseEnter}"
-        @mouseleave="${this.handleRippleMouseLeave}"
-        @touchstart="${this.handleRippleTouchStart}"
-        @touchend="${this.handleRippleDeactivate}"
-        @touchcancel="${this.handleRippleDeactivate}">
-        <span class="mdc-tab__content">
-          ${t}
-          ${n}
-          ${this.isMinWidthIndicator ? this.renderIndicator() : ""}
-        </span>
-        ${this.isMinWidthIndicator ? "" : this.renderIndicator()}
-        ${this.renderRipple()}
-      </button>`;
-  }
-  renderIndicator() {
-    return R`<mwc-tab-indicator
-        .icon="${this.indicatorIcon}"
-        .fade="${this.isFadingIndicator}"></mwc-tab-indicator>`;
-  }
-  // TODO(dfreedm): Make this use selected as a param after Polymer/internal#739
-  /** @soyCompatible */
-  renderRipple() {
-    return this.shouldRenderRipple ? R`
-          <mwc-ripple primary></mwc-ripple>
-        ` : "";
-  }
-  createAdapter() {
-    return Object.assign(Object.assign({}, At(this.mdcRoot)), { setAttr: (e, t) => this.mdcRoot.setAttribute(e, t), activateIndicator: async (e) => {
-      await this.tabIndicator.updateComplete, this.tabIndicator.activate(e);
-    }, deactivateIndicator: async () => {
-      await this.tabIndicator.updateComplete, this.tabIndicator.deactivate();
-    }, notifyInteracted: () => this.dispatchEvent(new CustomEvent(Ys.strings.INTERACTED_EVENT, {
-      detail: { tabId: this.id },
-      bubbles: !0,
-      composed: !0,
-      cancelable: !0
-    })), getOffsetLeft: () => this.offsetLeft, getOffsetWidth: () => this.mdcRoot.offsetWidth, getContentOffsetLeft: () => this._contentElement.offsetLeft, getContentOffsetWidth: () => this._contentElement.offsetWidth, focus: () => {
-      this.initFocus ? this.initFocus = !1 : this.mdcRoot.focus();
-    } });
-  }
-  activate(e) {
-    e || (this.initFocus = !0), this.mdcFoundation ? (this.mdcFoundation.activate(e), this.setActive(this.mdcFoundation.isActive())) : this.updateComplete.then(() => {
-      this.mdcFoundation.activate(e), this.setActive(this.mdcFoundation.isActive());
-    });
-  }
-  deactivate() {
-    this.mdcFoundation.deactivate(), this.setActive(this.mdcFoundation.isActive());
-  }
-  setActive(e) {
-    const t = this.active;
-    t !== e && (this._active = e, this.requestUpdate("active", t));
-  }
-  computeDimensions() {
-    return this.mdcFoundation.computeDimensions();
-  }
-  computeIndicatorClientRect() {
-    return this.tabIndicator.computeContentClientRect();
-  }
-  // NOTE: needed only for ShadyDOM where delegatesFocus is not implemented
-  focus() {
-    this.mdcRoot.focus(), this.handleFocus();
-  }
-  handleClick() {
-    this.handleFocus(), this.mdcFoundation.handleClick();
-  }
-  handleFocus() {
-    this.handleRippleFocus();
-  }
-  handleBlur() {
-    this.handleRippleBlur();
-  }
-  handleRippleMouseDown(e) {
-    const t = () => {
-      window.removeEventListener("mouseup", t), this.handleRippleDeactivate();
-    };
-    window.addEventListener("mouseup", t), this.rippleHandlers.startPress(e);
-  }
-  handleRippleTouchStart(e) {
-    this.rippleHandlers.startPress(e);
-  }
-  handleRippleDeactivate() {
-    this.rippleHandlers.endPress();
-  }
-  handleRippleMouseEnter() {
-    this.rippleHandlers.startHover();
-  }
-  handleRippleMouseLeave() {
-    this.rippleHandlers.endHover();
-  }
-  handleRippleFocus() {
-    this.rippleHandlers.startFocus();
-  }
-  handleRippleBlur() {
-    this.rippleHandlers.endFocus();
-  }
-  get isRippleActive() {
-    var e;
-    return ((e = this.rippleElement) === null || e === void 0 ? void 0 : e.isActive) || !1;
-  }
-}
-Ke.shadowRootOptions = { mode: "open", delegatesFocus: !0 };
-$([
-  z(".mdc-tab")
-], Ke.prototype, "mdcRoot", void 0);
-$([
-  z("mwc-tab-indicator")
-], Ke.prototype, "tabIndicator", void 0);
-$([
-  D()
-], Ke.prototype, "label", void 0);
-$([
-  D()
-], Ke.prototype, "icon", void 0);
-$([
-  D({ type: Boolean })
-], Ke.prototype, "hasImageIcon", void 0);
-$([
-  D({ type: Boolean })
-], Ke.prototype, "isFadingIndicator", void 0);
-$([
-  D({ type: Boolean })
-], Ke.prototype, "minWidth", void 0);
-$([
-  D({ type: Boolean })
-], Ke.prototype, "isMinWidthIndicator", void 0);
-$([
-  D({ type: Boolean, reflect: !0, attribute: "active" })
-], Ke.prototype, "active", null);
-$([
-  D()
-], Ke.prototype, "indicatorIcon", void 0);
-$([
-  D({ type: Boolean })
-], Ke.prototype, "stacked", void 0);
-$([
-  ae(async function(i) {
-    await this.updateComplete, this.mdcFoundation.setFocusOnActivate(i);
-  }),
-  D({ type: Boolean })
-], Ke.prototype, "focusOnActivate", void 0);
-$([
-  z(".mdc-tab__content")
-], Ke.prototype, "_contentElement", void 0);
-$([
-  j()
-], Ke.prototype, "shouldRenderRipple", void 0);
-$([
-  mi("mwc-ripple")
-], Ke.prototype, "ripple", void 0);
-$([
-  xt({ passive: !0 })
-], Ke.prototype, "handleRippleTouchStart", null);
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-LIcense-Identifier: Apache-2.0
- */
-const Ru = le`.material-icons{font-family:var(--mdc-icon-font, "Material Icons");font-weight:normal;font-style:normal;font-size:var(--mdc-icon-size, 24px);line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;-moz-osx-font-smoothing:grayscale;font-feature-settings:"liga"}.mdc-tab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:0.875rem;font-size:var(--mdc-typography-button-font-size, 0.875rem);line-height:2.25rem;line-height:var(--mdc-typography-button-line-height, 2.25rem);font-weight:500;font-weight:var(--mdc-typography-button-font-weight, 500);letter-spacing:0.0892857143em;letter-spacing:var(--mdc-typography-button-letter-spacing, 0.0892857143em);text-decoration:none;text-decoration:var(--mdc-typography-button-text-decoration, none);text-transform:uppercase;text-transform:var(--mdc-typography-button-text-transform, uppercase);position:relative}.mdc-tab .mdc-tab__text-label{color:rgba(0, 0, 0, 0.6)}.mdc-tab .mdc-tab__icon{color:rgba(0, 0, 0, 0.54);fill:currentColor}.mdc-tab__content{position:relative}.mdc-tab__icon{width:24px;height:24px;font-size:24px}.mdc-tab--active .mdc-tab__text-label{color:#6200ee;color:var(--mdc-theme-primary, #6200ee)}.mdc-tab--active .mdc-tab__icon{color:#6200ee;color:var(--mdc-theme-primary, #6200ee);fill:currentColor}.mdc-tab{min-width:90px;padding-right:24px;padding-left:24px;display:flex;flex:1 0 auto;justify-content:center;box-sizing:border-box;margin:0;padding-top:0;padding-bottom:0;border:none;outline:none;background:none;text-align:center;white-space:nowrap;cursor:pointer;-webkit-appearance:none;z-index:1}.mdc-tab::-moz-focus-inner{padding:0;border:0}.mdc-tab--min-width{flex:0 1 auto}.mdc-tab__content{display:flex;align-items:center;justify-content:center;height:inherit;pointer-events:none}.mdc-tab__text-label{transition:150ms color linear;display:inline-block;line-height:1;z-index:2}.mdc-tab__icon{transition:150ms color linear;z-index:2}.mdc-tab--stacked .mdc-tab__content{flex-direction:column;align-items:center;justify-content:center}.mdc-tab--stacked .mdc-tab__text-label{padding-top:6px;padding-bottom:4px}.mdc-tab--active .mdc-tab__text-label,.mdc-tab--active .mdc-tab__icon{transition-delay:100ms}.mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label{padding-left:8px;padding-right:0}[dir=rtl] .mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label,.mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label[dir=rtl]{padding-left:0;padding-right:8px}@keyframes mdc-ripple-fg-radius-in{from{animation-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transform:translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1)}to{transform:translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1))}}@keyframes mdc-ripple-fg-opacity-in{from{animation-timing-function:linear;opacity:0}to{opacity:var(--mdc-ripple-fg-opacity, 0)}}@keyframes mdc-ripple-fg-opacity-out{from{animation-timing-function:linear;opacity:var(--mdc-ripple-fg-opacity, 0)}to{opacity:0}}.mdc-tab{--mdc-ripple-fg-size: 0;--mdc-ripple-left: 0;--mdc-ripple-top: 0;--mdc-ripple-fg-scale: 1;--mdc-ripple-fg-translate-end: 0;--mdc-ripple-fg-translate-start: 0;-webkit-tap-highlight-color:rgba(0,0,0,0)}.mdc-tab .mdc-tab__ripple::before,.mdc-tab .mdc-tab__ripple::after{position:absolute;border-radius:50%;opacity:0;pointer-events:none;content:""}.mdc-tab .mdc-tab__ripple::before{transition:opacity 15ms linear,background-color 15ms linear;z-index:1;z-index:var(--mdc-ripple-z-index, 1)}.mdc-tab .mdc-tab__ripple::after{z-index:0;z-index:var(--mdc-ripple-z-index, 0)}.mdc-tab.mdc-ripple-upgraded .mdc-tab__ripple::before{transform:scale(var(--mdc-ripple-fg-scale, 1))}.mdc-tab.mdc-ripple-upgraded .mdc-tab__ripple::after{top:0;left:0;transform:scale(0);transform-origin:center center}.mdc-tab.mdc-ripple-upgraded--unbounded .mdc-tab__ripple::after{top:var(--mdc-ripple-top, 0);left:var(--mdc-ripple-left, 0)}.mdc-tab.mdc-ripple-upgraded--foreground-activation .mdc-tab__ripple::after{animation:mdc-ripple-fg-radius-in 225ms forwards,mdc-ripple-fg-opacity-in 75ms forwards}.mdc-tab.mdc-ripple-upgraded--foreground-deactivation .mdc-tab__ripple::after{animation:mdc-ripple-fg-opacity-out 150ms;transform:translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1))}.mdc-tab .mdc-tab__ripple::before,.mdc-tab .mdc-tab__ripple::after{top:calc(50% - 100%);left:calc(50% - 100%);width:200%;height:200%}.mdc-tab.mdc-ripple-upgraded .mdc-tab__ripple::after{width:var(--mdc-ripple-fg-size, 100%);height:var(--mdc-ripple-fg-size, 100%)}.mdc-tab .mdc-tab__ripple::before,.mdc-tab .mdc-tab__ripple::after{background-color:#6200ee;background-color:var(--mdc-ripple-color, var(--mdc-theme-primary, #6200ee))}.mdc-tab:hover .mdc-tab__ripple::before,.mdc-tab.mdc-ripple-surface--hover .mdc-tab__ripple::before{opacity:0.04;opacity:var(--mdc-ripple-hover-opacity, 0.04)}.mdc-tab.mdc-ripple-upgraded--background-focused .mdc-tab__ripple::before,.mdc-tab:not(.mdc-ripple-upgraded):focus .mdc-tab__ripple::before{transition-duration:75ms;opacity:0.12;opacity:var(--mdc-ripple-focus-opacity, 0.12)}.mdc-tab:not(.mdc-ripple-upgraded) .mdc-tab__ripple::after{transition:opacity 150ms linear}.mdc-tab:not(.mdc-ripple-upgraded):active .mdc-tab__ripple::after{transition-duration:75ms;opacity:0.12;opacity:var(--mdc-ripple-press-opacity, 0.12)}.mdc-tab.mdc-ripple-upgraded{--mdc-ripple-fg-opacity:var(--mdc-ripple-press-opacity, 0.12)}.mdc-tab__ripple{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;will-change:transform,opacity}:host{outline:none;flex:1 0 auto;display:flex;justify-content:center;-webkit-tap-highlight-color:transparent}.mdc-tab{height:var(--mdc-tab-height, 48px);margin-left:0;margin-right:0;padding-right:var(--mdc-tab-horizontal-padding, 24px);padding-left:var(--mdc-tab-horizontal-padding, 24px)}.mdc-tab--stacked{height:var(--mdc-tab-stacked-height, 72px)}.mdc-tab::-moz-focus-inner{border:0}.mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label{padding-left:8px;padding-right:0}[dir=rtl] .mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label,.mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label[dir=rtl]{padding-left:0;padding-right:8px}.mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label{color:var(--mdc-tab-text-label-color-default, rgba(0, 0, 0, 0.6))}.mdc-tab:not(.mdc-tab--active) .mdc-tab__icon{color:var(--mdc-tab-color-default, rgba(0, 0, 0, 0.54))}`;
-let ir = class extends Ke {
-};
-ir.styles = [Ru];
-ir = $([
-  te("mwc-tab")
-], ir);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Du = {
-  ANIMATING: "mdc-tab-scroller--animating",
-  SCROLL_AREA_SCROLL: "mdc-tab-scroller__scroll-area--scroll",
-  SCROLL_TEST: "mdc-tab-scroller__test"
-}, Mu = {
-  AREA_SELECTOR: ".mdc-tab-scroller__scroll-area",
-  CONTENT_SELECTOR: ".mdc-tab-scroller__scroll-content"
-};
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var is = (
-  /** @class */
-  /* @__PURE__ */ function() {
-    function i(e) {
-      this.adapter = e;
-    }
-    return i;
-  }()
-);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Ou = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e() {
-      return i !== null && i.apply(this, arguments) || this;
-    }
-    return e.prototype.getScrollPositionRTL = function() {
-      var t = this.adapter.getScrollAreaScrollLeft(), n = this.calculateScrollEdges().right;
-      return Math.round(n - t);
-    }, e.prototype.scrollToRTL = function(t) {
-      var n = this.calculateScrollEdges(), s = this.adapter.getScrollAreaScrollLeft(), a = this.clampScrollValue(n.right - t);
-      return {
-        finalScrollPosition: a,
-        scrollDelta: a - s
-      };
-    }, e.prototype.incrementScrollRTL = function(t) {
-      var n = this.adapter.getScrollAreaScrollLeft(), s = this.clampScrollValue(n - t);
-      return {
-        finalScrollPosition: s,
-        scrollDelta: s - n
-      };
-    }, e.prototype.getAnimatingScrollPosition = function(t) {
-      return t;
-    }, e.prototype.calculateScrollEdges = function() {
-      var t = this.adapter.getScrollContentOffsetWidth(), n = this.adapter.getScrollAreaOffsetWidth();
-      return {
-        left: 0,
-        right: t - n
-      };
-    }, e.prototype.clampScrollValue = function(t) {
-      var n = this.calculateScrollEdges();
-      return Math.min(Math.max(n.left, t), n.right);
-    }, e;
-  }(is)
-);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Nu = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e() {
-      return i !== null && i.apply(this, arguments) || this;
-    }
-    return e.prototype.getScrollPositionRTL = function(t) {
-      var n = this.adapter.getScrollAreaScrollLeft();
-      return Math.round(t - n);
-    }, e.prototype.scrollToRTL = function(t) {
-      var n = this.adapter.getScrollAreaScrollLeft(), s = this.clampScrollValue(-t);
-      return {
-        finalScrollPosition: s,
-        scrollDelta: s - n
-      };
-    }, e.prototype.incrementScrollRTL = function(t) {
-      var n = this.adapter.getScrollAreaScrollLeft(), s = this.clampScrollValue(n - t);
-      return {
-        finalScrollPosition: s,
-        scrollDelta: s - n
-      };
-    }, e.prototype.getAnimatingScrollPosition = function(t, n) {
-      return t - n;
-    }, e.prototype.calculateScrollEdges = function() {
-      var t = this.adapter.getScrollContentOffsetWidth(), n = this.adapter.getScrollAreaOffsetWidth();
-      return {
-        left: n - t,
-        right: 0
-      };
-    }, e.prototype.clampScrollValue = function(t) {
-      var n = this.calculateScrollEdges();
-      return Math.max(Math.min(n.right, t), n.left);
-    }, e;
-  }(is)
-);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Fu = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e() {
-      return i !== null && i.apply(this, arguments) || this;
-    }
-    return e.prototype.getScrollPositionRTL = function(t) {
-      var n = this.adapter.getScrollAreaScrollLeft();
-      return Math.round(n - t);
-    }, e.prototype.scrollToRTL = function(t) {
-      var n = this.adapter.getScrollAreaScrollLeft(), s = this.clampScrollValue(t);
-      return {
-        finalScrollPosition: s,
-        scrollDelta: n - s
-      };
-    }, e.prototype.incrementScrollRTL = function(t) {
-      var n = this.adapter.getScrollAreaScrollLeft(), s = this.clampScrollValue(n + t);
-      return {
-        finalScrollPosition: s,
-        scrollDelta: n - s
-      };
-    }, e.prototype.getAnimatingScrollPosition = function(t, n) {
-      return t + n;
-    }, e.prototype.calculateScrollEdges = function() {
-      var t = this.adapter.getScrollContentOffsetWidth(), n = this.adapter.getScrollAreaOffsetWidth();
-      return {
-        left: t - n,
-        right: 0
-      };
-    }, e.prototype.clampScrollValue = function(t) {
-      var n = this.calculateScrollEdges();
-      return Math.min(Math.max(n.right, t), n.left);
-    }, e;
-  }(is)
-);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Pu = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e(t) {
-      var n = i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
-      return n.isAnimating = !1, n;
-    }
-    return Object.defineProperty(e, "cssClasses", {
-      get: function() {
-        return Du;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "strings", {
-      get: function() {
-        return Mu;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "defaultAdapter", {
-      get: function() {
-        return {
-          eventTargetMatchesSelector: function() {
-            return !1;
-          },
-          addClass: function() {
-          },
-          removeClass: function() {
-          },
-          addScrollAreaClass: function() {
-          },
-          setScrollAreaStyleProperty: function() {
-          },
-          setScrollContentStyleProperty: function() {
-          },
-          getScrollContentStyleValue: function() {
-            return "";
-          },
-          setScrollAreaScrollLeft: function() {
-          },
-          getScrollAreaScrollLeft: function() {
-            return 0;
-          },
-          getScrollContentOffsetWidth: function() {
-            return 0;
-          },
-          getScrollAreaOffsetWidth: function() {
-            return 0;
-          },
-          computeScrollAreaClientRect: function() {
-            return { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
-          },
-          computeScrollContentClientRect: function() {
-            return { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
-          },
-          computeHorizontalScrollbarHeight: function() {
-            return 0;
-          }
-        };
-      },
-      enumerable: !1,
-      configurable: !0
-    }), e.prototype.init = function() {
-      var t = this.adapter.computeHorizontalScrollbarHeight();
-      this.adapter.setScrollAreaStyleProperty("margin-bottom", -t + "px"), this.adapter.addScrollAreaClass(e.cssClasses.SCROLL_AREA_SCROLL);
-    }, e.prototype.getScrollPosition = function() {
-      if (this.isRTL())
-        return this.computeCurrentScrollPositionRTL();
-      var t = this.calculateCurrentTranslateX(), n = this.adapter.getScrollAreaScrollLeft();
-      return n - t;
-    }, e.prototype.handleInteraction = function() {
-      this.isAnimating && this.stopScrollAnimation();
-    }, e.prototype.handleTransitionEnd = function(t) {
-      var n = t.target;
-      !this.isAnimating || !this.adapter.eventTargetMatchesSelector(n, e.strings.CONTENT_SELECTOR) || (this.isAnimating = !1, this.adapter.removeClass(e.cssClasses.ANIMATING));
-    }, e.prototype.incrementScroll = function(t) {
-      t !== 0 && this.animate(this.getIncrementScrollOperation(t));
-    }, e.prototype.incrementScrollImmediate = function(t) {
-      if (t !== 0) {
-        var n = this.getIncrementScrollOperation(t);
-        n.scrollDelta !== 0 && (this.stopScrollAnimation(), this.adapter.setScrollAreaScrollLeft(n.finalScrollPosition));
-      }
-    }, e.prototype.scrollTo = function(t) {
-      if (this.isRTL()) {
-        this.scrollToImplRTL(t);
-        return;
-      }
-      this.scrollToImpl(t);
-    }, e.prototype.getRTLScroller = function() {
-      return this.rtlScrollerInstance || (this.rtlScrollerInstance = this.rtlScrollerFactory()), this.rtlScrollerInstance;
-    }, e.prototype.calculateCurrentTranslateX = function() {
-      var t = this.adapter.getScrollContentStyleValue("transform");
-      if (t === "none")
-        return 0;
-      var n = /\((.+?)\)/.exec(t);
-      if (!n)
-        return 0;
-      var s = n[1], a = Tc(s.split(","), 6);
-      a[0], a[1], a[2], a[3];
-      var l = a[4];
-      return a[5], parseFloat(l);
-    }, e.prototype.clampScrollValue = function(t) {
-      var n = this.calculateScrollEdges();
-      return Math.min(Math.max(n.left, t), n.right);
-    }, e.prototype.computeCurrentScrollPositionRTL = function() {
-      var t = this.calculateCurrentTranslateX();
-      return this.getRTLScroller().getScrollPositionRTL(t);
-    }, e.prototype.calculateScrollEdges = function() {
-      var t = this.adapter.getScrollContentOffsetWidth(), n = this.adapter.getScrollAreaOffsetWidth();
-      return {
-        left: 0,
-        right: t - n
-      };
-    }, e.prototype.scrollToImpl = function(t) {
-      var n = this.getScrollPosition(), s = this.clampScrollValue(t), a = s - n;
-      this.animate({
-        finalScrollPosition: s,
-        scrollDelta: a
-      });
-    }, e.prototype.scrollToImplRTL = function(t) {
-      var n = this.getRTLScroller().scrollToRTL(t);
-      this.animate(n);
-    }, e.prototype.getIncrementScrollOperation = function(t) {
-      if (this.isRTL())
-        return this.getRTLScroller().incrementScrollRTL(t);
-      var n = this.getScrollPosition(), s = t + n, a = this.clampScrollValue(s), l = a - n;
-      return {
-        finalScrollPosition: a,
-        scrollDelta: l
-      };
-    }, e.prototype.animate = function(t) {
-      var n = this;
-      t.scrollDelta !== 0 && (this.stopScrollAnimation(), this.adapter.setScrollAreaScrollLeft(t.finalScrollPosition), this.adapter.setScrollContentStyleProperty("transform", "translateX(" + t.scrollDelta + "px)"), this.adapter.computeScrollAreaClientRect(), requestAnimationFrame(function() {
-        n.adapter.addClass(e.cssClasses.ANIMATING), n.adapter.setScrollContentStyleProperty("transform", "none");
-      }), this.isAnimating = !0);
-    }, e.prototype.stopScrollAnimation = function() {
-      this.isAnimating = !1;
-      var t = this.getAnimatingScrollPosition();
-      this.adapter.removeClass(e.cssClasses.ANIMATING), this.adapter.setScrollContentStyleProperty("transform", "translateX(0px)"), this.adapter.setScrollAreaScrollLeft(t);
-    }, e.prototype.getAnimatingScrollPosition = function() {
-      var t = this.calculateCurrentTranslateX(), n = this.adapter.getScrollAreaScrollLeft();
-      return this.isRTL() ? this.getRTLScroller().getAnimatingScrollPosition(n, t) : n - t;
-    }, e.prototype.rtlScrollerFactory = function() {
-      var t = this.adapter.getScrollAreaScrollLeft();
-      this.adapter.setScrollAreaScrollLeft(t - 1);
-      var n = this.adapter.getScrollAreaScrollLeft();
-      if (n < 0)
-        return this.adapter.setScrollAreaScrollLeft(t), new Nu(this.adapter);
-      var s = this.adapter.computeScrollAreaClientRect(), a = this.adapter.computeScrollContentClientRect(), l = Math.round(a.right - s.right);
-      return this.adapter.setScrollAreaScrollLeft(t), l === n ? new Fu(this.adapter) : new Ou(this.adapter);
-    }, e.prototype.isRTL = function() {
-      return this.adapter.getScrollContentStyleValue("direction") === "rtl";
-    }, e;
-  }(Fe)
-);
-class _n extends ot {
-  constructor() {
-    super(...arguments), this.mdcFoundationClass = Pu, this._scrollbarHeight = -1;
-  }
-  _handleInteraction() {
-    this.mdcFoundation.handleInteraction();
-  }
-  _handleTransitionEnd(e) {
-    this.mdcFoundation.handleTransitionEnd(e);
-  }
-  render() {
-    return R`
-      <div class="mdc-tab-scroller">
-        <div class="mdc-tab-scroller__scroll-area"
-            @wheel="${this._handleInteraction}"
-            @touchstart="${this._handleInteraction}"
-            @pointerdown="${this._handleInteraction}"
-            @mousedown="${this._handleInteraction}"
-            @keydown="${this._handleInteraction}"
-            @transitionend="${this._handleTransitionEnd}">
-          <div class="mdc-tab-scroller__scroll-content"><slot></slot></div>
-        </div>
-      </div>
-      `;
-  }
-  createAdapter() {
-    return Object.assign(Object.assign({}, At(this.mdcRoot)), { eventTargetMatchesSelector: (e, t) => mr(e, t), addScrollAreaClass: (e) => this.scrollAreaElement.classList.add(e), setScrollAreaStyleProperty: (e, t) => this.scrollAreaElement.style.setProperty(e, t), setScrollContentStyleProperty: (e, t) => this.scrollContentElement.style.setProperty(e, t), getScrollContentStyleValue: (e) => window.getComputedStyle(this.scrollContentElement).getPropertyValue(e), setScrollAreaScrollLeft: (e) => this.scrollAreaElement.scrollLeft = e, getScrollAreaScrollLeft: () => this.scrollAreaElement.scrollLeft, getScrollContentOffsetWidth: () => this.scrollContentElement.offsetWidth, getScrollAreaOffsetWidth: () => this.scrollAreaElement.offsetWidth, computeScrollAreaClientRect: () => this.scrollAreaElement.getBoundingClientRect(), computeScrollContentClientRect: () => this.scrollContentElement.getBoundingClientRect(), computeHorizontalScrollbarHeight: () => (this._scrollbarHeight === -1 && (this.scrollAreaElement.style.overflowX = "scroll", this._scrollbarHeight = this.scrollAreaElement.offsetHeight - this.scrollAreaElement.clientHeight, this.scrollAreaElement.style.overflowX = ""), this._scrollbarHeight) });
-  }
-  /**
-   * Returns the current visual scroll position
-   * @return {number}
-   */
-  getScrollPosition() {
-    return this.mdcFoundation.getScrollPosition();
-  }
-  /**
-   * Returns the width of the scroll content
-   * @return {number}
-   */
-  getScrollContentWidth() {
-    return this.scrollContentElement.offsetWidth;
-  }
-  /**
-   * Increments the scroll value by the given amount
-   * @param {number} scrollXIncrement The pixel value by which to increment the
-   *     scroll value
-   */
-  incrementScrollPosition(e) {
-    this.mdcFoundation.incrementScroll(e);
-  }
-  /**
-   * Scrolls to the given pixel position
-   * @param {number} scrollX The pixel value to scroll to
-   */
-  scrollToPosition(e) {
-    this.mdcFoundation.scrollTo(e);
-  }
-}
-$([
-  z(".mdc-tab-scroller")
-], _n.prototype, "mdcRoot", void 0);
-$([
-  z(".mdc-tab-scroller__scroll-area")
-], _n.prototype, "scrollAreaElement", void 0);
-$([
-  z(".mdc-tab-scroller__scroll-content")
-], _n.prototype, "scrollContentElement", void 0);
-$([
-  xt({ passive: !0 })
-], _n.prototype, "_handleInteraction", null);
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-LIcense-Identifier: Apache-2.0
- */
-const Bu = le`.mdc-tab-scroller{overflow-y:hidden}.mdc-tab-scroller.mdc-tab-scroller--animating .mdc-tab-scroller__scroll-content{transition:250ms transform cubic-bezier(0.4, 0, 0.2, 1)}.mdc-tab-scroller__test{position:absolute;top:-9999px;width:100px;height:100px;overflow-x:scroll}.mdc-tab-scroller__scroll-area{-webkit-overflow-scrolling:touch;display:flex;overflow-x:hidden}.mdc-tab-scroller__scroll-area::-webkit-scrollbar,.mdc-tab-scroller__test::-webkit-scrollbar{display:none}.mdc-tab-scroller__scroll-area--scroll{overflow-x:scroll}.mdc-tab-scroller__scroll-content{position:relative;display:flex;flex:1 0 auto;transform:none;will-change:transform}.mdc-tab-scroller--align-start .mdc-tab-scroller__scroll-content{justify-content:flex-start}.mdc-tab-scroller--align-end .mdc-tab-scroller__scroll-content{justify-content:flex-end}.mdc-tab-scroller--align-center .mdc-tab-scroller__scroll-content{justify-content:center}.mdc-tab-scroller--animating .mdc-tab-scroller__scroll-area{-webkit-overflow-scrolling:auto}:host{display:flex}.mdc-tab-scroller{flex:1}`;
-let So = class extends _n {
-};
-So.styles = [Bu];
-So = $([
-  te("mwc-tab-scroller")
-], So);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Me = {
-  ARROW_LEFT_KEY: "ArrowLeft",
-  ARROW_RIGHT_KEY: "ArrowRight",
-  END_KEY: "End",
-  ENTER_KEY: "Enter",
-  HOME_KEY: "Home",
-  SPACE_KEY: "Space",
-  TAB_ACTIVATED_EVENT: "MDCTabBar:activated",
-  TAB_SCROLLER_SELECTOR: ".mdc-tab-scroller",
-  TAB_SELECTOR: ".mdc-tab"
-}, $t = {
-  ARROW_LEFT_KEYCODE: 37,
-  ARROW_RIGHT_KEYCODE: 39,
-  END_KEYCODE: 35,
-  ENTER_KEYCODE: 13,
-  EXTRA_SCROLL_AMOUNT: 20,
-  HOME_KEYCODE: 36,
-  SPACE_KEYCODE: 32
-};
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Ii = /* @__PURE__ */ new Set();
-Ii.add(Me.ARROW_LEFT_KEY);
-Ii.add(Me.ARROW_RIGHT_KEY);
-Ii.add(Me.END_KEY);
-Ii.add(Me.HOME_KEY);
-Ii.add(Me.ENTER_KEY);
-Ii.add(Me.SPACE_KEY);
-var Li = /* @__PURE__ */ new Map();
-Li.set($t.ARROW_LEFT_KEYCODE, Me.ARROW_LEFT_KEY);
-Li.set($t.ARROW_RIGHT_KEYCODE, Me.ARROW_RIGHT_KEY);
-Li.set($t.END_KEYCODE, Me.END_KEY);
-Li.set($t.HOME_KEYCODE, Me.HOME_KEY);
-Li.set($t.ENTER_KEYCODE, Me.ENTER_KEY);
-Li.set($t.SPACE_KEYCODE, Me.SPACE_KEY);
-var Zs = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e(t) {
-      var n = i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
-      return n.useAutomaticActivation = !1, n;
-    }
-    return Object.defineProperty(e, "strings", {
-      get: function() {
-        return Me;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "numbers", {
-      get: function() {
-        return $t;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "defaultAdapter", {
-      get: function() {
-        return {
-          scrollTo: function() {
-          },
-          incrementScroll: function() {
-          },
-          getScrollPosition: function() {
-            return 0;
-          },
-          getScrollContentWidth: function() {
-            return 0;
-          },
-          getOffsetWidth: function() {
-            return 0;
-          },
-          isRTL: function() {
-            return !1;
-          },
-          setActiveTab: function() {
-          },
-          activateTabAtIndex: function() {
-          },
-          deactivateTabAtIndex: function() {
-          },
-          focusTabAtIndex: function() {
-          },
-          getTabIndicatorClientRectAtIndex: function() {
-            return { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
-          },
-          getTabDimensionsAtIndex: function() {
-            return { rootLeft: 0, rootRight: 0, contentLeft: 0, contentRight: 0 };
-          },
-          getPreviousActiveTabIndex: function() {
-            return -1;
-          },
-          getFocusedTabIndex: function() {
-            return -1;
-          },
-          getIndexOfTabById: function() {
-            return -1;
-          },
-          getTabListLength: function() {
-            return 0;
-          },
-          notifyTabActivated: function() {
-          }
-        };
-      },
-      enumerable: !1,
-      configurable: !0
-    }), e.prototype.setUseAutomaticActivation = function(t) {
-      this.useAutomaticActivation = t;
-    }, e.prototype.activateTab = function(t) {
-      var n = this.adapter.getPreviousActiveTabIndex();
-      if (!(!this.indexIsInRange(t) || t === n)) {
-        var s;
-        n !== -1 && (this.adapter.deactivateTabAtIndex(n), s = this.adapter.getTabIndicatorClientRectAtIndex(n)), this.adapter.activateTabAtIndex(t, s), this.scrollIntoView(t), this.adapter.notifyTabActivated(t);
-      }
-    }, e.prototype.handleKeyDown = function(t) {
-      var n = this.getKeyFromEvent(t);
-      if (n !== void 0)
-        if (this.isActivationKey(n) || t.preventDefault(), this.useAutomaticActivation) {
-          if (this.isActivationKey(n))
-            return;
-          var s = this.determineTargetFromKey(this.adapter.getPreviousActiveTabIndex(), n);
-          this.adapter.setActiveTab(s), this.scrollIntoView(s);
-        } else {
-          var a = this.adapter.getFocusedTabIndex();
-          if (this.isActivationKey(n))
-            this.adapter.setActiveTab(a);
-          else {
-            var s = this.determineTargetFromKey(a, n);
-            this.adapter.focusTabAtIndex(s), this.scrollIntoView(s);
-          }
-        }
-    }, e.prototype.handleTabInteraction = function(t) {
-      this.adapter.setActiveTab(this.adapter.getIndexOfTabById(t.detail.tabId));
-    }, e.prototype.scrollIntoView = function(t) {
-      if (this.indexIsInRange(t)) {
-        if (t === 0) {
-          this.adapter.scrollTo(0);
-          return;
-        }
-        if (t === this.adapter.getTabListLength() - 1) {
-          this.adapter.scrollTo(this.adapter.getScrollContentWidth());
-          return;
-        }
-        if (this.isRTL()) {
-          this.scrollIntoViewImplRTL(t);
-          return;
-        }
-        this.scrollIntoViewImpl(t);
-      }
-    }, e.prototype.determineTargetFromKey = function(t, n) {
-      var s = this.isRTL(), a = this.adapter.getTabListLength() - 1, l = n === Me.END_KEY, u = n === Me.ARROW_LEFT_KEY && !s || n === Me.ARROW_RIGHT_KEY && s, o = n === Me.ARROW_RIGHT_KEY && !s || n === Me.ARROW_LEFT_KEY && s, r = t;
-      return l ? r = a : u ? r -= 1 : o ? r += 1 : r = 0, r < 0 ? r = a : r > a && (r = 0), r;
-    }, e.prototype.calculateScrollIncrement = function(t, n, s, a) {
-      var l = this.adapter.getTabDimensionsAtIndex(n), u = l.contentLeft - s - a, o = l.contentRight - s, r = o - $t.EXTRA_SCROLL_AMOUNT, c = u + $t.EXTRA_SCROLL_AMOUNT;
-      return n < t ? Math.min(r, 0) : Math.max(c, 0);
-    }, e.prototype.calculateScrollIncrementRTL = function(t, n, s, a, l) {
-      var u = this.adapter.getTabDimensionsAtIndex(n), o = l - u.contentLeft - s, r = l - u.contentRight - s - a, c = r + $t.EXTRA_SCROLL_AMOUNT, d = o - $t.EXTRA_SCROLL_AMOUNT;
-      return n > t ? Math.max(c, 0) : Math.min(d, 0);
-    }, e.prototype.findAdjacentTabIndexClosestToEdge = function(t, n, s, a) {
-      var l = n.rootLeft - s, u = n.rootRight - s - a, o = l + u, r = l < 0 || o < 0, c = u > 0 || o > 0;
-      return r ? t - 1 : c ? t + 1 : -1;
-    }, e.prototype.findAdjacentTabIndexClosestToEdgeRTL = function(t, n, s, a, l) {
-      var u = l - n.rootLeft - a - s, o = l - n.rootRight - s, r = u + o, c = u > 0 || r > 0, d = o < 0 || r < 0;
-      return c ? t + 1 : d ? t - 1 : -1;
-    }, e.prototype.getKeyFromEvent = function(t) {
-      return Ii.has(t.key) ? t.key : Li.get(t.keyCode);
-    }, e.prototype.isActivationKey = function(t) {
-      return t === Me.SPACE_KEY || t === Me.ENTER_KEY;
-    }, e.prototype.indexIsInRange = function(t) {
-      return t >= 0 && t < this.adapter.getTabListLength();
-    }, e.prototype.isRTL = function() {
-      return this.adapter.isRTL();
-    }, e.prototype.scrollIntoViewImpl = function(t) {
-      var n = this.adapter.getScrollPosition(), s = this.adapter.getOffsetWidth(), a = this.adapter.getTabDimensionsAtIndex(t), l = this.findAdjacentTabIndexClosestToEdge(t, a, n, s);
-      if (this.indexIsInRange(l)) {
-        var u = this.calculateScrollIncrement(t, l, n, s);
-        this.adapter.incrementScroll(u);
-      }
-    }, e.prototype.scrollIntoViewImplRTL = function(t) {
-      var n = this.adapter.getScrollPosition(), s = this.adapter.getOffsetWidth(), a = this.adapter.getTabDimensionsAtIndex(t), l = this.adapter.getScrollContentWidth(), u = this.findAdjacentTabIndexClosestToEdgeRTL(t, a, n, s, l);
-      if (this.indexIsInRange(u)) {
-        var o = this.calculateScrollIncrementRTL(t, u, n, s, l);
-        this.adapter.incrementScroll(o);
-      }
-    }, e;
-  }(Fe)
-);
-class Sn extends ot {
-  constructor() {
-    super(...arguments), this.mdcFoundationClass = Zs, this.activeIndex = 0, this._previousActiveIndex = -1;
-  }
-  _handleTabInteraction(e) {
-    this.mdcFoundation.handleTabInteraction(e);
-  }
-  _handleKeydown(e) {
-    this.mdcFoundation.handleKeyDown(e);
-  }
-  // TODO(sorvell): can scroller be optional for perf?
-  render() {
-    return R`
-      <div class="mdc-tab-bar" role="tablist"
-          @MDCTab:interacted="${this._handleTabInteraction}"
-          @keydown="${this._handleKeydown}">
-        <mwc-tab-scroller><slot></slot></mwc-tab-scroller>
-      </div>
-      `;
-  }
-  // TODO(sorvell): probably want to memoize this and use a `slotChange` event
-  _getTabs() {
-    return this.tabsSlot.assignedNodes({ flatten: !0 }).filter((e) => e instanceof ir);
-  }
-  _getTab(e) {
-    return this._getTabs()[e];
-  }
-  createAdapter() {
-    return {
-      scrollTo: (e) => this.scrollerElement.scrollToPosition(e),
-      incrementScroll: (e) => this.scrollerElement.incrementScrollPosition(e),
-      getScrollPosition: () => this.scrollerElement.getScrollPosition(),
-      getScrollContentWidth: () => this.scrollerElement.getScrollContentWidth(),
-      getOffsetWidth: () => this.mdcRoot.offsetWidth,
-      isRTL: () => window.getComputedStyle(this.mdcRoot).getPropertyValue("direction") === "rtl",
-      setActiveTab: (e) => this.mdcFoundation.activateTab(e),
-      activateTabAtIndex: (e, t) => {
-        const n = this._getTab(e);
-        n !== void 0 && n.activate(t), this._previousActiveIndex = e;
-      },
-      deactivateTabAtIndex: (e) => {
-        const t = this._getTab(e);
-        t !== void 0 && t.deactivate();
-      },
-      focusTabAtIndex: (e) => {
-        const t = this._getTab(e);
-        t !== void 0 && t.focus();
-      },
-      // TODO(sorvell): tab may not be able to synchronously answer
-      // `computeIndicatorClientRect` if an update is pending or it has not yet
-      // updated. If this is necessary, LitElement may need a `forceUpdate`
-      // method.
-      getTabIndicatorClientRectAtIndex: (e) => {
-        const t = this._getTab(e);
-        return t !== void 0 ? t.computeIndicatorClientRect() : new DOMRect();
-      },
-      getTabDimensionsAtIndex: (e) => {
-        const t = this._getTab(e);
-        return t !== void 0 ? t.computeDimensions() : { rootLeft: 0, rootRight: 0, contentLeft: 0, contentRight: 0 };
-      },
-      getPreviousActiveTabIndex: () => this._previousActiveIndex,
-      getFocusedTabIndex: () => {
-        const e = this._getTabs(), t = this.getRootNode().activeElement;
-        return e.indexOf(t);
-      },
-      getIndexOfTabById: (e) => {
-        const t = this._getTabs();
-        for (let n = 0; n < t.length; n++)
-          if (t[n].id === e)
-            return n;
-        return -1;
-      },
-      getTabListLength: () => this._getTabs().length,
-      notifyTabActivated: (e) => {
-        this.activeIndex = e, this.dispatchEvent(new CustomEvent(Zs.strings.TAB_ACTIVATED_EVENT, { detail: { index: e }, bubbles: !0, cancelable: !0 }));
-      }
-    };
-  }
-  firstUpdated() {
-  }
-  async getUpdateComplete() {
-    const e = await super.getUpdateComplete();
-    return await this.scrollerElement.updateComplete, this.mdcFoundation === void 0 && this.createFoundation(), e;
-  }
-  scrollIndexIntoView(e) {
-    this.mdcFoundation.scrollIntoView(e);
-  }
-}
-$([
-  z(".mdc-tab-bar")
-], Sn.prototype, "mdcRoot", void 0);
-$([
-  z("mwc-tab-scroller")
-], Sn.prototype, "scrollerElement", void 0);
-$([
-  z("slot")
-], Sn.prototype, "tabsSlot", void 0);
-$([
-  ae(async function() {
-    await this.updateComplete, this.activeIndex !== this._previousActiveIndex && this.mdcFoundation.activateTab(this.activeIndex);
-  }),
-  D({ type: Number })
-], Sn.prototype, "activeIndex", void 0);
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-LIcense-Identifier: Apache-2.0
- */
-const Hu = le`.mdc-tab-bar{width:100%}.mdc-tab{height:48px}.mdc-tab--stacked{height:72px}:host{display:block}.mdc-tab-bar{flex:1}mwc-tab{--mdc-tab-height: 48px;--mdc-tab-stacked-height: 72px}`;
-let Co = class extends Sn {
-};
-Co.styles = [Hu];
-Co = $([
-  te("mwc-tab-bar")
-], Co);
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-LIcense-Identifier: Apache-2.0
- */
-const zu = le`.mdc-top-app-bar{background-color:#6200ee;background-color:var(--mdc-theme-primary, #6200ee);color:white;display:flex;position:fixed;flex-direction:column;justify-content:space-between;box-sizing:border-box;width:100%;z-index:4}.mdc-top-app-bar .mdc-top-app-bar__action-item,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon{color:#fff;color:var(--mdc-theme-on-primary, #fff)}.mdc-top-app-bar .mdc-top-app-bar__action-item::before,.mdc-top-app-bar .mdc-top-app-bar__action-item::after,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon::before,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon::after{background-color:#fff;background-color:var(--mdc-ripple-color, var(--mdc-theme-on-primary, #fff))}.mdc-top-app-bar .mdc-top-app-bar__action-item:hover::before,.mdc-top-app-bar .mdc-top-app-bar__action-item.mdc-ripple-surface--hover::before,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon:hover::before,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon.mdc-ripple-surface--hover::before{opacity:0.08;opacity:var(--mdc-ripple-hover-opacity, 0.08)}.mdc-top-app-bar .mdc-top-app-bar__action-item.mdc-ripple-upgraded--background-focused::before,.mdc-top-app-bar .mdc-top-app-bar__action-item:not(.mdc-ripple-upgraded):focus::before,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon.mdc-ripple-upgraded--background-focused::before,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon:not(.mdc-ripple-upgraded):focus::before{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-focus-opacity, 0.24)}.mdc-top-app-bar .mdc-top-app-bar__action-item:not(.mdc-ripple-upgraded)::after,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon:not(.mdc-ripple-upgraded)::after{transition:opacity 150ms linear}.mdc-top-app-bar .mdc-top-app-bar__action-item:not(.mdc-ripple-upgraded):active::after,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon:not(.mdc-ripple-upgraded):active::after{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-top-app-bar .mdc-top-app-bar__action-item.mdc-ripple-upgraded,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon.mdc-ripple-upgraded{--mdc-ripple-fg-opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-top-app-bar__row{display:flex;position:relative;box-sizing:border-box;width:100%;height:64px}.mdc-top-app-bar__section{display:inline-flex;flex:1 1 auto;align-items:center;min-width:0;padding:8px 12px;z-index:1}.mdc-top-app-bar__section--align-start{justify-content:flex-start;order:-1}.mdc-top-app-bar__section--align-end{justify-content:flex-end;order:1}.mdc-top-app-bar__title{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-headline6-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:1.25rem;font-size:var(--mdc-typography-headline6-font-size, 1.25rem);line-height:2rem;line-height:var(--mdc-typography-headline6-line-height, 2rem);font-weight:500;font-weight:var(--mdc-typography-headline6-font-weight, 500);letter-spacing:0.0125em;letter-spacing:var(--mdc-typography-headline6-letter-spacing, 0.0125em);text-decoration:inherit;text-decoration:var(--mdc-typography-headline6-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-headline6-text-transform, inherit);padding-left:20px;padding-right:0;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;z-index:1}[dir=rtl] .mdc-top-app-bar__title,.mdc-top-app-bar__title[dir=rtl]{padding-left:0;padding-right:20px}.mdc-top-app-bar--short-collapsed{border-top-left-radius:0;border-top-right-radius:0;border-bottom-right-radius:24px;border-bottom-left-radius:0}[dir=rtl] .mdc-top-app-bar--short-collapsed,.mdc-top-app-bar--short-collapsed[dir=rtl]{border-top-left-radius:0;border-top-right-radius:0;border-bottom-right-radius:0;border-bottom-left-radius:24px}.mdc-top-app-bar--short{top:0;right:auto;left:0;width:100%;transition:width 250ms cubic-bezier(0.4, 0, 0.2, 1)}[dir=rtl] .mdc-top-app-bar--short,.mdc-top-app-bar--short[dir=rtl]{right:0;left:auto}.mdc-top-app-bar--short .mdc-top-app-bar__row{height:56px}.mdc-top-app-bar--short .mdc-top-app-bar__section{padding:4px}.mdc-top-app-bar--short .mdc-top-app-bar__title{transition:opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);opacity:1}.mdc-top-app-bar--short-collapsed{box-shadow:0px 2px 4px -1px rgba(0, 0, 0, 0.2),0px 4px 5px 0px rgba(0, 0, 0, 0.14),0px 1px 10px 0px rgba(0,0,0,.12);width:56px;transition:width 300ms cubic-bezier(0.4, 0, 0.2, 1)}.mdc-top-app-bar--short-collapsed .mdc-top-app-bar__title{display:none}.mdc-top-app-bar--short-collapsed .mdc-top-app-bar__action-item{transition:padding 150ms cubic-bezier(0.4, 0, 0.2, 1)}.mdc-top-app-bar--short-collapsed.mdc-top-app-bar--short-has-action-item{width:112px}.mdc-top-app-bar--short-collapsed.mdc-top-app-bar--short-has-action-item .mdc-top-app-bar__section--align-end{padding-left:0;padding-right:12px}[dir=rtl] .mdc-top-app-bar--short-collapsed.mdc-top-app-bar--short-has-action-item .mdc-top-app-bar__section--align-end,.mdc-top-app-bar--short-collapsed.mdc-top-app-bar--short-has-action-item .mdc-top-app-bar__section--align-end[dir=rtl]{padding-left:12px;padding-right:0}.mdc-top-app-bar--dense .mdc-top-app-bar__row{height:48px}.mdc-top-app-bar--dense .mdc-top-app-bar__section{padding:0 4px}.mdc-top-app-bar--dense .mdc-top-app-bar__title{padding-left:12px;padding-right:0}[dir=rtl] .mdc-top-app-bar--dense .mdc-top-app-bar__title,.mdc-top-app-bar--dense .mdc-top-app-bar__title[dir=rtl]{padding-left:0;padding-right:12px}.mdc-top-app-bar--prominent .mdc-top-app-bar__row{height:128px}.mdc-top-app-bar--prominent .mdc-top-app-bar__title{align-self:flex-end;padding-bottom:2px}.mdc-top-app-bar--prominent .mdc-top-app-bar__action-item,.mdc-top-app-bar--prominent .mdc-top-app-bar__navigation-icon{align-self:flex-start}.mdc-top-app-bar--fixed{transition:box-shadow 200ms linear}.mdc-top-app-bar--fixed-scrolled{box-shadow:0px 2px 4px -1px rgba(0, 0, 0, 0.2),0px 4px 5px 0px rgba(0, 0, 0, 0.14),0px 1px 10px 0px rgba(0,0,0,.12);transition:box-shadow 200ms linear}.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__row{height:96px}.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__section{padding:0 12px}.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__title{padding-left:20px;padding-right:0;padding-bottom:9px}[dir=rtl] .mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__title,.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__title[dir=rtl]{padding-left:0;padding-right:20px}.mdc-top-app-bar--fixed-adjust{padding-top:64px}.mdc-top-app-bar--dense-fixed-adjust{padding-top:48px}.mdc-top-app-bar--short-fixed-adjust{padding-top:56px}.mdc-top-app-bar--prominent-fixed-adjust{padding-top:128px}.mdc-top-app-bar--dense-prominent-fixed-adjust{padding-top:96px}@media(max-width: 599px){.mdc-top-app-bar__row{height:56px}.mdc-top-app-bar__section{padding:4px}.mdc-top-app-bar--short{transition:width 200ms cubic-bezier(0.4, 0, 0.2, 1)}.mdc-top-app-bar--short-collapsed{transition:width 250ms cubic-bezier(0.4, 0, 0.2, 1)}.mdc-top-app-bar--short-collapsed .mdc-top-app-bar__section--align-end{padding-left:0;padding-right:12px}[dir=rtl] .mdc-top-app-bar--short-collapsed .mdc-top-app-bar__section--align-end,.mdc-top-app-bar--short-collapsed .mdc-top-app-bar__section--align-end[dir=rtl]{padding-left:12px;padding-right:0}.mdc-top-app-bar--prominent .mdc-top-app-bar__title{padding-bottom:6px}.mdc-top-app-bar--fixed-adjust{padding-top:56px}}:host{display:block}.mdc-top-app-bar{color:#fff;color:var(--mdc-theme-on-primary, #fff);width:100%;width:var(--mdc-top-app-bar-width, 100%)}.mdc-top-app-bar--prominent #navigation ::slotted(*),.mdc-top-app-bar--prominent #actions ::slotted(*){align-self:flex-start}#navigation ::slotted(*),#actions ::slotted(*){--mdc-icon-button-ripple-opacity: 0.24}.mdc-top-app-bar--short-collapsed #actions ::slotted(*){transition:padding 150ms cubic-bezier(0.4, 0, 0.2, 1)}.mdc-top-app-bar__section--align-center{justify-content:center}.mdc-top-app-bar__section--align-center .mdc-top-app-bar__title{padding-left:0;padding-right:0}.center-title .mdc-top-app-bar__section--align-start,.center-title .mdc-top-app-bar__section--align-end{flex-basis:0}.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__section--align-center .mdc-top-app-bar__title{padding-left:0;padding-right:0}.mdc-top-app-bar--fixed-scrolled{box-shadow:var(--mdc-top-app-bar-fixed-box-shadow, 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12))}`;
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Eo = {
-  FIXED_CLASS: "mdc-top-app-bar--fixed",
-  FIXED_SCROLLED_CLASS: "mdc-top-app-bar--fixed-scrolled",
-  SHORT_CLASS: "mdc-top-app-bar--short",
-  SHORT_COLLAPSED_CLASS: "mdc-top-app-bar--short-collapsed",
-  SHORT_HAS_ACTION_ITEM_CLASS: "mdc-top-app-bar--short-has-action-item"
-}, Ao = {
-  DEBOUNCE_THROTTLE_RESIZE_TIME_MS: 100,
-  MAX_TOP_APP_BAR_HEIGHT: 128
-}, fl = {
-  ACTION_ITEM_SELECTOR: ".mdc-top-app-bar__action-item",
-  NAVIGATION_EVENT: "MDCTopAppBar:nav",
-  NAVIGATION_ICON_SELECTOR: ".mdc-top-app-bar__navigation-icon",
-  ROOT_SELECTOR: ".mdc-top-app-bar",
-  TITLE_SELECTOR: ".mdc-top-app-bar__title"
-};
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Vu = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e(t) {
-      return i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
-    }
-    return Object.defineProperty(e, "strings", {
-      get: function() {
-        return fl;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "cssClasses", {
-      get: function() {
-        return Eo;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "numbers", {
-      get: function() {
-        return Ao;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "defaultAdapter", {
-      /**
-       * See {@link MDCTopAppBarAdapter} for typing information on parameters and return types.
-       */
-      get: function() {
-        return {
-          addClass: function() {
-          },
-          removeClass: function() {
-          },
-          hasClass: function() {
-            return !1;
-          },
-          setStyle: function() {
-          },
-          getTopAppBarHeight: function() {
-            return 0;
-          },
-          notifyNavigationIconClicked: function() {
-          },
-          getViewportScrollY: function() {
-            return 0;
-          },
-          getTotalActionItems: function() {
-            return 0;
-          }
-        };
-      },
-      enumerable: !1,
-      configurable: !0
-    }), e.prototype.handleTargetScroll = function() {
-    }, e.prototype.handleWindowResize = function() {
-    }, e.prototype.handleNavigationClick = function() {
-      this.adapter.notifyNavigationIconClicked();
-    }, e;
-  }(Fe)
-);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Vn = 0, gl = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e(t) {
-      var n = i.call(this, t) || this;
-      return n.wasDocked = !0, n.isDockedShowing = !0, n.currentAppBarOffsetTop = 0, n.isCurrentlyBeingResized = !1, n.resizeThrottleId = Vn, n.resizeDebounceId = Vn, n.lastScrollPosition = n.adapter.getViewportScrollY(), n.topAppBarHeight = n.adapter.getTopAppBarHeight(), n;
-    }
-    return e.prototype.destroy = function() {
-      i.prototype.destroy.call(this), this.adapter.setStyle("top", "");
-    }, e.prototype.handleTargetScroll = function() {
-      var t = Math.max(this.adapter.getViewportScrollY(), 0), n = t - this.lastScrollPosition;
-      this.lastScrollPosition = t, this.isCurrentlyBeingResized || (this.currentAppBarOffsetTop -= n, this.currentAppBarOffsetTop > 0 ? this.currentAppBarOffsetTop = 0 : Math.abs(this.currentAppBarOffsetTop) > this.topAppBarHeight && (this.currentAppBarOffsetTop = -this.topAppBarHeight), this.moveTopAppBar());
-    }, e.prototype.handleWindowResize = function() {
-      var t = this;
-      this.resizeThrottleId || (this.resizeThrottleId = setTimeout(function() {
-        t.resizeThrottleId = Vn, t.throttledResizeHandler();
-      }, Ao.DEBOUNCE_THROTTLE_RESIZE_TIME_MS)), this.isCurrentlyBeingResized = !0, this.resizeDebounceId && clearTimeout(this.resizeDebounceId), this.resizeDebounceId = setTimeout(function() {
-        t.handleTargetScroll(), t.isCurrentlyBeingResized = !1, t.resizeDebounceId = Vn;
-      }, Ao.DEBOUNCE_THROTTLE_RESIZE_TIME_MS);
-    }, e.prototype.checkForUpdate = function() {
-      var t = -this.topAppBarHeight, n = this.currentAppBarOffsetTop < 0, s = this.currentAppBarOffsetTop > t, a = n && s;
-      if (a)
-        this.wasDocked = !1;
-      else if (this.wasDocked) {
-        if (this.isDockedShowing !== s)
-          return this.isDockedShowing = s, !0;
-      } else return this.wasDocked = !0, !0;
-      return a;
-    }, e.prototype.moveTopAppBar = function() {
-      if (this.checkForUpdate()) {
-        var t = this.currentAppBarOffsetTop;
-        Math.abs(t) >= this.topAppBarHeight && (t = -128), this.adapter.setStyle("top", t + "px");
-      }
-    }, e.prototype.throttledResizeHandler = function() {
-      var t = this.adapter.getTopAppBarHeight();
-      this.topAppBarHeight !== t && (this.wasDocked = !1, this.currentAppBarOffsetTop -= this.topAppBarHeight - t, this.topAppBarHeight = t), this.handleTargetScroll();
-    }, e;
-  }(Vu)
-);
-const ns = Dc ? { passive: !0 } : void 0;
-class Cn extends ot {
-  constructor() {
-    super(...arguments), this.centerTitle = !1, this.handleTargetScroll = () => {
-      this.mdcFoundation.handleTargetScroll();
-    }, this.handleNavigationClick = () => {
-      this.mdcFoundation.handleNavigationClick();
-    };
-  }
-  get scrollTarget() {
-    return this._scrollTarget || window;
-  }
-  set scrollTarget(e) {
-    this.unregisterScrollListener();
-    const t = this.scrollTarget;
-    this._scrollTarget = e, this.updateRootPosition(), this.requestUpdate("scrollTarget", t), this.registerScrollListener();
-  }
-  updateRootPosition() {
-    if (this.mdcRoot) {
-      const e = this.scrollTarget === window;
-      this.mdcRoot.style.position = e ? "" : "absolute";
+      version: "???",
+      identifier: "???",
+      identifierHelper: "???",
+      sum: "???",
+      sumHelper: "???",
+      channel: "???",
+      channelHelper: "???",
+      transformPrimary: "???",
+      transformPrimaryHelper: "???",
+      transformSecondary: "???",
+      transformSecondaryHelper: "???",
+      updateAction: "???"
     }
   }
-  render() {
-    let e = R`<span class="mdc-top-app-bar__title"><slot name="title"></slot></span>`;
-    return this.centerTitle && (e = R`<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-center">${e}</section>`), R`
-      <header class="mdc-top-app-bar ${pe(this.barClasses())}">
-      <div class="mdc-top-app-bar__row">
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start" id="navigation">
-          <slot name="navigationIcon"
-            @click=${this.handleNavigationClick}></slot>
-          ${this.centerTitle ? null : e}
-        </section>
-        ${this.centerTitle ? e : null}
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" id="actions" role="toolbar">
-          <slot name="actionItems"></slot>
-        </section>
-      </div>
-    </header>
-    <div class="${pe(this.contentClasses())}">
-      <slot></slot>
-    </div>
-    `;
-  }
-  createAdapter() {
-    return Object.assign(Object.assign({}, At(this.mdcRoot)), { setStyle: (e, t) => this.mdcRoot.style.setProperty(e, t), getTopAppBarHeight: () => this.mdcRoot.clientHeight, notifyNavigationIconClicked: () => {
-      this.dispatchEvent(new Event(fl.NAVIGATION_EVENT, { bubbles: !0, cancelable: !0 }));
-    }, getViewportScrollY: () => this.scrollTarget instanceof Window ? this.scrollTarget.pageYOffset : this.scrollTarget.scrollTop, getTotalActionItems: () => this._actionItemsSlot.assignedNodes({ flatten: !0 }).length });
-  }
-  registerListeners() {
-    this.registerScrollListener();
-  }
-  unregisterListeners() {
-    this.unregisterScrollListener();
-  }
-  registerScrollListener() {
-    this.scrollTarget.addEventListener("scroll", this.handleTargetScroll, ns);
-  }
-  unregisterScrollListener() {
-    this.scrollTarget.removeEventListener("scroll", this.handleTargetScroll);
-  }
-  firstUpdated() {
-    super.firstUpdated(), this.updateRootPosition(), this.registerListeners();
-  }
-  disconnectedCallback() {
-    super.disconnectedCallback(), this.unregisterListeners();
-  }
-}
-$([
-  z(".mdc-top-app-bar")
-], Cn.prototype, "mdcRoot", void 0);
-$([
-  z('slot[name="actionItems"]')
-], Cn.prototype, "_actionItemsSlot", void 0);
-$([
-  D({ type: Boolean })
-], Cn.prototype, "centerTitle", void 0);
-$([
-  D({ type: Object })
-], Cn.prototype, "scrollTarget", null);
-class rs extends Cn {
-  constructor() {
-    super(...arguments), this.mdcFoundationClass = gl, this.prominent = !1, this.dense = !1, this.handleResize = () => {
-      this.mdcFoundation.handleWindowResize();
-    };
-  }
-  barClasses() {
-    return {
-      "mdc-top-app-bar--dense": this.dense,
-      "mdc-top-app-bar--prominent": this.prominent,
-      "center-title": this.centerTitle
-    };
-  }
-  contentClasses() {
-    return {
-      "mdc-top-app-bar--fixed-adjust": !this.dense && !this.prominent,
-      "mdc-top-app-bar--dense-fixed-adjust": this.dense && !this.prominent,
-      "mdc-top-app-bar--prominent-fixed-adjust": !this.dense && this.prominent,
-      "mdc-top-app-bar--dense-prominent-fixed-adjust": this.dense && this.prominent
-    };
-  }
-  registerListeners() {
-    super.registerListeners(), window.addEventListener("resize", this.handleResize, ns);
-  }
-  unregisterListeners() {
-    super.unregisterListeners(), window.removeEventListener("resize", this.handleResize);
-  }
-}
-$([
-  D({ type: Boolean, reflect: !0 })
-], rs.prototype, "prominent", void 0);
-$([
-  D({ type: Boolean, reflect: !0 })
-], rs.prototype, "dense", void 0);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Uu = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e() {
-      var t = i !== null && i.apply(this, arguments) || this;
-      return t.wasScrolled = !1, t;
+}, Su = {
+  userinfo: {
+    loggedInAs: "Logged in as {{name}}"
+  },
+  compas: {
+    loading: "Loading...",
+    comment: "Comment",
+    newLabel: "Add new label",
+    notExists: "Project no longer exists in CoMPAS!",
+    noSclTypes: "No types found in CoMPAS",
+    noScls: "No projects found in CoMPAS",
+    sclFilter: "Filter on:",
+    noFilteredScls: "No projects found matching the filter(s)",
+    noSclVersions: "No versions found for this project in CoMPAS",
+    sclType: "SCL Type",
+    error: {
+      type: "Unable to determine type from document name!",
+      server: "Error communicating with CoMPAS Ecosystem",
+      serverDetails: "{{type}}: {{message}}"
+    },
+    warning: {
+      nsdoc: "Could not load NSDoc file",
+      nsdocDetails: "Cannot load {{url}}"
+    },
+    changeset: {
+      major: "Major change",
+      minor: "Minor change",
+      patch: "Patch change"
+    },
+    import: {
+      title: "Import from API"
+    },
+    label: {
+      selectLabels: "Select labels to be show"
+    },
+    open: {
+      title: "Open project",
+      localTitle: "Local",
+      selectFileButton: "Open file...",
+      compasTitle: "CoMPAS",
+      listSclTypes: "Select type of project",
+      listScls: "Select project ({{ type }})",
+      otherTypeButton: "Other type..."
+    },
+    save: {
+      saveTitle: "Save project",
+      saveAsTitle: "Save as new project",
+      saveAsVersionTitle: "Save as new version to existing project",
+      localTitle: "Local",
+      saveFileButton: "Save to file...",
+      compasTitle: "CoMPAS",
+      labelsTitle: "CoMPAS Labels",
+      addSuccess: "Project added to CoMPAS.",
+      updateSuccess: "Project updated in CoMPAS"
+    },
+    updateSubstation: {
+      title: "Update substation"
+    },
+    importIEDS: {
+      title: "Import IED's"
+    },
+    merge: {
+      title: "Merge project"
+    },
+    autoAlignment: {
+      title: "Auto align SLD for selected substations",
+      button: "Execute",
+      missing: "No substations",
+      success: "Updated X/Y Coordinates for substation(s)"
+    },
+    uploadVersion: {
+      title: "Upload new version of project to CoMPAS",
+      selectButton: "Select file...",
+      filename: "Filename",
+      updateSuccess: "Project uploaded in CoMPAS"
+    },
+    versions: {
+      title: "CoMPAS Versions",
+      sclInfo: "Current project - Name: {{name}}, Version: {{version}}",
+      addVersionButton: "Add version",
+      confirmRestoreTitle: "Restore version?",
+      confirmRestore: "Are you sure to restore version {{version}}?",
+      restoreVersionSuccess: "Restored version {{version}} of project",
+      deleteProjectButton: "Delete project",
+      confirmDeleteTitle: "Delete project?",
+      confirmDelete: "Are you sure to delete all version(s)?",
+      deleteSuccess: "Removed project from CoMPAS",
+      confirmDeleteVersionTitle: "Delete version?",
+      confirmDeleteVersion: "Are you sure to delete version {{version}}?",
+      deleteVersionSuccess: "Removed version {{version}} of project from CoMPAS",
+      confirmButton: "Confirm",
+      compareButton: "Compare versions",
+      selectTwoVersionsTitle: "Select two versions?",
+      selectTwoVersionsMessage: "Select maximum two versions to compare with each other. Currently selected: {{size}}.",
+      compareCurrentButton: "Compare version (current)",
+      selectOneVersionsTitle: "Select one version?",
+      selectOneVersionsMessage: "Select maximum one version to compare the current project against. Currently selected: {{size}}."
+    },
+    scl: {
+      wizardTitle: "Edit SCL",
+      filenameHelper: "Filename used by CoMPAS when saving to a filesystem",
+      labelsTitle: "CoMPAS Labels",
+      updateAction: "Updated CoMPAS Private Element for SCL Element"
+    },
+    compare: {
+      title: "Compare version {{newVersion}} against version {{oldVersion}}",
+      titleCurrent: "Compare current project against version {{oldVersion}}",
+      noDiff: "No difference between versions",
+      attributes: "Attributes from",
+      children: "Child elements from"
+    },
+    settings: {
+      title: "CoMPAS Settings",
+      sclDataServiceUrl: "CoMPAS SCL Data Service URL",
+      sclValidatorServiceUrl: "CoMPAS SCL Validator Service URL",
+      cimMappingServiceUrl: "CoMPAS CIM Mapping Service URL",
+      sclAutoAlignmentServiceUrl: "CoMPAS SCL Auto Alignment Service URL",
+      useWebsockets: "Use Websockets"
+    },
+    exportIEDParams: {
+      noIEDs: "No IEDs found"
+    },
+    session: {
+      headingExpiring: "Your session is about to expire!",
+      explainExpiring: "Because of inactivity ({{expiringSessionWarning}} minutes), your session with the CoMPAS Systems is about to expire. <br>If you want to continue working press the button 'Continue'. Otherwise the session will expire in {{timeTillExpire}} minutes.",
+      continue: "Continue",
+      headingExpired: "Your session is expired!",
+      explainExpiredWithProject: "Because of inactivity ({{expiredSessionMessage}} minutes), your session with the CoMPAS Systems is expired. <br>To continue working you need to reload the browser to login again, but modifications to the project are lost. <br>To prevent this you can first save the project to your local filesystem using the button 'Save project'. <br>After loading the original project from CoMPAS you can add this file as new version using the tab 'CoMPAS Versions'.",
+      explainExpiredWithoutProject: "Because of inactivity ({{expiredSessionMessage}} minutes), your session with the CoMPAS Systems is expired. <br>To continue working you need to reload the browser to login again.",
+      saveProject: "Save project"
+    },
+    autogensubstation: {
+      substationAmount: "Found {{amount}} substation(s) to be created!",
+      voltagelevelAmount: "Generating {{amount}} Voltage Level(s) for {{substationname}} substation!",
+      bayAmount: "Generating {{amount}} Bay Element(s) for {{voltagelevelname}} Voltage Level!",
+      substationGen: "Generated {{substationname}} substation with content!"
+    },
+    export104: {
+      noSignalsFound: "Export 104 found no signals",
+      invalidSignalWarning: "Export 104 found invalid signal",
+      errors: {
+        tiOrIoaInvalid: 'ti or ioa are missing or ioa is less than 4 digits, ti: "{{ ti }}", ioa: "{{ ioa }}"',
+        unknownSignalType: 'Unknown signal type for ti: "{{ ti }}", ioa: "{{ ioa }}"',
+        noDoi: 'No parent DOI found for address with ioa: "{{ ioa }}"',
+        noBay: 'No Bay found bayname: "{{ bayName }}" for address with ioa: "{{ ioa }}"',
+        noVoltageLevel: 'No parent voltage level found for bay "{{ bayName }}" for ioa "{{ ioa }}"',
+        noSubstation: 'No parent substation found for voltage level "{{ voltageLevelName }}" for ioa "{{ ioa }}"'
+      }
     }
-    return e.prototype.handleTargetScroll = function() {
-      var t = this.adapter.getViewportScrollY();
-      t <= 0 ? this.wasScrolled && (this.adapter.removeClass(Eo.FIXED_SCROLLED_CLASS), this.wasScrolled = !1) : this.wasScrolled || (this.adapter.addClass(Eo.FIXED_SCROLLED_CLASS), this.wasScrolled = !0);
-    }, e;
-  }(gl)
-);
-/**
- * @license
- * Copyright 2019 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-class Wu extends rs {
-  constructor() {
-    super(...arguments), this.mdcFoundationClass = Uu;
-  }
-  barClasses() {
-    return Object.assign(Object.assign({}, super.barClasses()), { "mdc-top-app-bar--fixed": !0 });
-  }
-  registerListeners() {
-    this.scrollTarget.addEventListener("scroll", this.handleTargetScroll, ns);
-  }
-  unregisterListeners() {
-    this.scrollTarget.removeEventListener("scroll", this.handleTargetScroll);
-  }
-}
-let ko = class extends Wu {
-};
-ko.styles = [zu];
-ko = $([
-  te("mwc-top-app-bar-fixed")
-], ko);
-/**
- * @license
- * Copyright 2016 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var ht = {
-  ANIMATE: "mdc-drawer--animate",
-  CLOSING: "mdc-drawer--closing",
-  DISMISSIBLE: "mdc-drawer--dismissible",
-  MODAL: "mdc-drawer--modal",
-  OPEN: "mdc-drawer--open",
-  OPENING: "mdc-drawer--opening",
-  ROOT: "mdc-drawer"
-}, $o = {
-  APP_CONTENT_SELECTOR: ".mdc-drawer-app-content",
-  CLOSE_EVENT: "MDCDrawer:closed",
-  OPEN_EVENT: "MDCDrawer:opened",
-  SCRIM_SELECTOR: ".mdc-drawer-scrim",
-  LIST_SELECTOR: ".mdc-list,.mdc-deprecated-list",
-  LIST_ITEM_ACTIVATED_SELECTOR: ".mdc-list-item--activated,.mdc-deprecated-list-item--activated"
-};
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var vl = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e(t) {
-      var n = i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
-      return n.animationFrame = 0, n.animationTimer = 0, n;
+  },
+  locamation: {
+    vmu: {
+      ied: {
+        title: "Configure Locamation VMUs",
+        missing: "No Locamation IEDs with Logica Devices found",
+        name: "IED"
+      },
+      ldevice: {
+        name: "Logical Device"
+      },
+      ln: {
+        title: "Configure Locamation VMUs (IED)",
+        editTitle: "Edit VMU",
+        name: "Logical Node"
+      },
+      version: "Locamation VMU Version",
+      identifier: "Identifier",
+      identifierHelper: "The address of the sensor. The address is constructed of 3 numbers, separated by dots. The range of each number is 0-255.",
+      sum: "Sum",
+      sumHelper: "The collection of three channel numbers for which the sum of currents or voltages will be calculated. The numbers are separated by commas. Values for the current sensor range from 0 - 5, for the voltage sensor 0-2.",
+      channel: "Channel",
+      channelHelper: "The channel number on the sensor. Values for the current sensor range from 0 - 5, for the voltage sensor 0-2.",
+      transformPrimary: "TransformPrimary",
+      transformPrimaryHelper: "The nominator of the ratio of the measement transformer.",
+      transformSecondary: "TransformSecondary",
+      transformSecondaryHelper: "The denominator of the ratio of the measement transformer.",
+      updateAction: "Locamation private fields updated for Logica Node {{lnName}}"
     }
-    return Object.defineProperty(e, "strings", {
-      get: function() {
-        return $o;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "cssClasses", {
-      get: function() {
-        return ht;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "defaultAdapter", {
-      get: function() {
-        return {
-          addClass: function() {
-          },
-          removeClass: function() {
-          },
-          hasClass: function() {
-            return !1;
-          },
-          elementHasClass: function() {
-            return !1;
-          },
-          notifyClose: function() {
-          },
-          notifyOpen: function() {
-          },
-          saveFocus: function() {
-          },
-          restoreFocus: function() {
-          },
-          focusActiveNavigationItem: function() {
-          },
-          trapFocus: function() {
-          },
-          releaseFocus: function() {
-          }
-        };
-      },
-      enumerable: !1,
-      configurable: !0
-    }), e.prototype.destroy = function() {
-      this.animationFrame && cancelAnimationFrame(this.animationFrame), this.animationTimer && clearTimeout(this.animationTimer);
-    }, e.prototype.open = function() {
-      var t = this;
-      this.isOpen() || this.isOpening() || this.isClosing() || (this.adapter.addClass(ht.OPEN), this.adapter.addClass(ht.ANIMATE), this.runNextAnimationFrame(function() {
-        t.adapter.addClass(ht.OPENING);
-      }), this.adapter.saveFocus());
-    }, e.prototype.close = function() {
-      !this.isOpen() || this.isOpening() || this.isClosing() || this.adapter.addClass(ht.CLOSING);
-    }, e.prototype.isOpen = function() {
-      return this.adapter.hasClass(ht.OPEN);
-    }, e.prototype.isOpening = function() {
-      return this.adapter.hasClass(ht.OPENING) || this.adapter.hasClass(ht.ANIMATE);
-    }, e.prototype.isClosing = function() {
-      return this.adapter.hasClass(ht.CLOSING);
-    }, e.prototype.handleKeydown = function(t) {
-      var n = t.keyCode, s = t.key, a = s === "Escape" || n === 27;
-      a && this.close();
-    }, e.prototype.handleTransitionEnd = function(t) {
-      var n = ht.OPENING, s = ht.CLOSING, a = ht.OPEN, l = ht.ANIMATE, u = ht.ROOT, o = this.isElement(t.target) && this.adapter.elementHasClass(t.target, u);
-      o && (this.isClosing() ? (this.adapter.removeClass(a), this.closed(), this.adapter.restoreFocus(), this.adapter.notifyClose()) : (this.adapter.focusActiveNavigationItem(), this.opened(), this.adapter.notifyOpen()), this.adapter.removeClass(l), this.adapter.removeClass(n), this.adapter.removeClass(s));
-    }, e.prototype.opened = function() {
-    }, e.prototype.closed = function() {
-    }, e.prototype.runNextAnimationFrame = function(t) {
-      var n = this;
-      cancelAnimationFrame(this.animationFrame), this.animationFrame = requestAnimationFrame(function() {
-        n.animationFrame = 0, clearTimeout(n.animationTimer), n.animationTimer = setTimeout(t, 0);
-      });
-    }, e.prototype.isElement = function(t) {
-      return !!t.classList;
-    }, e;
-  }(Fe)
-);
-/**
- * @license
- * Copyright 2018 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Qs = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e() {
-      return i !== null && i.apply(this, arguments) || this;
-    }
-    return e.prototype.handleScrimClick = function() {
-      this.close();
-    }, e.prototype.opened = function() {
-      this.adapter.trapFocus();
-    }, e.prototype.closed = function() {
-      this.adapter.releaseFocus();
-    }, e;
-  }(vl)
-);
-/**
- * @license
- * Copyright 2018 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const Js = document.$blockingElements;
-class Xi extends ot {
-  constructor() {
-    super(...arguments), this._previousFocus = null, this.open = !1, this.hasHeader = !1, this.type = "";
   }
-  get mdcFoundationClass() {
-    return this.type === "modal" ? Qs : vl;
-  }
-  createAdapter() {
-    return Object.assign(Object.assign({}, At(this.mdcRoot)), { elementHasClass: (e, t) => e.classList.contains(t), saveFocus: () => {
-      this._previousFocus = this.getRootNode().activeElement;
-    }, restoreFocus: () => {
-      this._previousFocus && this._previousFocus.focus && this._previousFocus.focus();
-    }, notifyClose: () => {
-      this.open = !1, this.dispatchEvent(new Event($o.CLOSE_EVENT, { bubbles: !0, cancelable: !0 }));
-    }, notifyOpen: () => {
-      this.open = !0, this.dispatchEvent(new Event($o.OPEN_EVENT, { bubbles: !0, cancelable: !0 }));
-    }, focusActiveNavigationItem: () => {
-    }, trapFocus: () => {
-      Js.push(this), this.appContent.inert = !0;
-    }, releaseFocus: () => {
-      Js.remove(this), this.appContent.inert = !1;
-    } });
-  }
-  _handleScrimClick() {
-    this.mdcFoundation instanceof Qs && this.mdcFoundation.handleScrimClick();
-  }
-  render() {
-    const e = this.type === "dismissible" || this.type === "modal", t = this.type === "modal", n = this.hasHeader ? R`
-      <div class="mdc-drawer__header">
-        <h3 class="mdc-drawer__title"><slot name="title"></slot></h3>
-        <h6 class="mdc-drawer__subtitle"><slot name="subtitle"></slot></h6>
-        <slot name="header"></slot>
-      </div>
-      ` : "";
-    return R`
-      <aside class="mdc-drawer ${pe({
-      "mdc-drawer--dismissible": e,
-      "mdc-drawer--modal": t
-    })}">
-        ${n}
-        <div class="mdc-drawer__content"><slot></slot></div>
-      </aside>
-      ${t ? R`<div class="mdc-drawer-scrim"
-                          @click="${this._handleScrimClick}"></div>` : ""}
-      <div class="mdc-drawer-app-content">
-        <slot name="appContent"></slot>
-      </div>
-      `;
-  }
-  // note, we avoid calling `super.firstUpdated()` to control when
-  // `createFoundation()` is called.
-  firstUpdated() {
-    this.mdcRoot.addEventListener("keydown", (e) => this.mdcFoundation.handleKeydown(e)), this.mdcRoot.addEventListener("transitionend", (e) => this.mdcFoundation.handleTransitionEnd(e));
-  }
-  updated(e) {
-    e.has("type") && this.createFoundation();
-  }
-}
-$([
-  z(".mdc-drawer")
-], Xi.prototype, "mdcRoot", void 0);
-$([
-  z(".mdc-drawer-app-content")
-], Xi.prototype, "appContent", void 0);
-$([
-  ae(function(i) {
-    this.type !== "" && (i ? this.mdcFoundation.open() : this.mdcFoundation.close());
-  }),
-  D({ type: Boolean, reflect: !0 })
-], Xi.prototype, "open", void 0);
-$([
-  D({ type: Boolean })
-], Xi.prototype, "hasHeader", void 0);
-$([
-  D({ reflect: !0 })
-], Xi.prototype, "type", void 0);
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-LIcense-Identifier: Apache-2.0
- */
-const Gu = le`.mdc-drawer{border-color:rgba(0, 0, 0, 0.12);background-color:#fff;background-color:var(--mdc-theme-surface, #fff);border-top-left-radius:0;border-top-right-radius:0;border-top-right-radius:var(--mdc-shape-large, 0);border-bottom-right-radius:0;border-bottom-right-radius:var(--mdc-shape-large, 0);border-bottom-left-radius:0;z-index:6;width:256px;display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;height:100%;border-right-width:1px;border-right-style:solid;overflow:hidden;transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1)}.mdc-drawer .mdc-drawer__title{color:rgba(0, 0, 0, 0.87)}.mdc-drawer .mdc-deprecated-list-group__subheader{color:rgba(0, 0, 0, 0.6)}.mdc-drawer .mdc-drawer__subtitle{color:rgba(0, 0, 0, 0.6)}.mdc-drawer .mdc-deprecated-list-item__graphic{color:rgba(0, 0, 0, 0.6)}.mdc-drawer .mdc-deprecated-list-item{color:rgba(0, 0, 0, 0.87)}.mdc-drawer .mdc-deprecated-list-item--activated .mdc-deprecated-list-item__graphic{color:#6200ee}.mdc-drawer .mdc-deprecated-list-item--activated{color:rgba(98, 0, 238, 0.87)}[dir=rtl] .mdc-drawer,.mdc-drawer[dir=rtl]{border-top-left-radius:0;border-top-left-radius:var(--mdc-shape-large, 0);border-top-right-radius:0;border-bottom-right-radius:0;border-bottom-left-radius:0;border-bottom-left-radius:var(--mdc-shape-large, 0)}.mdc-drawer .mdc-deprecated-list-item{border-radius:4px;border-radius:var(--mdc-shape-small, 4px)}.mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content{margin-left:256px;margin-right:0}[dir=rtl] .mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content,.mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content[dir=rtl]{margin-left:0;margin-right:256px}[dir=rtl] .mdc-drawer,.mdc-drawer[dir=rtl]{border-right-width:0;border-left-width:1px;border-right-style:none;border-left-style:solid}.mdc-drawer .mdc-deprecated-list-item{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-subtitle2-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:0.875rem;font-size:var(--mdc-typography-subtitle2-font-size, 0.875rem);line-height:1.375rem;line-height:var(--mdc-typography-subtitle2-line-height, 1.375rem);font-weight:500;font-weight:var(--mdc-typography-subtitle2-font-weight, 500);letter-spacing:0.0071428571em;letter-spacing:var(--mdc-typography-subtitle2-letter-spacing, 0.0071428571em);text-decoration:inherit;text-decoration:var(--mdc-typography-subtitle2-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-subtitle2-text-transform, inherit);height:calc(48px - 2 * 4px);margin:8px 8px;padding:0 8px}.mdc-drawer .mdc-deprecated-list-item:nth-child(1){margin-top:2px}.mdc-drawer .mdc-deprecated-list-item:nth-last-child(1){margin-bottom:0}.mdc-drawer .mdc-deprecated-list-group__subheader{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-body2-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:0.875rem;font-size:var(--mdc-typography-body2-font-size, 0.875rem);line-height:1.25rem;line-height:var(--mdc-typography-body2-line-height, 1.25rem);font-weight:400;font-weight:var(--mdc-typography-body2-font-weight, 400);letter-spacing:0.0178571429em;letter-spacing:var(--mdc-typography-body2-letter-spacing, 0.0178571429em);text-decoration:inherit;text-decoration:var(--mdc-typography-body2-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-body2-text-transform, inherit);display:block;margin-top:0;line-height:normal;margin:0;padding:0 16px}.mdc-drawer .mdc-deprecated-list-group__subheader::before{display:inline-block;width:0;height:24px;content:"";vertical-align:0}.mdc-drawer .mdc-deprecated-list-divider{margin:3px 0 4px}.mdc-drawer .mdc-deprecated-list-item__text,.mdc-drawer .mdc-deprecated-list-item__graphic{pointer-events:none}.mdc-drawer--animate{transform:translateX(-100%)}[dir=rtl] .mdc-drawer--animate,.mdc-drawer--animate[dir=rtl]{transform:translateX(100%)}.mdc-drawer--opening{transform:translateX(0);transition-duration:250ms}[dir=rtl] .mdc-drawer--opening,.mdc-drawer--opening[dir=rtl]{transform:translateX(0)}.mdc-drawer--closing{transform:translateX(-100%);transition-duration:200ms}[dir=rtl] .mdc-drawer--closing,.mdc-drawer--closing[dir=rtl]{transform:translateX(100%)}.mdc-drawer__header{flex-shrink:0;box-sizing:border-box;min-height:64px;padding:0 16px 4px}.mdc-drawer__title{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-headline6-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:1.25rem;font-size:var(--mdc-typography-headline6-font-size, 1.25rem);line-height:2rem;line-height:var(--mdc-typography-headline6-line-height, 2rem);font-weight:500;font-weight:var(--mdc-typography-headline6-font-weight, 500);letter-spacing:0.0125em;letter-spacing:var(--mdc-typography-headline6-letter-spacing, 0.0125em);text-decoration:inherit;text-decoration:var(--mdc-typography-headline6-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-headline6-text-transform, inherit);display:block;margin-top:0;line-height:normal;margin-bottom:-20px}.mdc-drawer__title::before{display:inline-block;width:0;height:36px;content:"";vertical-align:0}.mdc-drawer__title::after{display:inline-block;width:0;height:20px;content:"";vertical-align:-20px}.mdc-drawer__subtitle{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-body2-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:0.875rem;font-size:var(--mdc-typography-body2-font-size, 0.875rem);line-height:1.25rem;line-height:var(--mdc-typography-body2-line-height, 1.25rem);font-weight:400;font-weight:var(--mdc-typography-body2-font-weight, 400);letter-spacing:0.0178571429em;letter-spacing:var(--mdc-typography-body2-letter-spacing, 0.0178571429em);text-decoration:inherit;text-decoration:var(--mdc-typography-body2-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-body2-text-transform, inherit);display:block;margin-top:0;line-height:normal;margin-bottom:0}.mdc-drawer__subtitle::before{display:inline-block;width:0;height:20px;content:"";vertical-align:0}.mdc-drawer__content{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}.mdc-drawer--dismissible{left:0;right:initial;display:none;position:absolute}[dir=rtl] .mdc-drawer--dismissible,.mdc-drawer--dismissible[dir=rtl]{left:initial;right:0}.mdc-drawer--dismissible.mdc-drawer--open{display:flex}.mdc-drawer-app-content{margin-left:0;margin-right:0;position:relative}[dir=rtl] .mdc-drawer-app-content,.mdc-drawer-app-content[dir=rtl]{margin-left:0;margin-right:0}.mdc-drawer--modal{box-shadow:0px 8px 10px -5px rgba(0, 0, 0, 0.2),0px 16px 24px 2px rgba(0, 0, 0, 0.14),0px 6px 30px 5px rgba(0,0,0,.12);left:0;right:initial;display:none;position:fixed}.mdc-drawer--modal+.mdc-drawer-scrim{background-color:rgba(0, 0, 0, 0.32)}[dir=rtl] .mdc-drawer--modal,.mdc-drawer--modal[dir=rtl]{left:initial;right:0}.mdc-drawer--modal.mdc-drawer--open{display:flex}.mdc-drawer-scrim{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:5;transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1)}.mdc-drawer--open+.mdc-drawer-scrim{display:block}.mdc-drawer--animate+.mdc-drawer-scrim{opacity:0}.mdc-drawer--opening+.mdc-drawer-scrim{transition-duration:250ms;opacity:1}.mdc-drawer--closing+.mdc-drawer-scrim{transition-duration:200ms;opacity:0}.mdc-drawer-app-content{overflow:auto;flex:1}:host{display:flex;height:100%}.mdc-drawer{width:256px;width:var(--mdc-drawer-width, 256px)}.mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content{margin-left:256px;margin-left:var(--mdc-drawer-width, 256px);margin-right:0}[dir=rtl] .mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content,.mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content[dir=rtl]{margin-left:0;margin-right:256px;margin-right:var(--mdc-drawer-width, 256px)}`;
-let To = class extends Xi {
-};
-To.styles = [Gu];
-To = $([
-  te("mwc-drawer")
-], To);
-/**
- * @license
- * Copyright 2020 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-const ea = Symbol("selection controller");
-class Ku {
-  constructor() {
-    this.selected = null, this.ordered = null, this.set = /* @__PURE__ */ new Set();
-  }
-}
-class os {
-  constructor(e) {
-    this.sets = {}, this.focusedSet = null, this.mouseIsDown = !1, this.updating = !1, e.addEventListener("keydown", (t) => {
-      this.keyDownHandler(t);
-    }), e.addEventListener("mousedown", () => {
-      this.mousedownHandler();
-    }), e.addEventListener("mouseup", () => {
-      this.mouseupHandler();
-    });
-  }
-  /**
-   * Get a controller for the given element. If no controller exists, one will
-   * be created. Defaults to getting the controller scoped to the element's root
-   * node shadow root unless `element.global` is true. Then, it will get a
-   * `window.document`-scoped controller.
-   *
-   * @param element Element from which to get / create a SelectionController. If
-   *     `element.global` is true, it gets a selection controller scoped to
-   *     `window.document`.
-   */
-  static getController(e) {
-    const n = !("global" in e) || "global" in e && e.global ? document : e.getRootNode();
-    let s = n[ea];
-    return s === void 0 && (s = new os(n), n[ea] = s), s;
-  }
-  keyDownHandler(e) {
-    const t = e.target;
-    "checked" in t && this.has(t) && (e.key == "ArrowRight" || e.key == "ArrowDown" ? this.selectNext(t) : (e.key == "ArrowLeft" || e.key == "ArrowUp") && this.selectPrevious(t));
-  }
-  mousedownHandler() {
-    this.mouseIsDown = !0;
-  }
-  mouseupHandler() {
-    this.mouseIsDown = !1;
-  }
-  /**
-   * Whether or not the controller controls  the given element.
-   *
-   * @param element element to check
-   */
-  has(e) {
-    return this.getSet(e.name).set.has(e);
-  }
-  /**
-   * Selects and returns the controlled element previous to the given element in
-   * document position order. See
-   * [Node.compareDocumentPosition](https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition).
-   *
-   * @param element element relative from which preceding element is fetched
-   */
-  selectPrevious(e) {
-    const t = this.getOrdered(e), n = t.indexOf(e), s = t[n - 1] || t[t.length - 1];
-    return this.select(s), s;
-  }
-  /**
-   * Selects and returns the controlled element next to the given element in
-   * document position order. See
-   * [Node.compareDocumentPosition](https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition).
-   *
-   * @param element element relative from which following element is fetched
-   */
-  selectNext(e) {
-    const t = this.getOrdered(e), n = t.indexOf(e), s = t[n + 1] || t[0];
-    return this.select(s), s;
-  }
-  select(e) {
-    e.click();
-  }
-  /**
-   * Focuses the selected element in the given element's selection set. User's
-   * mouse selection will override this focus.
-   *
-   * @param element Element from which selection set is derived and subsequently
-   *     focused.
-   * @deprecated update() method now handles focus management by setting
-   *     appropriate tabindex to form element.
-   */
-  focus(e) {
-    if (this.mouseIsDown)
-      return;
-    const t = this.getSet(e.name), n = this.focusedSet;
-    this.focusedSet = t, n != t && t.selected && t.selected != e && t.selected.focus();
-  }
-  /**
-   * @return Returns true if atleast one radio is selected in the radio group.
-   */
-  isAnySelected(e) {
-    const t = this.getSet(e.name);
-    for (const n of t.set)
-      if (n.checked)
-        return !0;
-    return !1;
-  }
-  /**
-   * Returns the elements in the given element's selection set in document
-   * position order.
-   * [Node.compareDocumentPosition](https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition).
-   *
-   * @param element Element from which selection set is derived and subsequently
-   *     ordered.
-   */
-  getOrdered(e) {
-    const t = this.getSet(e.name);
-    return t.ordered || (t.ordered = Array.from(t.set), t.ordered.sort((n, s) => n.compareDocumentPosition(s) == Node.DOCUMENT_POSITION_PRECEDING ? 1 : 0)), t.ordered;
-  }
-  /**
-   * Gets the selection set of the given name and creates one if it does not yet
-   * exist.
-   *
-   * @param name Name of set
-   */
-  getSet(e) {
-    return this.sets[e] || (this.sets[e] = new Ku()), this.sets[e];
-  }
-  /**
-   * Register the element in the selection controller.
-   *
-   * @param element Element to register. Registers in set of `element.name`.
-   */
-  register(e) {
-    const t = e.name || e.getAttribute("name") || "", n = this.getSet(t);
-    n.set.add(e), n.ordered = null;
-  }
-  /**
-   * Unregister the element from selection controller.
-   *
-   * @param element Element to register. Registers in set of `element.name`.
-   */
-  unregister(e) {
-    const t = this.getSet(e.name);
-    t.set.delete(e), t.ordered = null, t.selected == e && (t.selected = null);
-  }
-  /**
-   * Unselects other elements in element's set if element is checked. Noop
-   * otherwise.
-   *
-   * @param element Element from which to calculate selection controller update.
-   */
-  update(e) {
-    if (this.updating)
-      return;
-    this.updating = !0;
-    const t = this.getSet(e.name);
-    if (e.checked) {
-      for (const n of t.set)
-        n != e && (n.checked = !1);
-      t.selected = e;
-    }
-    if (this.isAnySelected(e))
-      for (const n of t.set) {
-        if (n.formElementTabIndex === void 0)
-          break;
-        n.formElementTabIndex = n.checked ? 0 : -1;
-      }
-    this.updating = !1;
-  }
-}
-/**
- * @license
- * Copyright 2016 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var ju = {
-  NATIVE_CONTROL_SELECTOR: ".mdc-radio__native-control"
-}, qu = {
-  DISABLED: "mdc-radio--disabled",
-  ROOT: "mdc-radio"
-};
-/**
- * @license
- * Copyright 2016 Google Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-var Xu = (
-  /** @class */
-  function(i) {
-    xe(e, i);
-    function e(t) {
-      return i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
-    }
-    return Object.defineProperty(e, "cssClasses", {
-      get: function() {
-        return qu;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "strings", {
-      get: function() {
-        return ju;
-      },
-      enumerable: !1,
-      configurable: !0
-    }), Object.defineProperty(e, "defaultAdapter", {
-      get: function() {
-        return {
-          addClass: function() {
-          },
-          removeClass: function() {
-          },
-          setNativeControlDisabled: function() {
-          }
-        };
-      },
-      enumerable: !1,
-      configurable: !0
-    }), e.prototype.setDisabled = function(t) {
-      var n = e.cssClasses.DISABLED;
-      this.adapter.setNativeControlDisabled(t), t ? this.adapter.addClass(n) : this.adapter.removeClass(n);
-    }, e;
-  }(Fe)
-);
-class Xe extends Qt {
-  constructor() {
-    super(...arguments), this._checked = !1, this.useStateLayerCustomProperties = !1, this.global = !1, this.disabled = !1, this.value = "", this.name = "", this.reducedTouchTarget = !1, this.mdcFoundationClass = Xu, this.formElementTabIndex = 0, this.focused = !1, this.shouldRenderRipple = !1, this.rippleElement = null, this.rippleHandlers = new pi(() => (this.shouldRenderRipple = !0, this.ripple.then((e) => {
-      this.rippleElement = e;
-    }), this.ripple));
-  }
-  get checked() {
-    return this._checked;
-  }
-  /**
-   * We define our own getter/setter for `checked` because we need to track
-   * changes to it synchronously.
-   *
-   * The order in which the `checked` property is set across radio buttons
-   * within the same group is very important. However, we can't rely on
-   * UpdatingElement's `updated` callback to observe these changes (which is
-   * also what the `@observer` decorator uses), because it batches changes to
-   * all properties.
-   *
-   * Consider:
-   *
-   *   radio1.disabled = true;
-   *   radio2.checked = true;
-   *   radio1.checked = true;
-   *
-   * In this case we'd first see all changes for radio1, and then for radio2,
-   * and we couldn't tell that radio1 was the most recently checked.
-   */
-  set checked(e) {
-    var t, n;
-    const s = this._checked;
-    e !== s && (this._checked = e, this.formElement && (this.formElement.checked = e), (t = this._selectionController) === null || t === void 0 || t.update(this), e === !1 && ((n = this.formElement) === null || n === void 0 || n.blur()), this.requestUpdate("checked", s), this.dispatchEvent(new Event("checked", { bubbles: !0, composed: !0 })));
-  }
-  _handleUpdatedValue(e) {
-    this.formElement.value = e;
-  }
-  /** @soyTemplate */
-  renderRipple() {
-    return this.shouldRenderRipple ? R`<mwc-ripple unbounded accent
-        .internalUseStateLayerCustomProperties="${this.useStateLayerCustomProperties}"
-        .disabled="${this.disabled}"></mwc-ripple>` : "";
-  }
-  get isRippleActive() {
-    var e;
-    return ((e = this.rippleElement) === null || e === void 0 ? void 0 : e.isActive) || !1;
-  }
-  connectedCallback() {
-    super.connectedCallback(), this._selectionController = os.getController(this), this._selectionController.register(this), this._selectionController.update(this);
-  }
-  disconnectedCallback() {
-    this._selectionController.unregister(this), this._selectionController = void 0;
-  }
-  focus() {
-    this.formElement.focus();
-  }
-  createAdapter() {
-    return Object.assign(Object.assign({}, At(this.mdcRoot)), { setNativeControlDisabled: (e) => {
-      this.formElement.disabled = e;
-    } });
-  }
-  handleFocus() {
-    this.focused = !0, this.handleRippleFocus();
-  }
-  handleClick() {
-    this.formElement.focus();
-  }
-  handleBlur() {
-    this.focused = !1, this.formElement.blur(), this.rippleHandlers.endFocus();
-  }
-  /**
-   * @soyTemplate
-   * @soyAttributes radioAttributes: input
-   * @soyClasses radioClasses: .mdc-radio
-   */
-  render() {
-    const e = {
-      "mdc-radio--touch": !this.reducedTouchTarget,
-      "mdc-ripple-upgraded--background-focused": this.focused,
-      "mdc-radio--disabled": this.disabled
-    };
-    return R`
-      <div class="mdc-radio ${pe(e)}">
-        <input
-          tabindex="${this.formElementTabIndex}"
-          class="mdc-radio__native-control"
-          type="radio"
-          name="${this.name}"
-          aria-label="${ee(this.ariaLabel)}"
-          aria-labelledby="${ee(this.ariaLabelledBy)}"
-          .checked="${this.checked}"
-          .value="${this.value}"
-          ?disabled="${this.disabled}"
-          @change="${this.changeHandler}"
-          @focus="${this.handleFocus}"
-          @click="${this.handleClick}"
-          @blur="${this.handleBlur}"
-          @mousedown="${this.handleRippleMouseDown}"
-          @mouseenter="${this.handleRippleMouseEnter}"
-          @mouseleave="${this.handleRippleMouseLeave}"
-          @touchstart="${this.handleRippleTouchStart}"
-          @touchend="${this.handleRippleDeactivate}"
-          @touchcancel="${this.handleRippleDeactivate}">
-        <div class="mdc-radio__background">
-          <div class="mdc-radio__outer-circle"></div>
-          <div class="mdc-radio__inner-circle"></div>
-        </div>
-        ${this.renderRipple()}
-      </div>`;
-  }
-  handleRippleMouseDown(e) {
-    const t = () => {
-      window.removeEventListener("mouseup", t), this.handleRippleDeactivate();
-    };
-    window.addEventListener("mouseup", t), this.rippleHandlers.startPress(e);
-  }
-  handleRippleTouchStart(e) {
-    this.rippleHandlers.startPress(e);
-  }
-  handleRippleDeactivate() {
-    this.rippleHandlers.endPress();
-  }
-  handleRippleMouseEnter() {
-    this.rippleHandlers.startHover();
-  }
-  handleRippleMouseLeave() {
-    this.rippleHandlers.endHover();
-  }
-  handleRippleFocus() {
-    this.rippleHandlers.startFocus();
-  }
-  changeHandler() {
-    this.checked = this.formElement.checked;
-  }
-}
-$([
-  z(".mdc-radio")
-], Xe.prototype, "mdcRoot", void 0);
-$([
-  z("input")
-], Xe.prototype, "formElement", void 0);
-$([
-  j()
-], Xe.prototype, "useStateLayerCustomProperties", void 0);
-$([
-  D({ type: Boolean })
-], Xe.prototype, "global", void 0);
-$([
-  D({ type: Boolean, reflect: !0 })
-], Xe.prototype, "checked", null);
-$([
-  D({ type: Boolean }),
-  ae(function(i) {
-    this.mdcFoundation.setDisabled(i);
-  })
-], Xe.prototype, "disabled", void 0);
-$([
-  D({ type: String }),
-  ae(function(i) {
-    this._handleUpdatedValue(i);
-  })
-], Xe.prototype, "value", void 0);
-$([
-  D({ type: String })
-], Xe.prototype, "name", void 0);
-$([
-  D({ type: Boolean })
-], Xe.prototype, "reducedTouchTarget", void 0);
-$([
-  D({ type: Number })
-], Xe.prototype, "formElementTabIndex", void 0);
-$([
-  j()
-], Xe.prototype, "focused", void 0);
-$([
-  j()
-], Xe.prototype, "shouldRenderRipple", void 0);
-$([
-  mi("mwc-ripple")
-], Xe.prototype, "ripple", void 0);
-$([
-  Pt,
-  D({ attribute: "aria-label" })
-], Xe.prototype, "ariaLabel", void 0);
-$([
-  Pt,
-  D({ attribute: "aria-labelledby" })
-], Xe.prototype, "ariaLabelledBy", void 0);
-$([
-  xt({ passive: !0 })
-], Xe.prototype, "handleRippleTouchStart", null);
-/**
- * @license
- * Copyright 2021 Google LLC
- * SPDX-LIcense-Identifier: Apache-2.0
- */
-const Yu = le`.mdc-touch-target-wrapper{display:inline}.mdc-radio{padding:calc((40px - 20px) / 2)}.mdc-radio .mdc-radio__native-control:enabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle{border-color:rgba(0, 0, 0, 0.54)}.mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background .mdc-radio__outer-circle{border-color:#018786;border-color:var(--mdc-theme-secondary, #018786)}.mdc-radio .mdc-radio__native-control:enabled+.mdc-radio__background .mdc-radio__inner-circle{border-color:#018786;border-color:var(--mdc-theme-secondary, #018786)}.mdc-radio [aria-disabled=true] .mdc-radio__native-control:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle{border-color:rgba(0, 0, 0, 0.38)}.mdc-radio [aria-disabled=true] .mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:checked+.mdc-radio__background .mdc-radio__outer-circle{border-color:rgba(0, 0, 0, 0.38)}.mdc-radio [aria-disabled=true] .mdc-radio__native-control+.mdc-radio__background .mdc-radio__inner-circle,.mdc-radio .mdc-radio__native-control:disabled+.mdc-radio__background .mdc-radio__inner-circle{border-color:rgba(0, 0, 0, 0.38)}.mdc-radio .mdc-radio__background::before{background-color:#018786;background-color:var(--mdc-theme-secondary, #018786)}.mdc-radio .mdc-radio__background::before{top:calc(-1 * (40px - 20px) / 2);left:calc(-1 * (40px - 20px) / 2);width:40px;height:40px}.mdc-radio .mdc-radio__native-control{top:calc((40px - 40px) / 2);right:calc((40px - 40px) / 2);left:calc((40px - 40px) / 2);width:40px;height:40px}@media screen and (forced-colors: active),(-ms-high-contrast: active){.mdc-radio [aria-disabled=true] .mdc-radio__native-control:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle{border-color:GrayText}.mdc-radio [aria-disabled=true] .mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:checked+.mdc-radio__background .mdc-radio__outer-circle{border-color:GrayText}.mdc-radio [aria-disabled=true] .mdc-radio__native-control+.mdc-radio__background .mdc-radio__inner-circle,.mdc-radio .mdc-radio__native-control:disabled+.mdc-radio__background .mdc-radio__inner-circle{border-color:GrayText}}.mdc-radio{display:inline-block;position:relative;flex:0 0 auto;box-sizing:content-box;width:20px;height:20px;cursor:pointer;will-change:opacity,transform,border-color,color}.mdc-radio__background{display:inline-block;position:relative;box-sizing:border-box;width:20px;height:20px}.mdc-radio__background::before{position:absolute;transform:scale(0, 0);border-radius:50%;opacity:0;pointer-events:none;content:"";transition:opacity 120ms 0ms cubic-bezier(0.4, 0, 0.6, 1),transform 120ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-radio__outer-circle{position:absolute;top:0;left:0;box-sizing:border-box;width:100%;height:100%;border-width:2px;border-style:solid;border-radius:50%;transition:border-color 120ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-radio__inner-circle{position:absolute;top:0;left:0;box-sizing:border-box;width:100%;height:100%;transform:scale(0, 0);border-width:10px;border-style:solid;border-radius:50%;transition:transform 120ms 0ms cubic-bezier(0.4, 0, 0.6, 1),border-color 120ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-radio__native-control{position:absolute;margin:0;padding:0;opacity:0;cursor:inherit;z-index:1}.mdc-radio--touch{margin-top:4px;margin-bottom:4px;margin-right:4px;margin-left:4px}.mdc-radio--touch .mdc-radio__native-control{top:calc((40px - 48px) / 2);right:calc((40px - 48px) / 2);left:calc((40px - 48px) / 2);width:48px;height:48px}.mdc-radio__native-control:checked+.mdc-radio__background,.mdc-radio__native-control:disabled+.mdc-radio__background{transition:opacity 120ms 0ms cubic-bezier(0, 0, 0.2, 1),transform 120ms 0ms cubic-bezier(0, 0, 0.2, 1)}.mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio__native-control:disabled+.mdc-radio__background .mdc-radio__outer-circle{transition:border-color 120ms 0ms cubic-bezier(0, 0, 0.2, 1)}.mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__inner-circle,.mdc-radio__native-control:disabled+.mdc-radio__background .mdc-radio__inner-circle{transition:transform 120ms 0ms cubic-bezier(0, 0, 0.2, 1),border-color 120ms 0ms cubic-bezier(0, 0, 0.2, 1)}.mdc-radio--disabled{cursor:default;pointer-events:none}.mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__inner-circle{transform:scale(0.5);transition:transform 120ms 0ms cubic-bezier(0, 0, 0.2, 1),border-color 120ms 0ms cubic-bezier(0, 0, 0.2, 1)}.mdc-radio__native-control:disabled+.mdc-radio__background,[aria-disabled=true] .mdc-radio__native-control+.mdc-radio__background{cursor:default}.mdc-radio__native-control:focus+.mdc-radio__background::before{transform:scale(1);opacity:.12;transition:opacity 120ms 0ms cubic-bezier(0, 0, 0.2, 1),transform 120ms 0ms cubic-bezier(0, 0, 0.2, 1)}:host{display:inline-block;outline:none}.mdc-radio{vertical-align:bottom}.mdc-radio .mdc-radio__native-control:enabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle{border-color:var(--mdc-radio-unchecked-color, rgba(0, 0, 0, 0.54))}.mdc-radio [aria-disabled=true] .mdc-radio__native-control:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle{border-color:var(--mdc-radio-disabled-color, rgba(0, 0, 0, 0.38))}.mdc-radio [aria-disabled=true] .mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:checked+.mdc-radio__background .mdc-radio__outer-circle{border-color:var(--mdc-radio-disabled-color, rgba(0, 0, 0, 0.38))}.mdc-radio [aria-disabled=true] .mdc-radio__native-control+.mdc-radio__background .mdc-radio__inner-circle,.mdc-radio .mdc-radio__native-control:disabled+.mdc-radio__background .mdc-radio__inner-circle{border-color:var(--mdc-radio-disabled-color, rgba(0, 0, 0, 0.38))}`;
-let Io = class extends Xe {
-};
-Io.styles = [Yu];
-Io = $([
-  te("mwc-radio")
-], Io);
-/**
- * @license
- * Copyright 2020 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-class En extends We {
-  constructor() {
-    super(...arguments), this.left = !1, this.graphic = "control", this._changeFromClick = !1;
-  }
-  render() {
-    const e = {
-      "mdc-deprecated-list-item__graphic": this.left,
-      "mdc-deprecated-list-item__meta": !this.left
-    }, t = this.renderText(), n = this.graphic && this.graphic !== "control" && !this.left ? this.renderGraphic() : R``, s = this.hasMeta && this.left ? this.renderMeta() : R``, a = this.renderRipple();
-    return R`
-      ${a}
-      ${n}
-      ${this.left ? "" : t}
-      <mwc-radio
-          global
-          class=${pe(e)}
-          tabindex=${this.tabindex}
-          name=${ee(this.group === null ? void 0 : this.group)}
-          .checked=${this.selected}
-          ?disabled=${this.disabled}
-          @checked=${this.onChange}>
-      </mwc-radio>
-      ${this.left ? t : ""}
-      ${s}`;
-  }
-  onClick() {
-    this._changeFromClick = !0, super.onClick();
-  }
-  async onChange(e) {
-    const t = e.target;
-    this.selected === t.checked || (this._skipPropRequest = !0, this.selected = t.checked, await this.updateComplete, this._skipPropRequest = !1, this._changeFromClick || this.fireRequestSelected(this.selected, "interaction")), this._changeFromClick = !1;
-  }
-}
-$([
-  z("slot")
-], En.prototype, "slotElement", void 0);
-$([
-  z("mwc-radio")
-], En.prototype, "radioElement", void 0);
-$([
-  D({ type: Boolean })
-], En.prototype, "left", void 0);
-$([
-  D({ type: String, reflect: !0 })
-], En.prototype, "graphic", void 0);
-/**
- * @license
- * Copyright 2020 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-let Lo = class extends En {
-};
-Lo.styles = [Zo, ml];
-Lo = $([
-  te("mwc-radio-list-item")
-], Lo);
-function Zu(i) {
-  return document.body.style.cssText = Qu[i], R`
-    ${Ju[i]}
-    <style>
-      * {
-        --primary: var(--cyan);
-        --secondary: var(--violet);
-        --mdc-theme-primary: var(--primary);
-        --mdc-theme-secondary: var(--secondary);
-        --mdc-theme-background: var(--base3);
-        --mdc-theme-surface: var(--base3);
-        --mdc-theme-on-primary: var(--base2);
-        --mdc-theme-on-secondary: var(--base2);
-        --mdc-theme-on-background: var(--base00);
-        --mdc-theme-on-surface: var(--base00);
-        --mdc-theme-text-primary-on-background: var(--base01);
-        --mdc-theme-text-secondary-on-background: var(--base00);
-        --mdc-theme-text-icon-on-background: var(--base00);
-        --mdc-theme-error: var(--red);
-
-        --mdc-button-disabled-ink-color: var(--base1);
-
-        --mdc-drawer-heading-ink-color: var(--base00);
-
-        --mdc-text-field-fill-color: var(--base2);
-        --mdc-text-field-disabled-fill-color: var(--base3);
-        --mdc-text-field-ink-color: var(--base00);
-        --mdc-text-field-label-ink-color: var(--base00);
-
-        --mdc-select-fill-color: var(--base2);
-        --mdc-select-disabled-fill-color: var(--base3);
-        --mdc-select-ink-color: var(--base00);
-
-        --mdc-dialog-heading-ink-color: var(--base00);
-
-        --mdc-icon-font: 'Material Icons Outlined';
-
-        --oscd-primary: var(--oscd-theme-primary, var(--cyan));
-        --oscd-secondary: var(--oscd-theme-secondary, var(--violet));
-        --oscd-error: var(--oscd-theme-error, var(--red));
-
-        --oscd-base03: var(--oscd-theme-base03, var(--base03));
-        --oscd-base02: var(--oscd-theme-base02, var(--base02));
-        --oscd-base01: var(--oscd-theme-base01, var(--base01));
-        --oscd-base00: var(--oscd-theme-base00, var(--base00));
-        --oscd-base0: var(--oscd-theme-base0, var(--base0));
-        --oscd-base1: var(--oscd-theme-base1, var(--base1));
-        --oscd-base2: var(--oscd-theme-base2, var(--base2));
-        --oscd-base3: var(--oscd-theme-base3, var(--base3));
-
-        --oscd-text-font: var(--oscd-theme-text-font, 'Roboto');
-        --oscd-icon-font: var(--oscd-theme-icon-font, 'Material Icons');
-      }
-
-      .mdc-drawer span.mdc-drawer__title {
-        color: var(--mdc-theme-text-primary-on-background) !important;
-      }
-
-      abbr {
-        text-decoration: none;
-        border-bottom: none;
-      }
-
-      mwc-textfield[iconTrailing='search'] {
-        --mdc-shape-small: 28px;
-      }
-    </style>
-  `;
-}
-const Qu = {
-  dark: "background: #073642",
-  light: "background: #eee8d5"
-}, Ju = {
-  light: R`
-    <style>
-      * {
-        --base03: #002b36;
-        --base02: #073642;
-        --base01: #586e75;
-        --base00: #657b83;
-        --base0: #839496;
-        --base1: #93a1a1;
-        --base2: #eee8d5;
-        --base3: #fdf6e3;
-        --yellow: #b58900;
-        --orange: #cb4b16;
-        --red: #dc322f;
-        --magenta: #d33682;
-        --violet: #6c71c4;
-        --blue: #268bd2;
-        --cyan: #2aa198;
-        --green: #859900;
-      }
-    </style>
-  `,
-  dark: R`
-    <style>
-      * {
-        --base03: #fdf6e3;
-        --base02: #eee8d5;
-        --base01: #93a1a1;
-        --base00: #839496;
-        --base0: #657b83;
-        --base1: #586e75;
-        --base2: #073642;
-        --base3: #002b36;
-        --yellow: #b58900;
-        --orange: #cb4b16;
-        --red: #dc322f;
-        --magenta: #d33682;
-        --violet: #6c71c4;
-        --blue: #268bd2;
-        --cyan: #2aa198;
-        --green: #859900;
-      }
-    </style>
-  `
-}, bl = {
+}, pl = {
   scl: {
     id: "ID",
     name: "Name",
@@ -15742,7 +13143,7 @@ const Qu = {
   connect: "Verbinden",
   disconnect: "Trennen",
   next: "Weiter"
-}, yl = {
+}, fl = {
   scl: {
     id: "ID",
     name: "Name",
@@ -16641,11 +14042,2978 @@ const Qu = {
   connect: "Connect",
   disconnect: "Disconnect",
   next: "Next"
-}, Ro = { en: yl, de: bl };
-async function em(i) {
+}, Xs = {
+  en: { ...fl, ...Su },
+  de: { ...pl, ..._u }
+};
+async function Cu(i) {
+  return Object.keys(Xs).includes(i) ? Xs[i] : {};
+}
+Fa({ loader: Cu, empty: (i) => i });
+const Eu = localStorage.getItem("language") || "en";
+eo(Eu);
+var Au = Object.defineProperty, ku = Object.getOwnPropertyDescriptor, fr = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? ku(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+    (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
+  return n && s && Au(e, t, s), s;
+};
+function Ys(i, e, t, n) {
+  return new CustomEvent("doc-retrieved", {
+    bubbles: !0,
+    composed: !0,
+    detail: { localFile: i, doc: e, docName: t, docId: n }
+  });
+}
+let un = class extends ge {
+  constructor() {
+    super(...arguments), this.allowLocalFile = !0;
+  }
+  async getSclDocument(i) {
+    const e = await ts().getSclDocument(this, this.selectedType ?? "", i ?? "").catch((t) => su(this, t));
+    if (e instanceof Document) {
+      const t = Wa(e.documentElement);
+      this.dispatchEvent(Ys(!1, e, t, i));
+    }
+  }
+  async getSclFile(i) {
+    const e = i.target?.files?.item(0) ?? !1;
+    if (!e) return;
+    const t = await e.text(), n = e.name, s = new DOMParser().parseFromString(t, "application/xml");
+    this.dispatchEvent(Ys(!0, s, n));
+  }
+  renderFileSelect() {
+    return R`
+      <input
+        id="scl-file"
+        accept=".sed,.scd,.ssd,.isd,.iid,.cid,.icd"
+        type="file"
+        hidden
+        required
+        @change=${(i) => this.dispatchEvent(It(this.getSclFile(i)))}
+      />
+
+      <mwc-button
+        label="${G("compas.open.selectFileButton")}"
+        @click=${() => {
+      this.sclFileUI.value = "", this.sclFileUI.click();
+    }}
+      >
+      </mwc-button>
+    `;
+  }
+  renderSclTypeList() {
+    return R`
+      <p>${G("compas.open.listSclTypes")}</p>
+      <compas-scltype-list
+        @typeSelected=${(i) => this.selectedType = i.detail.type}
+      />
+    `;
+  }
+  renderSclList() {
+    return R`
+      <p>${G("compas.open.listScls", {
+      type: this.selectedType ?? ""
+    })}</p>
+      <compas-scl-list .type=${this.selectedType}
+                       @scl-selected=${(i) => this.dispatchEvent(
+      It(
+        this.getSclDocument(i.detail.docId)
+      )
+    )}/>
+      </compas-scl-list>
+      <mwc-button id="reselect-type"
+                  label="${G("compas.open.otherTypeButton")}"
+                  icon="arrow_back"
+                  @click=${() => {
+      this.selectedType = void 0;
+    }}>
+      </mwc-button>
+    `;
+  }
+  render() {
+    return R`
+      ${this.allowLocalFile ? R`<wizard-divider></wizard-divider>
+            <section>
+              <h3>${G("compas.open.localTitle")}</h3>
+              ${this.renderFileSelect()}
+            </section>` : Kt}
+      <wizard-divider></wizard-divider>
+      <section>
+        <h3>${G("compas.open.compasTitle")}</h3>
+        ${this.selectedType ? this.renderSclList() : this.renderSclTypeList()}
+      </section>
+    `;
+  }
+};
+fr([
+  D()
+], un.prototype, "selectedType", 2);
+fr([
+  D()
+], un.prototype, "allowLocalFile", 2);
+fr([
+  z("#scl-file")
+], un.prototype, "sclFileUI", 2);
+un = fr([
+  te("compas-open")
+], un);
+function $u(i, e) {
+  return new CustomEvent("load-nsdoc", {
+    bubbles: !0,
+    composed: !0,
+    detail: { nsdoc: i, filename: e }
+  });
+}
+function gl(i, e) {
+  return new CustomEvent("oscd-settings", {
+    bubbles: !0,
+    composed: !0,
+    ...e,
+    detail: {
+      show: i,
+      ...e?.detail
+    }
+  });
+}
+class lt extends ge {
+  constructor() {
+    super(...arguments), this.indeterminate = !1, this.progress = 0, this.buffer = 1, this.reverse = !1, this.closed = !1, this.stylePrimaryHalf = "", this.stylePrimaryFull = "", this.styleSecondaryQuarter = "", this.styleSecondaryHalf = "", this.styleSecondaryFull = "", this.animationReady = !0, this.closedAnimationOff = !1, this.resizeObserver = null;
+  }
+  connectedCallback() {
+    super.connectedCallback(), this.rootEl && this.attachResizeObserver();
+  }
+  /**
+   * @soyTemplate
+   */
+  render() {
+    const e = {
+      "mdc-linear-progress--closed": this.closed,
+      "mdc-linear-progress--closed-animation-off": this.closedAnimationOff,
+      "mdc-linear-progress--indeterminate": this.indeterminate,
+      // needed for controller-less render
+      "mdc-linear-progress--animation-ready": this.animationReady
+    }, t = {
+      "--mdc-linear-progress-primary-half": this.stylePrimaryHalf,
+      "--mdc-linear-progress-primary-half-neg": this.stylePrimaryHalf !== "" ? `-${this.stylePrimaryHalf}` : "",
+      "--mdc-linear-progress-primary-full": this.stylePrimaryFull,
+      "--mdc-linear-progress-primary-full-neg": this.stylePrimaryFull !== "" ? `-${this.stylePrimaryFull}` : "",
+      "--mdc-linear-progress-secondary-quarter": this.styleSecondaryQuarter,
+      "--mdc-linear-progress-secondary-quarter-neg": this.styleSecondaryQuarter !== "" ? `-${this.styleSecondaryQuarter}` : "",
+      "--mdc-linear-progress-secondary-half": this.styleSecondaryHalf,
+      "--mdc-linear-progress-secondary-half-neg": this.styleSecondaryHalf !== "" ? `-${this.styleSecondaryHalf}` : "",
+      "--mdc-linear-progress-secondary-full": this.styleSecondaryFull,
+      "--mdc-linear-progress-secondary-full-neg": this.styleSecondaryFull !== "" ? `-${this.styleSecondaryFull}` : ""
+    }, n = {
+      "flex-basis": this.indeterminate ? "100%" : `${this.buffer * 100}%`
+    }, s = {
+      transform: this.indeterminate ? "scaleX(1)" : `scaleX(${this.progress})`
+    };
+    return R`
+      <div
+          role="progressbar"
+          class="mdc-linear-progress ${pe(e)}"
+          style="${an(t)}"
+          dir="${ee(this.reverse ? "rtl" : void 0)}"
+          aria-label="${ee(this.ariaLabel)}"
+          aria-valuemin="0"
+          aria-valuemax="1"
+          aria-valuenow="${ee(this.indeterminate ? void 0 : this.progress)}"
+        @transitionend="${this.syncClosedState}">
+        <div class="mdc-linear-progress__buffer">
+          <div
+            class="mdc-linear-progress__buffer-bar"
+            style=${an(n)}>
+          </div>
+          <div class="mdc-linear-progress__buffer-dots"></div>
+        </div>
+        <div
+            class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+            style=${an(s)}>
+          <span class="mdc-linear-progress__bar-inner"></span>
+        </div>
+        <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+          <span class="mdc-linear-progress__bar-inner"></span>
+        </div>
+      </div>`;
+  }
+  update(e) {
+    e.has("closed") && (!this.closed || e.get("closed") === void 0) && this.syncClosedState(), super.update(e);
+  }
+  async firstUpdated(e) {
+    super.firstUpdated(e), this.attachResizeObserver();
+  }
+  syncClosedState() {
+    this.closedAnimationOff = this.closed;
+  }
+  updated(e) {
+    !e.has("indeterminate") && e.has("reverse") && this.indeterminate && this.restartAnimation(), e.has("indeterminate") && e.get("indeterminate") !== void 0 && this.indeterminate && window.ResizeObserver && this.calculateAndSetAnimationDimensions(this.rootEl.offsetWidth), super.updated(e);
+  }
+  disconnectedCallback() {
+    this.resizeObserver && (this.resizeObserver.disconnect(), this.resizeObserver = null), super.disconnectedCallback();
+  }
+  attachResizeObserver() {
+    if (window.ResizeObserver) {
+      this.resizeObserver = new window.ResizeObserver((e) => {
+        if (this.indeterminate) {
+          for (const t of e)
+            if (t.contentRect) {
+              const n = t.contentRect.width;
+              this.calculateAndSetAnimationDimensions(n);
+            }
+        }
+      }), this.resizeObserver.observe(this.rootEl);
+      return;
+    }
+    this.resizeObserver = null;
+  }
+  calculateAndSetAnimationDimensions(e) {
+    const t = e * 0.8367142, n = e * 2.00611057, s = e * 0.37651913, a = e * 0.84386165, l = e * 1.60277782;
+    this.stylePrimaryHalf = `${t}px`, this.stylePrimaryFull = `${n}px`, this.styleSecondaryQuarter = `${s}px`, this.styleSecondaryHalf = `${a}px`, this.styleSecondaryFull = `${l}px`, this.restartAnimation();
+  }
+  async restartAnimation() {
+    this.animationReady = !1, await this.updateComplete, await new Promise(requestAnimationFrame), this.animationReady = !0, await this.updateComplete;
+  }
+  open() {
+    this.closed = !1;
+  }
+  close() {
+    this.closed = !0;
+  }
+}
+$([
+  z(".mdc-linear-progress")
+], lt.prototype, "rootEl", void 0);
+$([
+  D({ type: Boolean, reflect: !0 })
+], lt.prototype, "indeterminate", void 0);
+$([
+  D({ type: Number })
+], lt.prototype, "progress", void 0);
+$([
+  D({ type: Number })
+], lt.prototype, "buffer", void 0);
+$([
+  D({ type: Boolean, reflect: !0 })
+], lt.prototype, "reverse", void 0);
+$([
+  D({ type: Boolean, reflect: !0 })
+], lt.prototype, "closed", void 0);
+$([
+  Pt,
+  D({ attribute: "aria-label" })
+], lt.prototype, "ariaLabel", void 0);
+$([
+  j()
+], lt.prototype, "stylePrimaryHalf", void 0);
+$([
+  j()
+], lt.prototype, "stylePrimaryFull", void 0);
+$([
+  j()
+], lt.prototype, "styleSecondaryQuarter", void 0);
+$([
+  j()
+], lt.prototype, "styleSecondaryHalf", void 0);
+$([
+  j()
+], lt.prototype, "styleSecondaryFull", void 0);
+$([
+  j()
+], lt.prototype, "animationReady", void 0);
+$([
+  j()
+], lt.prototype, "closedAnimationOff", void 0);
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-LIcense-Identifier: Apache-2.0
+ */
+const Tu = le`@keyframes mdc-linear-progress-primary-indeterminate-translate{0%{transform:translateX(0)}20%{animation-timing-function:cubic-bezier(0.5, 0, 0.701732, 0.495819);transform:translateX(0)}59.15%{animation-timing-function:cubic-bezier(0.302435, 0.381352, 0.55, 0.956352);transform:translateX(83.67142%);transform:translateX(var(--mdc-linear-progress-primary-half, 83.67142%))}100%{transform:translateX(200.611057%);transform:translateX(var(--mdc-linear-progress-primary-full, 200.611057%))}}@keyframes mdc-linear-progress-primary-indeterminate-scale{0%{transform:scaleX(0.08)}36.65%{animation-timing-function:cubic-bezier(0.334731, 0.12482, 0.785844, 1);transform:scaleX(0.08)}69.15%{animation-timing-function:cubic-bezier(0.06, 0.11, 0.6, 1);transform:scaleX(0.661479)}100%{transform:scaleX(0.08)}}@keyframes mdc-linear-progress-secondary-indeterminate-translate{0%{animation-timing-function:cubic-bezier(0.15, 0, 0.515058, 0.409685);transform:translateX(0)}25%{animation-timing-function:cubic-bezier(0.31033, 0.284058, 0.8, 0.733712);transform:translateX(37.651913%);transform:translateX(var(--mdc-linear-progress-secondary-quarter, 37.651913%))}48.35%{animation-timing-function:cubic-bezier(0.4, 0.627035, 0.6, 0.902026);transform:translateX(84.386165%);transform:translateX(var(--mdc-linear-progress-secondary-half, 84.386165%))}100%{transform:translateX(160.277782%);transform:translateX(var(--mdc-linear-progress-secondary-full, 160.277782%))}}@keyframes mdc-linear-progress-secondary-indeterminate-scale{0%{animation-timing-function:cubic-bezier(0.205028, 0.057051, 0.57661, 0.453971);transform:scaleX(0.08)}19.15%{animation-timing-function:cubic-bezier(0.152313, 0.196432, 0.648374, 1.004315);transform:scaleX(0.457104)}44.15%{animation-timing-function:cubic-bezier(0.257759, -0.003163, 0.211762, 1.38179);transform:scaleX(0.72796)}100%{transform:scaleX(0.08)}}@keyframes mdc-linear-progress-buffering{from{transform:rotate(180deg) translateX(-10px)}}@keyframes mdc-linear-progress-primary-indeterminate-translate-reverse{0%{transform:translateX(0)}20%{animation-timing-function:cubic-bezier(0.5, 0, 0.701732, 0.495819);transform:translateX(0)}59.15%{animation-timing-function:cubic-bezier(0.302435, 0.381352, 0.55, 0.956352);transform:translateX(-83.67142%);transform:translateX(var(--mdc-linear-progress-primary-half-neg, -83.67142%))}100%{transform:translateX(-200.611057%);transform:translateX(var(--mdc-linear-progress-primary-full-neg, -200.611057%))}}@keyframes mdc-linear-progress-secondary-indeterminate-translate-reverse{0%{animation-timing-function:cubic-bezier(0.15, 0, 0.515058, 0.409685);transform:translateX(0)}25%{animation-timing-function:cubic-bezier(0.31033, 0.284058, 0.8, 0.733712);transform:translateX(-37.651913%);transform:translateX(var(--mdc-linear-progress-secondary-quarter-neg, -37.651913%))}48.35%{animation-timing-function:cubic-bezier(0.4, 0.627035, 0.6, 0.902026);transform:translateX(-84.386165%);transform:translateX(var(--mdc-linear-progress-secondary-half-neg, -84.386165%))}100%{transform:translateX(-160.277782%);transform:translateX(var(--mdc-linear-progress-secondary-full-neg, -160.277782%))}}@keyframes mdc-linear-progress-buffering-reverse{from{transform:translateX(-10px)}}.mdc-linear-progress{position:relative;width:100%;height:4px;transform:translateZ(0);outline:1px solid transparent;overflow:hidden;transition:opacity 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-linear-progress__bar{position:absolute;width:100%;height:100%;animation:none;transform-origin:top left;transition:transform 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-linear-progress__bar-inner{display:inline-block;position:absolute;width:100%;animation:none;border-top:4px solid}.mdc-linear-progress__buffer{display:flex;position:absolute;width:100%;height:100%}.mdc-linear-progress__buffer-dots{background-repeat:repeat-x;background-size:10px 4px;flex:auto;transform:rotate(180deg);animation:mdc-linear-progress-buffering 250ms infinite linear}.mdc-linear-progress__buffer-bar{flex:0 1 100%;transition:flex-basis 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-linear-progress__primary-bar{transform:scaleX(0)}.mdc-linear-progress__secondary-bar{display:none}.mdc-linear-progress--indeterminate .mdc-linear-progress__bar{transition:none}.mdc-linear-progress--indeterminate .mdc-linear-progress__primary-bar{left:-145.166611%}.mdc-linear-progress--indeterminate .mdc-linear-progress__secondary-bar{left:-54.888891%;display:block}.mdc-linear-progress--indeterminate.mdc-linear-progress--animation-ready .mdc-linear-progress__primary-bar{animation:mdc-linear-progress-primary-indeterminate-translate 2s infinite linear}.mdc-linear-progress--indeterminate.mdc-linear-progress--animation-ready .mdc-linear-progress__primary-bar>.mdc-linear-progress__bar-inner{animation:mdc-linear-progress-primary-indeterminate-scale 2s infinite linear}.mdc-linear-progress--indeterminate.mdc-linear-progress--animation-ready .mdc-linear-progress__secondary-bar{animation:mdc-linear-progress-secondary-indeterminate-translate 2s infinite linear}.mdc-linear-progress--indeterminate.mdc-linear-progress--animation-ready .mdc-linear-progress__secondary-bar>.mdc-linear-progress__bar-inner{animation:mdc-linear-progress-secondary-indeterminate-scale 2s infinite linear}[dir=rtl] .mdc-linear-progress:not([dir=ltr]) .mdc-linear-progress__bar,.mdc-linear-progress[dir=rtl]:not([dir=ltr]) .mdc-linear-progress__bar{right:0;-webkit-transform-origin:center right;transform-origin:center right}[dir=rtl] .mdc-linear-progress:not([dir=ltr]).mdc-linear-progress--animation-ready .mdc-linear-progress__primary-bar,.mdc-linear-progress[dir=rtl]:not([dir=ltr]).mdc-linear-progress--animation-ready .mdc-linear-progress__primary-bar{animation-name:mdc-linear-progress-primary-indeterminate-translate-reverse}[dir=rtl] .mdc-linear-progress:not([dir=ltr]).mdc-linear-progress--animation-ready .mdc-linear-progress__secondary-bar,.mdc-linear-progress[dir=rtl]:not([dir=ltr]).mdc-linear-progress--animation-ready .mdc-linear-progress__secondary-bar{animation-name:mdc-linear-progress-secondary-indeterminate-translate-reverse}[dir=rtl] .mdc-linear-progress:not([dir=ltr]) .mdc-linear-progress__buffer-dots,.mdc-linear-progress[dir=rtl]:not([dir=ltr]) .mdc-linear-progress__buffer-dots{animation:mdc-linear-progress-buffering-reverse 250ms infinite linear;transform:rotate(0)}[dir=rtl] .mdc-linear-progress:not([dir=ltr]).mdc-linear-progress--indeterminate .mdc-linear-progress__primary-bar,.mdc-linear-progress[dir=rtl]:not([dir=ltr]).mdc-linear-progress--indeterminate .mdc-linear-progress__primary-bar{right:-145.166611%;left:auto}[dir=rtl] .mdc-linear-progress:not([dir=ltr]).mdc-linear-progress--indeterminate .mdc-linear-progress__secondary-bar,.mdc-linear-progress[dir=rtl]:not([dir=ltr]).mdc-linear-progress--indeterminate .mdc-linear-progress__secondary-bar{right:-54.888891%;left:auto}.mdc-linear-progress--closed{opacity:0}.mdc-linear-progress--closed-animation-off .mdc-linear-progress__buffer-dots{animation:none}.mdc-linear-progress--closed-animation-off.mdc-linear-progress--indeterminate .mdc-linear-progress__bar,.mdc-linear-progress--closed-animation-off.mdc-linear-progress--indeterminate .mdc-linear-progress__bar .mdc-linear-progress__bar-inner{animation:none}.mdc-linear-progress__bar-inner{border-color:#6200ee;border-color:var(--mdc-theme-primary, #6200ee)}.mdc-linear-progress__buffer-dots{background-image:url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' enable-background='new 0 0 5 2' xml:space='preserve' viewBox='0 0 5 2' preserveAspectRatio='none slice'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23e6e6e6'/%3E%3C/svg%3E")}.mdc-linear-progress__buffer-bar{background-color:#e6e6e6}:host{display:block}.mdc-linear-progress__buffer-bar{background-color:#e6e6e6;background-color:var(--mdc-linear-progress-buffer-color, #e6e6e6)}.mdc-linear-progress__buffer-dots{background-image:url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' enable-background='new 0 0 5 2' xml:space='preserve' viewBox='0 0 5 2' preserveAspectRatio='none slice'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23e6e6e6'/%3E%3C/svg%3E");background-image:var(--mdc-linear-progress-buffering-dots-image, url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' enable-background='new 0 0 5 2' xml:space='preserve' viewBox='0 0 5 2' preserveAspectRatio='none slice'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23e6e6e6'/%3E%3C/svg%3E"))}`;
+let wo = class extends lt {
+};
+wo.styles = [Tu];
+wo = $([
+  te("mwc-linear-progress")
+], wo);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Iu = {
+  ACTIVE: "mdc-tab-indicator--active",
+  FADE: "mdc-tab-indicator--fade",
+  NO_TRANSITION: "mdc-tab-indicator--no-transition"
+}, Lu = {
+  CONTENT_SELECTOR: ".mdc-tab-indicator__content"
+};
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var jt = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e(t) {
+      return i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
+    }
+    return Object.defineProperty(e, "cssClasses", {
+      get: function() {
+        return Iu;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "strings", {
+      get: function() {
+        return Lu;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "defaultAdapter", {
+      get: function() {
+        return {
+          addClass: function() {
+          },
+          removeClass: function() {
+          },
+          computeContentClientRect: function() {
+            return { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
+          },
+          setContentStyleProperty: function() {
+          }
+        };
+      },
+      enumerable: !1,
+      configurable: !0
+    }), e.prototype.computeContentClientRect = function() {
+      return this.adapter.computeContentClientRect();
+    }, e;
+  }(Fe)
+);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Ru = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e() {
+      return i !== null && i.apply(this, arguments) || this;
+    }
+    return e.prototype.activate = function() {
+      this.adapter.addClass(jt.cssClasses.ACTIVE);
+    }, e.prototype.deactivate = function() {
+      this.adapter.removeClass(jt.cssClasses.ACTIVE);
+    }, e;
+  }(jt)
+);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Du = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e() {
+      return i !== null && i.apply(this, arguments) || this;
+    }
+    return e.prototype.activate = function(t) {
+      if (!t) {
+        this.adapter.addClass(jt.cssClasses.ACTIVE);
+        return;
+      }
+      var n = this.computeContentClientRect(), s = t.width / n.width, a = t.left - n.left;
+      this.adapter.addClass(jt.cssClasses.NO_TRANSITION), this.adapter.setContentStyleProperty("transform", "translateX(" + a + "px) scaleX(" + s + ")"), this.computeContentClientRect(), this.adapter.removeClass(jt.cssClasses.NO_TRANSITION), this.adapter.addClass(jt.cssClasses.ACTIVE), this.adapter.setContentStyleProperty("transform", "");
+    }, e.prototype.deactivate = function() {
+      this.adapter.removeClass(jt.cssClasses.ACTIVE);
+    }, e;
+  }(jt)
+);
+class wn extends ot {
+  constructor() {
+    super(...arguments), this.icon = "", this.fade = !1;
+  }
+  get mdcFoundationClass() {
+    return this.fade ? Ru : Du;
+  }
+  render() {
+    const e = {
+      "mdc-tab-indicator__content--icon": this.icon,
+      "material-icons": this.icon,
+      "mdc-tab-indicator__content--underline": !this.icon
+    };
+    return R`
+      <span class="mdc-tab-indicator ${pe({
+      "mdc-tab-indicator--fade": this.fade
+    })}">
+        <span class="mdc-tab-indicator__content ${pe(e)}">${this.icon}</span>
+      </span>
+      `;
+  }
+  updated(e) {
+    e.has("fade") && this.createFoundation();
+  }
+  createAdapter() {
+    return Object.assign(Object.assign({}, At(this.mdcRoot)), { computeContentClientRect: () => this.contentElement.getBoundingClientRect(), setContentStyleProperty: (e, t) => this.contentElement.style.setProperty(e, t) });
+  }
+  computeContentClientRect() {
+    return this.mdcFoundation.computeContentClientRect();
+  }
+  activate(e) {
+    this.mdcFoundation.activate(e);
+  }
+  deactivate() {
+    this.mdcFoundation.deactivate();
+  }
+}
+$([
+  z(".mdc-tab-indicator")
+], wn.prototype, "mdcRoot", void 0);
+$([
+  z(".mdc-tab-indicator__content")
+], wn.prototype, "contentElement", void 0);
+$([
+  D()
+], wn.prototype, "icon", void 0);
+$([
+  D({ type: Boolean })
+], wn.prototype, "fade", void 0);
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-LIcense-Identifier: Apache-2.0
+ */
+const Mu = le`.material-icons{font-family:var(--mdc-icon-font, "Material Icons");font-weight:normal;font-style:normal;font-size:var(--mdc-icon-size, 24px);line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;-moz-osx-font-smoothing:grayscale;font-feature-settings:"liga"}.mdc-tab-indicator .mdc-tab-indicator__content--underline{border-color:#6200ee;border-color:var(--mdc-theme-primary, #6200ee)}.mdc-tab-indicator .mdc-tab-indicator__content--icon{color:#018786;color:var(--mdc-theme-secondary, #018786)}.mdc-tab-indicator .mdc-tab-indicator__content--underline{border-top-width:2px}.mdc-tab-indicator .mdc-tab-indicator__content--icon{height:34px;font-size:34px}.mdc-tab-indicator{display:flex;position:absolute;top:0;left:0;justify-content:center;width:100%;height:100%;pointer-events:none;z-index:1}.mdc-tab-indicator__content{transform-origin:left;opacity:0}.mdc-tab-indicator__content--underline{align-self:flex-end;box-sizing:border-box;width:100%;border-top-style:solid}.mdc-tab-indicator__content--icon{align-self:center;margin:0 auto}.mdc-tab-indicator--active .mdc-tab-indicator__content{opacity:1}.mdc-tab-indicator .mdc-tab-indicator__content{transition:250ms transform cubic-bezier(0.4, 0, 0.2, 1)}.mdc-tab-indicator--no-transition .mdc-tab-indicator__content{transition:none}.mdc-tab-indicator--fade .mdc-tab-indicator__content{transition:150ms opacity linear}.mdc-tab-indicator--active.mdc-tab-indicator--fade .mdc-tab-indicator__content{transition-delay:100ms}`;
+let _o = class extends wn {
+};
+_o.styles = [Mu];
+_o = $([
+  te("mwc-tab-indicator")
+], _o);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var zn = {
+  ACTIVE: "mdc-tab--active"
+}, en = {
+  ARIA_SELECTED: "aria-selected",
+  CONTENT_SELECTOR: ".mdc-tab__content",
+  INTERACTED_EVENT: "MDCTab:interacted",
+  RIPPLE_SELECTOR: ".mdc-tab__ripple",
+  TABINDEX: "tabIndex",
+  TAB_INDICATOR_SELECTOR: ".mdc-tab-indicator"
+};
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Zs = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e(t) {
+      var n = i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
+      return n.focusOnActivate = !0, n;
+    }
+    return Object.defineProperty(e, "cssClasses", {
+      get: function() {
+        return zn;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "strings", {
+      get: function() {
+        return en;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "defaultAdapter", {
+      get: function() {
+        return {
+          addClass: function() {
+          },
+          removeClass: function() {
+          },
+          hasClass: function() {
+            return !1;
+          },
+          setAttr: function() {
+          },
+          activateIndicator: function() {
+          },
+          deactivateIndicator: function() {
+          },
+          notifyInteracted: function() {
+          },
+          getOffsetLeft: function() {
+            return 0;
+          },
+          getOffsetWidth: function() {
+            return 0;
+          },
+          getContentOffsetLeft: function() {
+            return 0;
+          },
+          getContentOffsetWidth: function() {
+            return 0;
+          },
+          focus: function() {
+          }
+        };
+      },
+      enumerable: !1,
+      configurable: !0
+    }), e.prototype.handleClick = function() {
+      this.adapter.notifyInteracted();
+    }, e.prototype.isActive = function() {
+      return this.adapter.hasClass(zn.ACTIVE);
+    }, e.prototype.setFocusOnActivate = function(t) {
+      this.focusOnActivate = t;
+    }, e.prototype.activate = function(t) {
+      this.adapter.addClass(zn.ACTIVE), this.adapter.setAttr(en.ARIA_SELECTED, "true"), this.adapter.setAttr(en.TABINDEX, "0"), this.adapter.activateIndicator(t), this.focusOnActivate && this.adapter.focus();
+    }, e.prototype.deactivate = function() {
+      this.isActive() && (this.adapter.removeClass(zn.ACTIVE), this.adapter.setAttr(en.ARIA_SELECTED, "false"), this.adapter.setAttr(en.TABINDEX, "-1"), this.adapter.deactivateIndicator());
+    }, e.prototype.computeDimensions = function() {
+      var t = this.adapter.getOffsetWidth(), n = this.adapter.getOffsetLeft(), s = this.adapter.getContentOffsetWidth(), a = this.adapter.getContentOffsetLeft();
+      return {
+        contentLeft: n + a,
+        contentRight: n + a + s,
+        rootLeft: n,
+        rootRight: n + t
+      };
+    }, e;
+  }(Fe)
+);
+let Ou = 0;
+class Ke extends ot {
+  constructor() {
+    super(...arguments), this.mdcFoundationClass = Zs, this.label = "", this.icon = "", this.hasImageIcon = !1, this.isFadingIndicator = !1, this.minWidth = !1, this.isMinWidthIndicator = !1, this.indicatorIcon = "", this.stacked = !1, this.focusOnActivate = !0, this._active = !1, this.initFocus = !1, this.shouldRenderRipple = !1, this.rippleElement = null, this.rippleHandlers = new pi(() => (this.shouldRenderRipple = !0, this.ripple.then((e) => this.rippleElement = e), this.ripple));
+  }
+  get active() {
+    return this._active;
+  }
+  connectedCallback() {
+    this.dir = document.dir, super.connectedCallback();
+  }
+  firstUpdated() {
+    super.firstUpdated(), this.id = this.id || `mdc-tab-${++Ou}`;
+  }
+  render() {
+    const e = {
+      "mdc-tab--min-width": this.minWidth,
+      "mdc-tab--stacked": this.stacked
+    };
+    let t = R``;
+    (this.hasImageIcon || this.icon) && (t = R`
+        <span class="mdc-tab__icon material-icons"><slot name="icon">${this.icon}</slot></span>`);
+    let n = R``;
+    return this.label && (n = R`
+        <span class="mdc-tab__text-label">${this.label}</span>`), R`
+      <button
+        @click="${this.handleClick}"
+        class="mdc-tab ${pe(e)}"
+        role="tab"
+        aria-selected="false"
+        tabindex="-1"
+        @focus="${this.focus}"
+        @blur="${this.handleBlur}"
+        @mousedown="${this.handleRippleMouseDown}"
+        @mouseenter="${this.handleRippleMouseEnter}"
+        @mouseleave="${this.handleRippleMouseLeave}"
+        @touchstart="${this.handleRippleTouchStart}"
+        @touchend="${this.handleRippleDeactivate}"
+        @touchcancel="${this.handleRippleDeactivate}">
+        <span class="mdc-tab__content">
+          ${t}
+          ${n}
+          ${this.isMinWidthIndicator ? this.renderIndicator() : ""}
+        </span>
+        ${this.isMinWidthIndicator ? "" : this.renderIndicator()}
+        ${this.renderRipple()}
+      </button>`;
+  }
+  renderIndicator() {
+    return R`<mwc-tab-indicator
+        .icon="${this.indicatorIcon}"
+        .fade="${this.isFadingIndicator}"></mwc-tab-indicator>`;
+  }
+  // TODO(dfreedm): Make this use selected as a param after Polymer/internal#739
+  /** @soyCompatible */
+  renderRipple() {
+    return this.shouldRenderRipple ? R`
+          <mwc-ripple primary></mwc-ripple>
+        ` : "";
+  }
+  createAdapter() {
+    return Object.assign(Object.assign({}, At(this.mdcRoot)), { setAttr: (e, t) => this.mdcRoot.setAttribute(e, t), activateIndicator: async (e) => {
+      await this.tabIndicator.updateComplete, this.tabIndicator.activate(e);
+    }, deactivateIndicator: async () => {
+      await this.tabIndicator.updateComplete, this.tabIndicator.deactivate();
+    }, notifyInteracted: () => this.dispatchEvent(new CustomEvent(Zs.strings.INTERACTED_EVENT, {
+      detail: { tabId: this.id },
+      bubbles: !0,
+      composed: !0,
+      cancelable: !0
+    })), getOffsetLeft: () => this.offsetLeft, getOffsetWidth: () => this.mdcRoot.offsetWidth, getContentOffsetLeft: () => this._contentElement.offsetLeft, getContentOffsetWidth: () => this._contentElement.offsetWidth, focus: () => {
+      this.initFocus ? this.initFocus = !1 : this.mdcRoot.focus();
+    } });
+  }
+  activate(e) {
+    e || (this.initFocus = !0), this.mdcFoundation ? (this.mdcFoundation.activate(e), this.setActive(this.mdcFoundation.isActive())) : this.updateComplete.then(() => {
+      this.mdcFoundation.activate(e), this.setActive(this.mdcFoundation.isActive());
+    });
+  }
+  deactivate() {
+    this.mdcFoundation.deactivate(), this.setActive(this.mdcFoundation.isActive());
+  }
+  setActive(e) {
+    const t = this.active;
+    t !== e && (this._active = e, this.requestUpdate("active", t));
+  }
+  computeDimensions() {
+    return this.mdcFoundation.computeDimensions();
+  }
+  computeIndicatorClientRect() {
+    return this.tabIndicator.computeContentClientRect();
+  }
+  // NOTE: needed only for ShadyDOM where delegatesFocus is not implemented
+  focus() {
+    this.mdcRoot.focus(), this.handleFocus();
+  }
+  handleClick() {
+    this.handleFocus(), this.mdcFoundation.handleClick();
+  }
+  handleFocus() {
+    this.handleRippleFocus();
+  }
+  handleBlur() {
+    this.handleRippleBlur();
+  }
+  handleRippleMouseDown(e) {
+    const t = () => {
+      window.removeEventListener("mouseup", t), this.handleRippleDeactivate();
+    };
+    window.addEventListener("mouseup", t), this.rippleHandlers.startPress(e);
+  }
+  handleRippleTouchStart(e) {
+    this.rippleHandlers.startPress(e);
+  }
+  handleRippleDeactivate() {
+    this.rippleHandlers.endPress();
+  }
+  handleRippleMouseEnter() {
+    this.rippleHandlers.startHover();
+  }
+  handleRippleMouseLeave() {
+    this.rippleHandlers.endHover();
+  }
+  handleRippleFocus() {
+    this.rippleHandlers.startFocus();
+  }
+  handleRippleBlur() {
+    this.rippleHandlers.endFocus();
+  }
+  get isRippleActive() {
+    var e;
+    return ((e = this.rippleElement) === null || e === void 0 ? void 0 : e.isActive) || !1;
+  }
+}
+Ke.shadowRootOptions = { mode: "open", delegatesFocus: !0 };
+$([
+  z(".mdc-tab")
+], Ke.prototype, "mdcRoot", void 0);
+$([
+  z("mwc-tab-indicator")
+], Ke.prototype, "tabIndicator", void 0);
+$([
+  D()
+], Ke.prototype, "label", void 0);
+$([
+  D()
+], Ke.prototype, "icon", void 0);
+$([
+  D({ type: Boolean })
+], Ke.prototype, "hasImageIcon", void 0);
+$([
+  D({ type: Boolean })
+], Ke.prototype, "isFadingIndicator", void 0);
+$([
+  D({ type: Boolean })
+], Ke.prototype, "minWidth", void 0);
+$([
+  D({ type: Boolean })
+], Ke.prototype, "isMinWidthIndicator", void 0);
+$([
+  D({ type: Boolean, reflect: !0, attribute: "active" })
+], Ke.prototype, "active", null);
+$([
+  D()
+], Ke.prototype, "indicatorIcon", void 0);
+$([
+  D({ type: Boolean })
+], Ke.prototype, "stacked", void 0);
+$([
+  ae(async function(i) {
+    await this.updateComplete, this.mdcFoundation.setFocusOnActivate(i);
+  }),
+  D({ type: Boolean })
+], Ke.prototype, "focusOnActivate", void 0);
+$([
+  z(".mdc-tab__content")
+], Ke.prototype, "_contentElement", void 0);
+$([
+  j()
+], Ke.prototype, "shouldRenderRipple", void 0);
+$([
+  mi("mwc-ripple")
+], Ke.prototype, "ripple", void 0);
+$([
+  xt({ passive: !0 })
+], Ke.prototype, "handleRippleTouchStart", null);
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-LIcense-Identifier: Apache-2.0
+ */
+const Nu = le`.material-icons{font-family:var(--mdc-icon-font, "Material Icons");font-weight:normal;font-style:normal;font-size:var(--mdc-icon-size, 24px);line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;-moz-osx-font-smoothing:grayscale;font-feature-settings:"liga"}.mdc-tab{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:0.875rem;font-size:var(--mdc-typography-button-font-size, 0.875rem);line-height:2.25rem;line-height:var(--mdc-typography-button-line-height, 2.25rem);font-weight:500;font-weight:var(--mdc-typography-button-font-weight, 500);letter-spacing:0.0892857143em;letter-spacing:var(--mdc-typography-button-letter-spacing, 0.0892857143em);text-decoration:none;text-decoration:var(--mdc-typography-button-text-decoration, none);text-transform:uppercase;text-transform:var(--mdc-typography-button-text-transform, uppercase);position:relative}.mdc-tab .mdc-tab__text-label{color:rgba(0, 0, 0, 0.6)}.mdc-tab .mdc-tab__icon{color:rgba(0, 0, 0, 0.54);fill:currentColor}.mdc-tab__content{position:relative}.mdc-tab__icon{width:24px;height:24px;font-size:24px}.mdc-tab--active .mdc-tab__text-label{color:#6200ee;color:var(--mdc-theme-primary, #6200ee)}.mdc-tab--active .mdc-tab__icon{color:#6200ee;color:var(--mdc-theme-primary, #6200ee);fill:currentColor}.mdc-tab{min-width:90px;padding-right:24px;padding-left:24px;display:flex;flex:1 0 auto;justify-content:center;box-sizing:border-box;margin:0;padding-top:0;padding-bottom:0;border:none;outline:none;background:none;text-align:center;white-space:nowrap;cursor:pointer;-webkit-appearance:none;z-index:1}.mdc-tab::-moz-focus-inner{padding:0;border:0}.mdc-tab--min-width{flex:0 1 auto}.mdc-tab__content{display:flex;align-items:center;justify-content:center;height:inherit;pointer-events:none}.mdc-tab__text-label{transition:150ms color linear;display:inline-block;line-height:1;z-index:2}.mdc-tab__icon{transition:150ms color linear;z-index:2}.mdc-tab--stacked .mdc-tab__content{flex-direction:column;align-items:center;justify-content:center}.mdc-tab--stacked .mdc-tab__text-label{padding-top:6px;padding-bottom:4px}.mdc-tab--active .mdc-tab__text-label,.mdc-tab--active .mdc-tab__icon{transition-delay:100ms}.mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label{padding-left:8px;padding-right:0}[dir=rtl] .mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label,.mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label[dir=rtl]{padding-left:0;padding-right:8px}@keyframes mdc-ripple-fg-radius-in{from{animation-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transform:translate(var(--mdc-ripple-fg-translate-start, 0)) scale(1)}to{transform:translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1))}}@keyframes mdc-ripple-fg-opacity-in{from{animation-timing-function:linear;opacity:0}to{opacity:var(--mdc-ripple-fg-opacity, 0)}}@keyframes mdc-ripple-fg-opacity-out{from{animation-timing-function:linear;opacity:var(--mdc-ripple-fg-opacity, 0)}to{opacity:0}}.mdc-tab{--mdc-ripple-fg-size: 0;--mdc-ripple-left: 0;--mdc-ripple-top: 0;--mdc-ripple-fg-scale: 1;--mdc-ripple-fg-translate-end: 0;--mdc-ripple-fg-translate-start: 0;-webkit-tap-highlight-color:rgba(0,0,0,0)}.mdc-tab .mdc-tab__ripple::before,.mdc-tab .mdc-tab__ripple::after{position:absolute;border-radius:50%;opacity:0;pointer-events:none;content:""}.mdc-tab .mdc-tab__ripple::before{transition:opacity 15ms linear,background-color 15ms linear;z-index:1;z-index:var(--mdc-ripple-z-index, 1)}.mdc-tab .mdc-tab__ripple::after{z-index:0;z-index:var(--mdc-ripple-z-index, 0)}.mdc-tab.mdc-ripple-upgraded .mdc-tab__ripple::before{transform:scale(var(--mdc-ripple-fg-scale, 1))}.mdc-tab.mdc-ripple-upgraded .mdc-tab__ripple::after{top:0;left:0;transform:scale(0);transform-origin:center center}.mdc-tab.mdc-ripple-upgraded--unbounded .mdc-tab__ripple::after{top:var(--mdc-ripple-top, 0);left:var(--mdc-ripple-left, 0)}.mdc-tab.mdc-ripple-upgraded--foreground-activation .mdc-tab__ripple::after{animation:mdc-ripple-fg-radius-in 225ms forwards,mdc-ripple-fg-opacity-in 75ms forwards}.mdc-tab.mdc-ripple-upgraded--foreground-deactivation .mdc-tab__ripple::after{animation:mdc-ripple-fg-opacity-out 150ms;transform:translate(var(--mdc-ripple-fg-translate-end, 0)) scale(var(--mdc-ripple-fg-scale, 1))}.mdc-tab .mdc-tab__ripple::before,.mdc-tab .mdc-tab__ripple::after{top:calc(50% - 100%);left:calc(50% - 100%);width:200%;height:200%}.mdc-tab.mdc-ripple-upgraded .mdc-tab__ripple::after{width:var(--mdc-ripple-fg-size, 100%);height:var(--mdc-ripple-fg-size, 100%)}.mdc-tab .mdc-tab__ripple::before,.mdc-tab .mdc-tab__ripple::after{background-color:#6200ee;background-color:var(--mdc-ripple-color, var(--mdc-theme-primary, #6200ee))}.mdc-tab:hover .mdc-tab__ripple::before,.mdc-tab.mdc-ripple-surface--hover .mdc-tab__ripple::before{opacity:0.04;opacity:var(--mdc-ripple-hover-opacity, 0.04)}.mdc-tab.mdc-ripple-upgraded--background-focused .mdc-tab__ripple::before,.mdc-tab:not(.mdc-ripple-upgraded):focus .mdc-tab__ripple::before{transition-duration:75ms;opacity:0.12;opacity:var(--mdc-ripple-focus-opacity, 0.12)}.mdc-tab:not(.mdc-ripple-upgraded) .mdc-tab__ripple::after{transition:opacity 150ms linear}.mdc-tab:not(.mdc-ripple-upgraded):active .mdc-tab__ripple::after{transition-duration:75ms;opacity:0.12;opacity:var(--mdc-ripple-press-opacity, 0.12)}.mdc-tab.mdc-ripple-upgraded{--mdc-ripple-fg-opacity:var(--mdc-ripple-press-opacity, 0.12)}.mdc-tab__ripple{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;will-change:transform,opacity}:host{outline:none;flex:1 0 auto;display:flex;justify-content:center;-webkit-tap-highlight-color:transparent}.mdc-tab{height:var(--mdc-tab-height, 48px);margin-left:0;margin-right:0;padding-right:var(--mdc-tab-horizontal-padding, 24px);padding-left:var(--mdc-tab-horizontal-padding, 24px)}.mdc-tab--stacked{height:var(--mdc-tab-stacked-height, 72px)}.mdc-tab::-moz-focus-inner{border:0}.mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label{padding-left:8px;padding-right:0}[dir=rtl] .mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label,.mdc-tab:not(.mdc-tab--stacked) .mdc-tab__icon+.mdc-tab__text-label[dir=rtl]{padding-left:0;padding-right:8px}.mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label{color:var(--mdc-tab-text-label-color-default, rgba(0, 0, 0, 0.6))}.mdc-tab:not(.mdc-tab--active) .mdc-tab__icon{color:var(--mdc-tab-color-default, rgba(0, 0, 0, 0.54))}`;
+let ir = class extends Ke {
+};
+ir.styles = [Nu];
+ir = $([
+  te("mwc-tab")
+], ir);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Fu = {
+  ANIMATING: "mdc-tab-scroller--animating",
+  SCROLL_AREA_SCROLL: "mdc-tab-scroller__scroll-area--scroll",
+  SCROLL_TEST: "mdc-tab-scroller__test"
+}, Pu = {
+  AREA_SELECTOR: ".mdc-tab-scroller__scroll-area",
+  CONTENT_SELECTOR: ".mdc-tab-scroller__scroll-content"
+};
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var is = (
+  /** @class */
+  /* @__PURE__ */ function() {
+    function i(e) {
+      this.adapter = e;
+    }
+    return i;
+  }()
+);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Bu = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e() {
+      return i !== null && i.apply(this, arguments) || this;
+    }
+    return e.prototype.getScrollPositionRTL = function() {
+      var t = this.adapter.getScrollAreaScrollLeft(), n = this.calculateScrollEdges().right;
+      return Math.round(n - t);
+    }, e.prototype.scrollToRTL = function(t) {
+      var n = this.calculateScrollEdges(), s = this.adapter.getScrollAreaScrollLeft(), a = this.clampScrollValue(n.right - t);
+      return {
+        finalScrollPosition: a,
+        scrollDelta: a - s
+      };
+    }, e.prototype.incrementScrollRTL = function(t) {
+      var n = this.adapter.getScrollAreaScrollLeft(), s = this.clampScrollValue(n - t);
+      return {
+        finalScrollPosition: s,
+        scrollDelta: s - n
+      };
+    }, e.prototype.getAnimatingScrollPosition = function(t) {
+      return t;
+    }, e.prototype.calculateScrollEdges = function() {
+      var t = this.adapter.getScrollContentOffsetWidth(), n = this.adapter.getScrollAreaOffsetWidth();
+      return {
+        left: 0,
+        right: t - n
+      };
+    }, e.prototype.clampScrollValue = function(t) {
+      var n = this.calculateScrollEdges();
+      return Math.min(Math.max(n.left, t), n.right);
+    }, e;
+  }(is)
+);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Hu = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e() {
+      return i !== null && i.apply(this, arguments) || this;
+    }
+    return e.prototype.getScrollPositionRTL = function(t) {
+      var n = this.adapter.getScrollAreaScrollLeft();
+      return Math.round(t - n);
+    }, e.prototype.scrollToRTL = function(t) {
+      var n = this.adapter.getScrollAreaScrollLeft(), s = this.clampScrollValue(-t);
+      return {
+        finalScrollPosition: s,
+        scrollDelta: s - n
+      };
+    }, e.prototype.incrementScrollRTL = function(t) {
+      var n = this.adapter.getScrollAreaScrollLeft(), s = this.clampScrollValue(n - t);
+      return {
+        finalScrollPosition: s,
+        scrollDelta: s - n
+      };
+    }, e.prototype.getAnimatingScrollPosition = function(t, n) {
+      return t - n;
+    }, e.prototype.calculateScrollEdges = function() {
+      var t = this.adapter.getScrollContentOffsetWidth(), n = this.adapter.getScrollAreaOffsetWidth();
+      return {
+        left: n - t,
+        right: 0
+      };
+    }, e.prototype.clampScrollValue = function(t) {
+      var n = this.calculateScrollEdges();
+      return Math.max(Math.min(n.right, t), n.left);
+    }, e;
+  }(is)
+);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var zu = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e() {
+      return i !== null && i.apply(this, arguments) || this;
+    }
+    return e.prototype.getScrollPositionRTL = function(t) {
+      var n = this.adapter.getScrollAreaScrollLeft();
+      return Math.round(n - t);
+    }, e.prototype.scrollToRTL = function(t) {
+      var n = this.adapter.getScrollAreaScrollLeft(), s = this.clampScrollValue(t);
+      return {
+        finalScrollPosition: s,
+        scrollDelta: n - s
+      };
+    }, e.prototype.incrementScrollRTL = function(t) {
+      var n = this.adapter.getScrollAreaScrollLeft(), s = this.clampScrollValue(n + t);
+      return {
+        finalScrollPosition: s,
+        scrollDelta: n - s
+      };
+    }, e.prototype.getAnimatingScrollPosition = function(t, n) {
+      return t + n;
+    }, e.prototype.calculateScrollEdges = function() {
+      var t = this.adapter.getScrollContentOffsetWidth(), n = this.adapter.getScrollAreaOffsetWidth();
+      return {
+        left: t - n,
+        right: 0
+      };
+    }, e.prototype.clampScrollValue = function(t) {
+      var n = this.calculateScrollEdges();
+      return Math.min(Math.max(n.right, t), n.left);
+    }, e;
+  }(is)
+);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Vu = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e(t) {
+      var n = i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
+      return n.isAnimating = !1, n;
+    }
+    return Object.defineProperty(e, "cssClasses", {
+      get: function() {
+        return Fu;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "strings", {
+      get: function() {
+        return Pu;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "defaultAdapter", {
+      get: function() {
+        return {
+          eventTargetMatchesSelector: function() {
+            return !1;
+          },
+          addClass: function() {
+          },
+          removeClass: function() {
+          },
+          addScrollAreaClass: function() {
+          },
+          setScrollAreaStyleProperty: function() {
+          },
+          setScrollContentStyleProperty: function() {
+          },
+          getScrollContentStyleValue: function() {
+            return "";
+          },
+          setScrollAreaScrollLeft: function() {
+          },
+          getScrollAreaScrollLeft: function() {
+            return 0;
+          },
+          getScrollContentOffsetWidth: function() {
+            return 0;
+          },
+          getScrollAreaOffsetWidth: function() {
+            return 0;
+          },
+          computeScrollAreaClientRect: function() {
+            return { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
+          },
+          computeScrollContentClientRect: function() {
+            return { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
+          },
+          computeHorizontalScrollbarHeight: function() {
+            return 0;
+          }
+        };
+      },
+      enumerable: !1,
+      configurable: !0
+    }), e.prototype.init = function() {
+      var t = this.adapter.computeHorizontalScrollbarHeight();
+      this.adapter.setScrollAreaStyleProperty("margin-bottom", -t + "px"), this.adapter.addScrollAreaClass(e.cssClasses.SCROLL_AREA_SCROLL);
+    }, e.prototype.getScrollPosition = function() {
+      if (this.isRTL())
+        return this.computeCurrentScrollPositionRTL();
+      var t = this.calculateCurrentTranslateX(), n = this.adapter.getScrollAreaScrollLeft();
+      return n - t;
+    }, e.prototype.handleInteraction = function() {
+      this.isAnimating && this.stopScrollAnimation();
+    }, e.prototype.handleTransitionEnd = function(t) {
+      var n = t.target;
+      !this.isAnimating || !this.adapter.eventTargetMatchesSelector(n, e.strings.CONTENT_SELECTOR) || (this.isAnimating = !1, this.adapter.removeClass(e.cssClasses.ANIMATING));
+    }, e.prototype.incrementScroll = function(t) {
+      t !== 0 && this.animate(this.getIncrementScrollOperation(t));
+    }, e.prototype.incrementScrollImmediate = function(t) {
+      if (t !== 0) {
+        var n = this.getIncrementScrollOperation(t);
+        n.scrollDelta !== 0 && (this.stopScrollAnimation(), this.adapter.setScrollAreaScrollLeft(n.finalScrollPosition));
+      }
+    }, e.prototype.scrollTo = function(t) {
+      if (this.isRTL()) {
+        this.scrollToImplRTL(t);
+        return;
+      }
+      this.scrollToImpl(t);
+    }, e.prototype.getRTLScroller = function() {
+      return this.rtlScrollerInstance || (this.rtlScrollerInstance = this.rtlScrollerFactory()), this.rtlScrollerInstance;
+    }, e.prototype.calculateCurrentTranslateX = function() {
+      var t = this.adapter.getScrollContentStyleValue("transform");
+      if (t === "none")
+        return 0;
+      var n = /\((.+?)\)/.exec(t);
+      if (!n)
+        return 0;
+      var s = n[1], a = Tc(s.split(","), 6);
+      a[0], a[1], a[2], a[3];
+      var l = a[4];
+      return a[5], parseFloat(l);
+    }, e.prototype.clampScrollValue = function(t) {
+      var n = this.calculateScrollEdges();
+      return Math.min(Math.max(n.left, t), n.right);
+    }, e.prototype.computeCurrentScrollPositionRTL = function() {
+      var t = this.calculateCurrentTranslateX();
+      return this.getRTLScroller().getScrollPositionRTL(t);
+    }, e.prototype.calculateScrollEdges = function() {
+      var t = this.adapter.getScrollContentOffsetWidth(), n = this.adapter.getScrollAreaOffsetWidth();
+      return {
+        left: 0,
+        right: t - n
+      };
+    }, e.prototype.scrollToImpl = function(t) {
+      var n = this.getScrollPosition(), s = this.clampScrollValue(t), a = s - n;
+      this.animate({
+        finalScrollPosition: s,
+        scrollDelta: a
+      });
+    }, e.prototype.scrollToImplRTL = function(t) {
+      var n = this.getRTLScroller().scrollToRTL(t);
+      this.animate(n);
+    }, e.prototype.getIncrementScrollOperation = function(t) {
+      if (this.isRTL())
+        return this.getRTLScroller().incrementScrollRTL(t);
+      var n = this.getScrollPosition(), s = t + n, a = this.clampScrollValue(s), l = a - n;
+      return {
+        finalScrollPosition: a,
+        scrollDelta: l
+      };
+    }, e.prototype.animate = function(t) {
+      var n = this;
+      t.scrollDelta !== 0 && (this.stopScrollAnimation(), this.adapter.setScrollAreaScrollLeft(t.finalScrollPosition), this.adapter.setScrollContentStyleProperty("transform", "translateX(" + t.scrollDelta + "px)"), this.adapter.computeScrollAreaClientRect(), requestAnimationFrame(function() {
+        n.adapter.addClass(e.cssClasses.ANIMATING), n.adapter.setScrollContentStyleProperty("transform", "none");
+      }), this.isAnimating = !0);
+    }, e.prototype.stopScrollAnimation = function() {
+      this.isAnimating = !1;
+      var t = this.getAnimatingScrollPosition();
+      this.adapter.removeClass(e.cssClasses.ANIMATING), this.adapter.setScrollContentStyleProperty("transform", "translateX(0px)"), this.adapter.setScrollAreaScrollLeft(t);
+    }, e.prototype.getAnimatingScrollPosition = function() {
+      var t = this.calculateCurrentTranslateX(), n = this.adapter.getScrollAreaScrollLeft();
+      return this.isRTL() ? this.getRTLScroller().getAnimatingScrollPosition(n, t) : n - t;
+    }, e.prototype.rtlScrollerFactory = function() {
+      var t = this.adapter.getScrollAreaScrollLeft();
+      this.adapter.setScrollAreaScrollLeft(t - 1);
+      var n = this.adapter.getScrollAreaScrollLeft();
+      if (n < 0)
+        return this.adapter.setScrollAreaScrollLeft(t), new Hu(this.adapter);
+      var s = this.adapter.computeScrollAreaClientRect(), a = this.adapter.computeScrollContentClientRect(), l = Math.round(a.right - s.right);
+      return this.adapter.setScrollAreaScrollLeft(t), l === n ? new zu(this.adapter) : new Bu(this.adapter);
+    }, e.prototype.isRTL = function() {
+      return this.adapter.getScrollContentStyleValue("direction") === "rtl";
+    }, e;
+  }(Fe)
+);
+class _n extends ot {
+  constructor() {
+    super(...arguments), this.mdcFoundationClass = Vu, this._scrollbarHeight = -1;
+  }
+  _handleInteraction() {
+    this.mdcFoundation.handleInteraction();
+  }
+  _handleTransitionEnd(e) {
+    this.mdcFoundation.handleTransitionEnd(e);
+  }
+  render() {
+    return R`
+      <div class="mdc-tab-scroller">
+        <div class="mdc-tab-scroller__scroll-area"
+            @wheel="${this._handleInteraction}"
+            @touchstart="${this._handleInteraction}"
+            @pointerdown="${this._handleInteraction}"
+            @mousedown="${this._handleInteraction}"
+            @keydown="${this._handleInteraction}"
+            @transitionend="${this._handleTransitionEnd}">
+          <div class="mdc-tab-scroller__scroll-content"><slot></slot></div>
+        </div>
+      </div>
+      `;
+  }
+  createAdapter() {
+    return Object.assign(Object.assign({}, At(this.mdcRoot)), { eventTargetMatchesSelector: (e, t) => mr(e, t), addScrollAreaClass: (e) => this.scrollAreaElement.classList.add(e), setScrollAreaStyleProperty: (e, t) => this.scrollAreaElement.style.setProperty(e, t), setScrollContentStyleProperty: (e, t) => this.scrollContentElement.style.setProperty(e, t), getScrollContentStyleValue: (e) => window.getComputedStyle(this.scrollContentElement).getPropertyValue(e), setScrollAreaScrollLeft: (e) => this.scrollAreaElement.scrollLeft = e, getScrollAreaScrollLeft: () => this.scrollAreaElement.scrollLeft, getScrollContentOffsetWidth: () => this.scrollContentElement.offsetWidth, getScrollAreaOffsetWidth: () => this.scrollAreaElement.offsetWidth, computeScrollAreaClientRect: () => this.scrollAreaElement.getBoundingClientRect(), computeScrollContentClientRect: () => this.scrollContentElement.getBoundingClientRect(), computeHorizontalScrollbarHeight: () => (this._scrollbarHeight === -1 && (this.scrollAreaElement.style.overflowX = "scroll", this._scrollbarHeight = this.scrollAreaElement.offsetHeight - this.scrollAreaElement.clientHeight, this.scrollAreaElement.style.overflowX = ""), this._scrollbarHeight) });
+  }
+  /**
+   * Returns the current visual scroll position
+   * @return {number}
+   */
+  getScrollPosition() {
+    return this.mdcFoundation.getScrollPosition();
+  }
+  /**
+   * Returns the width of the scroll content
+   * @return {number}
+   */
+  getScrollContentWidth() {
+    return this.scrollContentElement.offsetWidth;
+  }
+  /**
+   * Increments the scroll value by the given amount
+   * @param {number} scrollXIncrement The pixel value by which to increment the
+   *     scroll value
+   */
+  incrementScrollPosition(e) {
+    this.mdcFoundation.incrementScroll(e);
+  }
+  /**
+   * Scrolls to the given pixel position
+   * @param {number} scrollX The pixel value to scroll to
+   */
+  scrollToPosition(e) {
+    this.mdcFoundation.scrollTo(e);
+  }
+}
+$([
+  z(".mdc-tab-scroller")
+], _n.prototype, "mdcRoot", void 0);
+$([
+  z(".mdc-tab-scroller__scroll-area")
+], _n.prototype, "scrollAreaElement", void 0);
+$([
+  z(".mdc-tab-scroller__scroll-content")
+], _n.prototype, "scrollContentElement", void 0);
+$([
+  xt({ passive: !0 })
+], _n.prototype, "_handleInteraction", null);
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-LIcense-Identifier: Apache-2.0
+ */
+const Uu = le`.mdc-tab-scroller{overflow-y:hidden}.mdc-tab-scroller.mdc-tab-scroller--animating .mdc-tab-scroller__scroll-content{transition:250ms transform cubic-bezier(0.4, 0, 0.2, 1)}.mdc-tab-scroller__test{position:absolute;top:-9999px;width:100px;height:100px;overflow-x:scroll}.mdc-tab-scroller__scroll-area{-webkit-overflow-scrolling:touch;display:flex;overflow-x:hidden}.mdc-tab-scroller__scroll-area::-webkit-scrollbar,.mdc-tab-scroller__test::-webkit-scrollbar{display:none}.mdc-tab-scroller__scroll-area--scroll{overflow-x:scroll}.mdc-tab-scroller__scroll-content{position:relative;display:flex;flex:1 0 auto;transform:none;will-change:transform}.mdc-tab-scroller--align-start .mdc-tab-scroller__scroll-content{justify-content:flex-start}.mdc-tab-scroller--align-end .mdc-tab-scroller__scroll-content{justify-content:flex-end}.mdc-tab-scroller--align-center .mdc-tab-scroller__scroll-content{justify-content:center}.mdc-tab-scroller--animating .mdc-tab-scroller__scroll-area{-webkit-overflow-scrolling:auto}:host{display:flex}.mdc-tab-scroller{flex:1}`;
+let So = class extends _n {
+};
+So.styles = [Uu];
+So = $([
+  te("mwc-tab-scroller")
+], So);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Me = {
+  ARROW_LEFT_KEY: "ArrowLeft",
+  ARROW_RIGHT_KEY: "ArrowRight",
+  END_KEY: "End",
+  ENTER_KEY: "Enter",
+  HOME_KEY: "Home",
+  SPACE_KEY: "Space",
+  TAB_ACTIVATED_EVENT: "MDCTabBar:activated",
+  TAB_SCROLLER_SELECTOR: ".mdc-tab-scroller",
+  TAB_SELECTOR: ".mdc-tab"
+}, $t = {
+  ARROW_LEFT_KEYCODE: 37,
+  ARROW_RIGHT_KEYCODE: 39,
+  END_KEYCODE: 35,
+  ENTER_KEYCODE: 13,
+  EXTRA_SCROLL_AMOUNT: 20,
+  HOME_KEYCODE: 36,
+  SPACE_KEYCODE: 32
+};
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Ii = /* @__PURE__ */ new Set();
+Ii.add(Me.ARROW_LEFT_KEY);
+Ii.add(Me.ARROW_RIGHT_KEY);
+Ii.add(Me.END_KEY);
+Ii.add(Me.HOME_KEY);
+Ii.add(Me.ENTER_KEY);
+Ii.add(Me.SPACE_KEY);
+var Li = /* @__PURE__ */ new Map();
+Li.set($t.ARROW_LEFT_KEYCODE, Me.ARROW_LEFT_KEY);
+Li.set($t.ARROW_RIGHT_KEYCODE, Me.ARROW_RIGHT_KEY);
+Li.set($t.END_KEYCODE, Me.END_KEY);
+Li.set($t.HOME_KEYCODE, Me.HOME_KEY);
+Li.set($t.ENTER_KEYCODE, Me.ENTER_KEY);
+Li.set($t.SPACE_KEYCODE, Me.SPACE_KEY);
+var Qs = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e(t) {
+      var n = i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
+      return n.useAutomaticActivation = !1, n;
+    }
+    return Object.defineProperty(e, "strings", {
+      get: function() {
+        return Me;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "numbers", {
+      get: function() {
+        return $t;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "defaultAdapter", {
+      get: function() {
+        return {
+          scrollTo: function() {
+          },
+          incrementScroll: function() {
+          },
+          getScrollPosition: function() {
+            return 0;
+          },
+          getScrollContentWidth: function() {
+            return 0;
+          },
+          getOffsetWidth: function() {
+            return 0;
+          },
+          isRTL: function() {
+            return !1;
+          },
+          setActiveTab: function() {
+          },
+          activateTabAtIndex: function() {
+          },
+          deactivateTabAtIndex: function() {
+          },
+          focusTabAtIndex: function() {
+          },
+          getTabIndicatorClientRectAtIndex: function() {
+            return { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
+          },
+          getTabDimensionsAtIndex: function() {
+            return { rootLeft: 0, rootRight: 0, contentLeft: 0, contentRight: 0 };
+          },
+          getPreviousActiveTabIndex: function() {
+            return -1;
+          },
+          getFocusedTabIndex: function() {
+            return -1;
+          },
+          getIndexOfTabById: function() {
+            return -1;
+          },
+          getTabListLength: function() {
+            return 0;
+          },
+          notifyTabActivated: function() {
+          }
+        };
+      },
+      enumerable: !1,
+      configurable: !0
+    }), e.prototype.setUseAutomaticActivation = function(t) {
+      this.useAutomaticActivation = t;
+    }, e.prototype.activateTab = function(t) {
+      var n = this.adapter.getPreviousActiveTabIndex();
+      if (!(!this.indexIsInRange(t) || t === n)) {
+        var s;
+        n !== -1 && (this.adapter.deactivateTabAtIndex(n), s = this.adapter.getTabIndicatorClientRectAtIndex(n)), this.adapter.activateTabAtIndex(t, s), this.scrollIntoView(t), this.adapter.notifyTabActivated(t);
+      }
+    }, e.prototype.handleKeyDown = function(t) {
+      var n = this.getKeyFromEvent(t);
+      if (n !== void 0)
+        if (this.isActivationKey(n) || t.preventDefault(), this.useAutomaticActivation) {
+          if (this.isActivationKey(n))
+            return;
+          var s = this.determineTargetFromKey(this.adapter.getPreviousActiveTabIndex(), n);
+          this.adapter.setActiveTab(s), this.scrollIntoView(s);
+        } else {
+          var a = this.adapter.getFocusedTabIndex();
+          if (this.isActivationKey(n))
+            this.adapter.setActiveTab(a);
+          else {
+            var s = this.determineTargetFromKey(a, n);
+            this.adapter.focusTabAtIndex(s), this.scrollIntoView(s);
+          }
+        }
+    }, e.prototype.handleTabInteraction = function(t) {
+      this.adapter.setActiveTab(this.adapter.getIndexOfTabById(t.detail.tabId));
+    }, e.prototype.scrollIntoView = function(t) {
+      if (this.indexIsInRange(t)) {
+        if (t === 0) {
+          this.adapter.scrollTo(0);
+          return;
+        }
+        if (t === this.adapter.getTabListLength() - 1) {
+          this.adapter.scrollTo(this.adapter.getScrollContentWidth());
+          return;
+        }
+        if (this.isRTL()) {
+          this.scrollIntoViewImplRTL(t);
+          return;
+        }
+        this.scrollIntoViewImpl(t);
+      }
+    }, e.prototype.determineTargetFromKey = function(t, n) {
+      var s = this.isRTL(), a = this.adapter.getTabListLength() - 1, l = n === Me.END_KEY, u = n === Me.ARROW_LEFT_KEY && !s || n === Me.ARROW_RIGHT_KEY && s, o = n === Me.ARROW_RIGHT_KEY && !s || n === Me.ARROW_LEFT_KEY && s, r = t;
+      return l ? r = a : u ? r -= 1 : o ? r += 1 : r = 0, r < 0 ? r = a : r > a && (r = 0), r;
+    }, e.prototype.calculateScrollIncrement = function(t, n, s, a) {
+      var l = this.adapter.getTabDimensionsAtIndex(n), u = l.contentLeft - s - a, o = l.contentRight - s, r = o - $t.EXTRA_SCROLL_AMOUNT, c = u + $t.EXTRA_SCROLL_AMOUNT;
+      return n < t ? Math.min(r, 0) : Math.max(c, 0);
+    }, e.prototype.calculateScrollIncrementRTL = function(t, n, s, a, l) {
+      var u = this.adapter.getTabDimensionsAtIndex(n), o = l - u.contentLeft - s, r = l - u.contentRight - s - a, c = r + $t.EXTRA_SCROLL_AMOUNT, d = o - $t.EXTRA_SCROLL_AMOUNT;
+      return n > t ? Math.max(c, 0) : Math.min(d, 0);
+    }, e.prototype.findAdjacentTabIndexClosestToEdge = function(t, n, s, a) {
+      var l = n.rootLeft - s, u = n.rootRight - s - a, o = l + u, r = l < 0 || o < 0, c = u > 0 || o > 0;
+      return r ? t - 1 : c ? t + 1 : -1;
+    }, e.prototype.findAdjacentTabIndexClosestToEdgeRTL = function(t, n, s, a, l) {
+      var u = l - n.rootLeft - a - s, o = l - n.rootRight - s, r = u + o, c = u > 0 || r > 0, d = o < 0 || r < 0;
+      return c ? t + 1 : d ? t - 1 : -1;
+    }, e.prototype.getKeyFromEvent = function(t) {
+      return Ii.has(t.key) ? t.key : Li.get(t.keyCode);
+    }, e.prototype.isActivationKey = function(t) {
+      return t === Me.SPACE_KEY || t === Me.ENTER_KEY;
+    }, e.prototype.indexIsInRange = function(t) {
+      return t >= 0 && t < this.adapter.getTabListLength();
+    }, e.prototype.isRTL = function() {
+      return this.adapter.isRTL();
+    }, e.prototype.scrollIntoViewImpl = function(t) {
+      var n = this.adapter.getScrollPosition(), s = this.adapter.getOffsetWidth(), a = this.adapter.getTabDimensionsAtIndex(t), l = this.findAdjacentTabIndexClosestToEdge(t, a, n, s);
+      if (this.indexIsInRange(l)) {
+        var u = this.calculateScrollIncrement(t, l, n, s);
+        this.adapter.incrementScroll(u);
+      }
+    }, e.prototype.scrollIntoViewImplRTL = function(t) {
+      var n = this.adapter.getScrollPosition(), s = this.adapter.getOffsetWidth(), a = this.adapter.getTabDimensionsAtIndex(t), l = this.adapter.getScrollContentWidth(), u = this.findAdjacentTabIndexClosestToEdgeRTL(t, a, n, s, l);
+      if (this.indexIsInRange(u)) {
+        var o = this.calculateScrollIncrementRTL(t, u, n, s, l);
+        this.adapter.incrementScroll(o);
+      }
+    }, e;
+  }(Fe)
+);
+class Sn extends ot {
+  constructor() {
+    super(...arguments), this.mdcFoundationClass = Qs, this.activeIndex = 0, this._previousActiveIndex = -1;
+  }
+  _handleTabInteraction(e) {
+    this.mdcFoundation.handleTabInteraction(e);
+  }
+  _handleKeydown(e) {
+    this.mdcFoundation.handleKeyDown(e);
+  }
+  // TODO(sorvell): can scroller be optional for perf?
+  render() {
+    return R`
+      <div class="mdc-tab-bar" role="tablist"
+          @MDCTab:interacted="${this._handleTabInteraction}"
+          @keydown="${this._handleKeydown}">
+        <mwc-tab-scroller><slot></slot></mwc-tab-scroller>
+      </div>
+      `;
+  }
+  // TODO(sorvell): probably want to memoize this and use a `slotChange` event
+  _getTabs() {
+    return this.tabsSlot.assignedNodes({ flatten: !0 }).filter((e) => e instanceof ir);
+  }
+  _getTab(e) {
+    return this._getTabs()[e];
+  }
+  createAdapter() {
+    return {
+      scrollTo: (e) => this.scrollerElement.scrollToPosition(e),
+      incrementScroll: (e) => this.scrollerElement.incrementScrollPosition(e),
+      getScrollPosition: () => this.scrollerElement.getScrollPosition(),
+      getScrollContentWidth: () => this.scrollerElement.getScrollContentWidth(),
+      getOffsetWidth: () => this.mdcRoot.offsetWidth,
+      isRTL: () => window.getComputedStyle(this.mdcRoot).getPropertyValue("direction") === "rtl",
+      setActiveTab: (e) => this.mdcFoundation.activateTab(e),
+      activateTabAtIndex: (e, t) => {
+        const n = this._getTab(e);
+        n !== void 0 && n.activate(t), this._previousActiveIndex = e;
+      },
+      deactivateTabAtIndex: (e) => {
+        const t = this._getTab(e);
+        t !== void 0 && t.deactivate();
+      },
+      focusTabAtIndex: (e) => {
+        const t = this._getTab(e);
+        t !== void 0 && t.focus();
+      },
+      // TODO(sorvell): tab may not be able to synchronously answer
+      // `computeIndicatorClientRect` if an update is pending or it has not yet
+      // updated. If this is necessary, LitElement may need a `forceUpdate`
+      // method.
+      getTabIndicatorClientRectAtIndex: (e) => {
+        const t = this._getTab(e);
+        return t !== void 0 ? t.computeIndicatorClientRect() : new DOMRect();
+      },
+      getTabDimensionsAtIndex: (e) => {
+        const t = this._getTab(e);
+        return t !== void 0 ? t.computeDimensions() : { rootLeft: 0, rootRight: 0, contentLeft: 0, contentRight: 0 };
+      },
+      getPreviousActiveTabIndex: () => this._previousActiveIndex,
+      getFocusedTabIndex: () => {
+        const e = this._getTabs(), t = this.getRootNode().activeElement;
+        return e.indexOf(t);
+      },
+      getIndexOfTabById: (e) => {
+        const t = this._getTabs();
+        for (let n = 0; n < t.length; n++)
+          if (t[n].id === e)
+            return n;
+        return -1;
+      },
+      getTabListLength: () => this._getTabs().length,
+      notifyTabActivated: (e) => {
+        this.activeIndex = e, this.dispatchEvent(new CustomEvent(Qs.strings.TAB_ACTIVATED_EVENT, { detail: { index: e }, bubbles: !0, cancelable: !0 }));
+      }
+    };
+  }
+  firstUpdated() {
+  }
+  async getUpdateComplete() {
+    const e = await super.getUpdateComplete();
+    return await this.scrollerElement.updateComplete, this.mdcFoundation === void 0 && this.createFoundation(), e;
+  }
+  scrollIndexIntoView(e) {
+    this.mdcFoundation.scrollIntoView(e);
+  }
+}
+$([
+  z(".mdc-tab-bar")
+], Sn.prototype, "mdcRoot", void 0);
+$([
+  z("mwc-tab-scroller")
+], Sn.prototype, "scrollerElement", void 0);
+$([
+  z("slot")
+], Sn.prototype, "tabsSlot", void 0);
+$([
+  ae(async function() {
+    await this.updateComplete, this.activeIndex !== this._previousActiveIndex && this.mdcFoundation.activateTab(this.activeIndex);
+  }),
+  D({ type: Number })
+], Sn.prototype, "activeIndex", void 0);
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-LIcense-Identifier: Apache-2.0
+ */
+const Wu = le`.mdc-tab-bar{width:100%}.mdc-tab{height:48px}.mdc-tab--stacked{height:72px}:host{display:block}.mdc-tab-bar{flex:1}mwc-tab{--mdc-tab-height: 48px;--mdc-tab-stacked-height: 72px}`;
+let Co = class extends Sn {
+};
+Co.styles = [Wu];
+Co = $([
+  te("mwc-tab-bar")
+], Co);
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-LIcense-Identifier: Apache-2.0
+ */
+const Gu = le`.mdc-top-app-bar{background-color:#6200ee;background-color:var(--mdc-theme-primary, #6200ee);color:white;display:flex;position:fixed;flex-direction:column;justify-content:space-between;box-sizing:border-box;width:100%;z-index:4}.mdc-top-app-bar .mdc-top-app-bar__action-item,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon{color:#fff;color:var(--mdc-theme-on-primary, #fff)}.mdc-top-app-bar .mdc-top-app-bar__action-item::before,.mdc-top-app-bar .mdc-top-app-bar__action-item::after,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon::before,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon::after{background-color:#fff;background-color:var(--mdc-ripple-color, var(--mdc-theme-on-primary, #fff))}.mdc-top-app-bar .mdc-top-app-bar__action-item:hover::before,.mdc-top-app-bar .mdc-top-app-bar__action-item.mdc-ripple-surface--hover::before,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon:hover::before,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon.mdc-ripple-surface--hover::before{opacity:0.08;opacity:var(--mdc-ripple-hover-opacity, 0.08)}.mdc-top-app-bar .mdc-top-app-bar__action-item.mdc-ripple-upgraded--background-focused::before,.mdc-top-app-bar .mdc-top-app-bar__action-item:not(.mdc-ripple-upgraded):focus::before,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon.mdc-ripple-upgraded--background-focused::before,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon:not(.mdc-ripple-upgraded):focus::before{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-focus-opacity, 0.24)}.mdc-top-app-bar .mdc-top-app-bar__action-item:not(.mdc-ripple-upgraded)::after,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon:not(.mdc-ripple-upgraded)::after{transition:opacity 150ms linear}.mdc-top-app-bar .mdc-top-app-bar__action-item:not(.mdc-ripple-upgraded):active::after,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon:not(.mdc-ripple-upgraded):active::after{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-top-app-bar .mdc-top-app-bar__action-item.mdc-ripple-upgraded,.mdc-top-app-bar .mdc-top-app-bar__navigation-icon.mdc-ripple-upgraded{--mdc-ripple-fg-opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-top-app-bar__row{display:flex;position:relative;box-sizing:border-box;width:100%;height:64px}.mdc-top-app-bar__section{display:inline-flex;flex:1 1 auto;align-items:center;min-width:0;padding:8px 12px;z-index:1}.mdc-top-app-bar__section--align-start{justify-content:flex-start;order:-1}.mdc-top-app-bar__section--align-end{justify-content:flex-end;order:1}.mdc-top-app-bar__title{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-headline6-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:1.25rem;font-size:var(--mdc-typography-headline6-font-size, 1.25rem);line-height:2rem;line-height:var(--mdc-typography-headline6-line-height, 2rem);font-weight:500;font-weight:var(--mdc-typography-headline6-font-weight, 500);letter-spacing:0.0125em;letter-spacing:var(--mdc-typography-headline6-letter-spacing, 0.0125em);text-decoration:inherit;text-decoration:var(--mdc-typography-headline6-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-headline6-text-transform, inherit);padding-left:20px;padding-right:0;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;z-index:1}[dir=rtl] .mdc-top-app-bar__title,.mdc-top-app-bar__title[dir=rtl]{padding-left:0;padding-right:20px}.mdc-top-app-bar--short-collapsed{border-top-left-radius:0;border-top-right-radius:0;border-bottom-right-radius:24px;border-bottom-left-radius:0}[dir=rtl] .mdc-top-app-bar--short-collapsed,.mdc-top-app-bar--short-collapsed[dir=rtl]{border-top-left-radius:0;border-top-right-radius:0;border-bottom-right-radius:0;border-bottom-left-radius:24px}.mdc-top-app-bar--short{top:0;right:auto;left:0;width:100%;transition:width 250ms cubic-bezier(0.4, 0, 0.2, 1)}[dir=rtl] .mdc-top-app-bar--short,.mdc-top-app-bar--short[dir=rtl]{right:0;left:auto}.mdc-top-app-bar--short .mdc-top-app-bar__row{height:56px}.mdc-top-app-bar--short .mdc-top-app-bar__section{padding:4px}.mdc-top-app-bar--short .mdc-top-app-bar__title{transition:opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);opacity:1}.mdc-top-app-bar--short-collapsed{box-shadow:0px 2px 4px -1px rgba(0, 0, 0, 0.2),0px 4px 5px 0px rgba(0, 0, 0, 0.14),0px 1px 10px 0px rgba(0,0,0,.12);width:56px;transition:width 300ms cubic-bezier(0.4, 0, 0.2, 1)}.mdc-top-app-bar--short-collapsed .mdc-top-app-bar__title{display:none}.mdc-top-app-bar--short-collapsed .mdc-top-app-bar__action-item{transition:padding 150ms cubic-bezier(0.4, 0, 0.2, 1)}.mdc-top-app-bar--short-collapsed.mdc-top-app-bar--short-has-action-item{width:112px}.mdc-top-app-bar--short-collapsed.mdc-top-app-bar--short-has-action-item .mdc-top-app-bar__section--align-end{padding-left:0;padding-right:12px}[dir=rtl] .mdc-top-app-bar--short-collapsed.mdc-top-app-bar--short-has-action-item .mdc-top-app-bar__section--align-end,.mdc-top-app-bar--short-collapsed.mdc-top-app-bar--short-has-action-item .mdc-top-app-bar__section--align-end[dir=rtl]{padding-left:12px;padding-right:0}.mdc-top-app-bar--dense .mdc-top-app-bar__row{height:48px}.mdc-top-app-bar--dense .mdc-top-app-bar__section{padding:0 4px}.mdc-top-app-bar--dense .mdc-top-app-bar__title{padding-left:12px;padding-right:0}[dir=rtl] .mdc-top-app-bar--dense .mdc-top-app-bar__title,.mdc-top-app-bar--dense .mdc-top-app-bar__title[dir=rtl]{padding-left:0;padding-right:12px}.mdc-top-app-bar--prominent .mdc-top-app-bar__row{height:128px}.mdc-top-app-bar--prominent .mdc-top-app-bar__title{align-self:flex-end;padding-bottom:2px}.mdc-top-app-bar--prominent .mdc-top-app-bar__action-item,.mdc-top-app-bar--prominent .mdc-top-app-bar__navigation-icon{align-self:flex-start}.mdc-top-app-bar--fixed{transition:box-shadow 200ms linear}.mdc-top-app-bar--fixed-scrolled{box-shadow:0px 2px 4px -1px rgba(0, 0, 0, 0.2),0px 4px 5px 0px rgba(0, 0, 0, 0.14),0px 1px 10px 0px rgba(0,0,0,.12);transition:box-shadow 200ms linear}.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__row{height:96px}.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__section{padding:0 12px}.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__title{padding-left:20px;padding-right:0;padding-bottom:9px}[dir=rtl] .mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__title,.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__title[dir=rtl]{padding-left:0;padding-right:20px}.mdc-top-app-bar--fixed-adjust{padding-top:64px}.mdc-top-app-bar--dense-fixed-adjust{padding-top:48px}.mdc-top-app-bar--short-fixed-adjust{padding-top:56px}.mdc-top-app-bar--prominent-fixed-adjust{padding-top:128px}.mdc-top-app-bar--dense-prominent-fixed-adjust{padding-top:96px}@media(max-width: 599px){.mdc-top-app-bar__row{height:56px}.mdc-top-app-bar__section{padding:4px}.mdc-top-app-bar--short{transition:width 200ms cubic-bezier(0.4, 0, 0.2, 1)}.mdc-top-app-bar--short-collapsed{transition:width 250ms cubic-bezier(0.4, 0, 0.2, 1)}.mdc-top-app-bar--short-collapsed .mdc-top-app-bar__section--align-end{padding-left:0;padding-right:12px}[dir=rtl] .mdc-top-app-bar--short-collapsed .mdc-top-app-bar__section--align-end,.mdc-top-app-bar--short-collapsed .mdc-top-app-bar__section--align-end[dir=rtl]{padding-left:12px;padding-right:0}.mdc-top-app-bar--prominent .mdc-top-app-bar__title{padding-bottom:6px}.mdc-top-app-bar--fixed-adjust{padding-top:56px}}:host{display:block}.mdc-top-app-bar{color:#fff;color:var(--mdc-theme-on-primary, #fff);width:100%;width:var(--mdc-top-app-bar-width, 100%)}.mdc-top-app-bar--prominent #navigation ::slotted(*),.mdc-top-app-bar--prominent #actions ::slotted(*){align-self:flex-start}#navigation ::slotted(*),#actions ::slotted(*){--mdc-icon-button-ripple-opacity: 0.24}.mdc-top-app-bar--short-collapsed #actions ::slotted(*){transition:padding 150ms cubic-bezier(0.4, 0, 0.2, 1)}.mdc-top-app-bar__section--align-center{justify-content:center}.mdc-top-app-bar__section--align-center .mdc-top-app-bar__title{padding-left:0;padding-right:0}.center-title .mdc-top-app-bar__section--align-start,.center-title .mdc-top-app-bar__section--align-end{flex-basis:0}.mdc-top-app-bar--dense.mdc-top-app-bar--prominent .mdc-top-app-bar__section--align-center .mdc-top-app-bar__title{padding-left:0;padding-right:0}.mdc-top-app-bar--fixed-scrolled{box-shadow:var(--mdc-top-app-bar-fixed-box-shadow, 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12))}`;
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Eo = {
+  FIXED_CLASS: "mdc-top-app-bar--fixed",
+  FIXED_SCROLLED_CLASS: "mdc-top-app-bar--fixed-scrolled",
+  SHORT_CLASS: "mdc-top-app-bar--short",
+  SHORT_COLLAPSED_CLASS: "mdc-top-app-bar--short-collapsed",
+  SHORT_HAS_ACTION_ITEM_CLASS: "mdc-top-app-bar--short-has-action-item"
+}, Ao = {
+  DEBOUNCE_THROTTLE_RESIZE_TIME_MS: 100,
+  MAX_TOP_APP_BAR_HEIGHT: 128
+}, vl = {
+  ACTION_ITEM_SELECTOR: ".mdc-top-app-bar__action-item",
+  NAVIGATION_EVENT: "MDCTopAppBar:nav",
+  NAVIGATION_ICON_SELECTOR: ".mdc-top-app-bar__navigation-icon",
+  ROOT_SELECTOR: ".mdc-top-app-bar",
+  TITLE_SELECTOR: ".mdc-top-app-bar__title"
+};
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Ku = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e(t) {
+      return i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
+    }
+    return Object.defineProperty(e, "strings", {
+      get: function() {
+        return vl;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "cssClasses", {
+      get: function() {
+        return Eo;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "numbers", {
+      get: function() {
+        return Ao;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "defaultAdapter", {
+      /**
+       * See {@link MDCTopAppBarAdapter} for typing information on parameters and return types.
+       */
+      get: function() {
+        return {
+          addClass: function() {
+          },
+          removeClass: function() {
+          },
+          hasClass: function() {
+            return !1;
+          },
+          setStyle: function() {
+          },
+          getTopAppBarHeight: function() {
+            return 0;
+          },
+          notifyNavigationIconClicked: function() {
+          },
+          getViewportScrollY: function() {
+            return 0;
+          },
+          getTotalActionItems: function() {
+            return 0;
+          }
+        };
+      },
+      enumerable: !1,
+      configurable: !0
+    }), e.prototype.handleTargetScroll = function() {
+    }, e.prototype.handleWindowResize = function() {
+    }, e.prototype.handleNavigationClick = function() {
+      this.adapter.notifyNavigationIconClicked();
+    }, e;
+  }(Fe)
+);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Vn = 0, bl = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e(t) {
+      var n = i.call(this, t) || this;
+      return n.wasDocked = !0, n.isDockedShowing = !0, n.currentAppBarOffsetTop = 0, n.isCurrentlyBeingResized = !1, n.resizeThrottleId = Vn, n.resizeDebounceId = Vn, n.lastScrollPosition = n.adapter.getViewportScrollY(), n.topAppBarHeight = n.adapter.getTopAppBarHeight(), n;
+    }
+    return e.prototype.destroy = function() {
+      i.prototype.destroy.call(this), this.adapter.setStyle("top", "");
+    }, e.prototype.handleTargetScroll = function() {
+      var t = Math.max(this.adapter.getViewportScrollY(), 0), n = t - this.lastScrollPosition;
+      this.lastScrollPosition = t, this.isCurrentlyBeingResized || (this.currentAppBarOffsetTop -= n, this.currentAppBarOffsetTop > 0 ? this.currentAppBarOffsetTop = 0 : Math.abs(this.currentAppBarOffsetTop) > this.topAppBarHeight && (this.currentAppBarOffsetTop = -this.topAppBarHeight), this.moveTopAppBar());
+    }, e.prototype.handleWindowResize = function() {
+      var t = this;
+      this.resizeThrottleId || (this.resizeThrottleId = setTimeout(function() {
+        t.resizeThrottleId = Vn, t.throttledResizeHandler();
+      }, Ao.DEBOUNCE_THROTTLE_RESIZE_TIME_MS)), this.isCurrentlyBeingResized = !0, this.resizeDebounceId && clearTimeout(this.resizeDebounceId), this.resizeDebounceId = setTimeout(function() {
+        t.handleTargetScroll(), t.isCurrentlyBeingResized = !1, t.resizeDebounceId = Vn;
+      }, Ao.DEBOUNCE_THROTTLE_RESIZE_TIME_MS);
+    }, e.prototype.checkForUpdate = function() {
+      var t = -this.topAppBarHeight, n = this.currentAppBarOffsetTop < 0, s = this.currentAppBarOffsetTop > t, a = n && s;
+      if (a)
+        this.wasDocked = !1;
+      else if (this.wasDocked) {
+        if (this.isDockedShowing !== s)
+          return this.isDockedShowing = s, !0;
+      } else return this.wasDocked = !0, !0;
+      return a;
+    }, e.prototype.moveTopAppBar = function() {
+      if (this.checkForUpdate()) {
+        var t = this.currentAppBarOffsetTop;
+        Math.abs(t) >= this.topAppBarHeight && (t = -128), this.adapter.setStyle("top", t + "px");
+      }
+    }, e.prototype.throttledResizeHandler = function() {
+      var t = this.adapter.getTopAppBarHeight();
+      this.topAppBarHeight !== t && (this.wasDocked = !1, this.currentAppBarOffsetTop -= this.topAppBarHeight - t, this.topAppBarHeight = t), this.handleTargetScroll();
+    }, e;
+  }(Ku)
+);
+const ns = Dc ? { passive: !0 } : void 0;
+class Cn extends ot {
+  constructor() {
+    super(...arguments), this.centerTitle = !1, this.handleTargetScroll = () => {
+      this.mdcFoundation.handleTargetScroll();
+    }, this.handleNavigationClick = () => {
+      this.mdcFoundation.handleNavigationClick();
+    };
+  }
+  get scrollTarget() {
+    return this._scrollTarget || window;
+  }
+  set scrollTarget(e) {
+    this.unregisterScrollListener();
+    const t = this.scrollTarget;
+    this._scrollTarget = e, this.updateRootPosition(), this.requestUpdate("scrollTarget", t), this.registerScrollListener();
+  }
+  updateRootPosition() {
+    if (this.mdcRoot) {
+      const e = this.scrollTarget === window;
+      this.mdcRoot.style.position = e ? "" : "absolute";
+    }
+  }
+  render() {
+    let e = R`<span class="mdc-top-app-bar__title"><slot name="title"></slot></span>`;
+    return this.centerTitle && (e = R`<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-center">${e}</section>`), R`
+      <header class="mdc-top-app-bar ${pe(this.barClasses())}">
+      <div class="mdc-top-app-bar__row">
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start" id="navigation">
+          <slot name="navigationIcon"
+            @click=${this.handleNavigationClick}></slot>
+          ${this.centerTitle ? null : e}
+        </section>
+        ${this.centerTitle ? e : null}
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" id="actions" role="toolbar">
+          <slot name="actionItems"></slot>
+        </section>
+      </div>
+    </header>
+    <div class="${pe(this.contentClasses())}">
+      <slot></slot>
+    </div>
+    `;
+  }
+  createAdapter() {
+    return Object.assign(Object.assign({}, At(this.mdcRoot)), { setStyle: (e, t) => this.mdcRoot.style.setProperty(e, t), getTopAppBarHeight: () => this.mdcRoot.clientHeight, notifyNavigationIconClicked: () => {
+      this.dispatchEvent(new Event(vl.NAVIGATION_EVENT, { bubbles: !0, cancelable: !0 }));
+    }, getViewportScrollY: () => this.scrollTarget instanceof Window ? this.scrollTarget.pageYOffset : this.scrollTarget.scrollTop, getTotalActionItems: () => this._actionItemsSlot.assignedNodes({ flatten: !0 }).length });
+  }
+  registerListeners() {
+    this.registerScrollListener();
+  }
+  unregisterListeners() {
+    this.unregisterScrollListener();
+  }
+  registerScrollListener() {
+    this.scrollTarget.addEventListener("scroll", this.handleTargetScroll, ns);
+  }
+  unregisterScrollListener() {
+    this.scrollTarget.removeEventListener("scroll", this.handleTargetScroll);
+  }
+  firstUpdated() {
+    super.firstUpdated(), this.updateRootPosition(), this.registerListeners();
+  }
+  disconnectedCallback() {
+    super.disconnectedCallback(), this.unregisterListeners();
+  }
+}
+$([
+  z(".mdc-top-app-bar")
+], Cn.prototype, "mdcRoot", void 0);
+$([
+  z('slot[name="actionItems"]')
+], Cn.prototype, "_actionItemsSlot", void 0);
+$([
+  D({ type: Boolean })
+], Cn.prototype, "centerTitle", void 0);
+$([
+  D({ type: Object })
+], Cn.prototype, "scrollTarget", null);
+class rs extends Cn {
+  constructor() {
+    super(...arguments), this.mdcFoundationClass = bl, this.prominent = !1, this.dense = !1, this.handleResize = () => {
+      this.mdcFoundation.handleWindowResize();
+    };
+  }
+  barClasses() {
+    return {
+      "mdc-top-app-bar--dense": this.dense,
+      "mdc-top-app-bar--prominent": this.prominent,
+      "center-title": this.centerTitle
+    };
+  }
+  contentClasses() {
+    return {
+      "mdc-top-app-bar--fixed-adjust": !this.dense && !this.prominent,
+      "mdc-top-app-bar--dense-fixed-adjust": this.dense && !this.prominent,
+      "mdc-top-app-bar--prominent-fixed-adjust": !this.dense && this.prominent,
+      "mdc-top-app-bar--dense-prominent-fixed-adjust": this.dense && this.prominent
+    };
+  }
+  registerListeners() {
+    super.registerListeners(), window.addEventListener("resize", this.handleResize, ns);
+  }
+  unregisterListeners() {
+    super.unregisterListeners(), window.removeEventListener("resize", this.handleResize);
+  }
+}
+$([
+  D({ type: Boolean, reflect: !0 })
+], rs.prototype, "prominent", void 0);
+$([
+  D({ type: Boolean, reflect: !0 })
+], rs.prototype, "dense", void 0);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var ju = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e() {
+      var t = i !== null && i.apply(this, arguments) || this;
+      return t.wasScrolled = !1, t;
+    }
+    return e.prototype.handleTargetScroll = function() {
+      var t = this.adapter.getViewportScrollY();
+      t <= 0 ? this.wasScrolled && (this.adapter.removeClass(Eo.FIXED_SCROLLED_CLASS), this.wasScrolled = !1) : this.wasScrolled || (this.adapter.addClass(Eo.FIXED_SCROLLED_CLASS), this.wasScrolled = !0);
+    }, e;
+  }(bl)
+);
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+class qu extends rs {
+  constructor() {
+    super(...arguments), this.mdcFoundationClass = ju;
+  }
+  barClasses() {
+    return Object.assign(Object.assign({}, super.barClasses()), { "mdc-top-app-bar--fixed": !0 });
+  }
+  registerListeners() {
+    this.scrollTarget.addEventListener("scroll", this.handleTargetScroll, ns);
+  }
+  unregisterListeners() {
+    this.scrollTarget.removeEventListener("scroll", this.handleTargetScroll);
+  }
+}
+let ko = class extends qu {
+};
+ko.styles = [Gu];
+ko = $([
+  te("mwc-top-app-bar-fixed")
+], ko);
+/**
+ * @license
+ * Copyright 2016 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var ht = {
+  ANIMATE: "mdc-drawer--animate",
+  CLOSING: "mdc-drawer--closing",
+  DISMISSIBLE: "mdc-drawer--dismissible",
+  MODAL: "mdc-drawer--modal",
+  OPEN: "mdc-drawer--open",
+  OPENING: "mdc-drawer--opening",
+  ROOT: "mdc-drawer"
+}, $o = {
+  APP_CONTENT_SELECTOR: ".mdc-drawer-app-content",
+  CLOSE_EVENT: "MDCDrawer:closed",
+  OPEN_EVENT: "MDCDrawer:opened",
+  SCRIM_SELECTOR: ".mdc-drawer-scrim",
+  LIST_SELECTOR: ".mdc-list,.mdc-deprecated-list",
+  LIST_ITEM_ACTIVATED_SELECTOR: ".mdc-list-item--activated,.mdc-deprecated-list-item--activated"
+};
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var yl = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e(t) {
+      var n = i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
+      return n.animationFrame = 0, n.animationTimer = 0, n;
+    }
+    return Object.defineProperty(e, "strings", {
+      get: function() {
+        return $o;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "cssClasses", {
+      get: function() {
+        return ht;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "defaultAdapter", {
+      get: function() {
+        return {
+          addClass: function() {
+          },
+          removeClass: function() {
+          },
+          hasClass: function() {
+            return !1;
+          },
+          elementHasClass: function() {
+            return !1;
+          },
+          notifyClose: function() {
+          },
+          notifyOpen: function() {
+          },
+          saveFocus: function() {
+          },
+          restoreFocus: function() {
+          },
+          focusActiveNavigationItem: function() {
+          },
+          trapFocus: function() {
+          },
+          releaseFocus: function() {
+          }
+        };
+      },
+      enumerable: !1,
+      configurable: !0
+    }), e.prototype.destroy = function() {
+      this.animationFrame && cancelAnimationFrame(this.animationFrame), this.animationTimer && clearTimeout(this.animationTimer);
+    }, e.prototype.open = function() {
+      var t = this;
+      this.isOpen() || this.isOpening() || this.isClosing() || (this.adapter.addClass(ht.OPEN), this.adapter.addClass(ht.ANIMATE), this.runNextAnimationFrame(function() {
+        t.adapter.addClass(ht.OPENING);
+      }), this.adapter.saveFocus());
+    }, e.prototype.close = function() {
+      !this.isOpen() || this.isOpening() || this.isClosing() || this.adapter.addClass(ht.CLOSING);
+    }, e.prototype.isOpen = function() {
+      return this.adapter.hasClass(ht.OPEN);
+    }, e.prototype.isOpening = function() {
+      return this.adapter.hasClass(ht.OPENING) || this.adapter.hasClass(ht.ANIMATE);
+    }, e.prototype.isClosing = function() {
+      return this.adapter.hasClass(ht.CLOSING);
+    }, e.prototype.handleKeydown = function(t) {
+      var n = t.keyCode, s = t.key, a = s === "Escape" || n === 27;
+      a && this.close();
+    }, e.prototype.handleTransitionEnd = function(t) {
+      var n = ht.OPENING, s = ht.CLOSING, a = ht.OPEN, l = ht.ANIMATE, u = ht.ROOT, o = this.isElement(t.target) && this.adapter.elementHasClass(t.target, u);
+      o && (this.isClosing() ? (this.adapter.removeClass(a), this.closed(), this.adapter.restoreFocus(), this.adapter.notifyClose()) : (this.adapter.focusActiveNavigationItem(), this.opened(), this.adapter.notifyOpen()), this.adapter.removeClass(l), this.adapter.removeClass(n), this.adapter.removeClass(s));
+    }, e.prototype.opened = function() {
+    }, e.prototype.closed = function() {
+    }, e.prototype.runNextAnimationFrame = function(t) {
+      var n = this;
+      cancelAnimationFrame(this.animationFrame), this.animationFrame = requestAnimationFrame(function() {
+        n.animationFrame = 0, clearTimeout(n.animationTimer), n.animationTimer = setTimeout(t, 0);
+      });
+    }, e.prototype.isElement = function(t) {
+      return !!t.classList;
+    }, e;
+  }(Fe)
+);
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Js = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e() {
+      return i !== null && i.apply(this, arguments) || this;
+    }
+    return e.prototype.handleScrimClick = function() {
+      this.close();
+    }, e.prototype.opened = function() {
+      this.adapter.trapFocus();
+    }, e.prototype.closed = function() {
+      this.adapter.releaseFocus();
+    }, e;
+  }(yl)
+);
+/**
+ * @license
+ * Copyright 2018 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const ea = document.$blockingElements;
+class Xi extends ot {
+  constructor() {
+    super(...arguments), this._previousFocus = null, this.open = !1, this.hasHeader = !1, this.type = "";
+  }
+  get mdcFoundationClass() {
+    return this.type === "modal" ? Js : yl;
+  }
+  createAdapter() {
+    return Object.assign(Object.assign({}, At(this.mdcRoot)), { elementHasClass: (e, t) => e.classList.contains(t), saveFocus: () => {
+      this._previousFocus = this.getRootNode().activeElement;
+    }, restoreFocus: () => {
+      this._previousFocus && this._previousFocus.focus && this._previousFocus.focus();
+    }, notifyClose: () => {
+      this.open = !1, this.dispatchEvent(new Event($o.CLOSE_EVENT, { bubbles: !0, cancelable: !0 }));
+    }, notifyOpen: () => {
+      this.open = !0, this.dispatchEvent(new Event($o.OPEN_EVENT, { bubbles: !0, cancelable: !0 }));
+    }, focusActiveNavigationItem: () => {
+    }, trapFocus: () => {
+      ea.push(this), this.appContent.inert = !0;
+    }, releaseFocus: () => {
+      ea.remove(this), this.appContent.inert = !1;
+    } });
+  }
+  _handleScrimClick() {
+    this.mdcFoundation instanceof Js && this.mdcFoundation.handleScrimClick();
+  }
+  render() {
+    const e = this.type === "dismissible" || this.type === "modal", t = this.type === "modal", n = this.hasHeader ? R`
+      <div class="mdc-drawer__header">
+        <h3 class="mdc-drawer__title"><slot name="title"></slot></h3>
+        <h6 class="mdc-drawer__subtitle"><slot name="subtitle"></slot></h6>
+        <slot name="header"></slot>
+      </div>
+      ` : "";
+    return R`
+      <aside class="mdc-drawer ${pe({
+      "mdc-drawer--dismissible": e,
+      "mdc-drawer--modal": t
+    })}">
+        ${n}
+        <div class="mdc-drawer__content"><slot></slot></div>
+      </aside>
+      ${t ? R`<div class="mdc-drawer-scrim"
+                          @click="${this._handleScrimClick}"></div>` : ""}
+      <div class="mdc-drawer-app-content">
+        <slot name="appContent"></slot>
+      </div>
+      `;
+  }
+  // note, we avoid calling `super.firstUpdated()` to control when
+  // `createFoundation()` is called.
+  firstUpdated() {
+    this.mdcRoot.addEventListener("keydown", (e) => this.mdcFoundation.handleKeydown(e)), this.mdcRoot.addEventListener("transitionend", (e) => this.mdcFoundation.handleTransitionEnd(e));
+  }
+  updated(e) {
+    e.has("type") && this.createFoundation();
+  }
+}
+$([
+  z(".mdc-drawer")
+], Xi.prototype, "mdcRoot", void 0);
+$([
+  z(".mdc-drawer-app-content")
+], Xi.prototype, "appContent", void 0);
+$([
+  ae(function(i) {
+    this.type !== "" && (i ? this.mdcFoundation.open() : this.mdcFoundation.close());
+  }),
+  D({ type: Boolean, reflect: !0 })
+], Xi.prototype, "open", void 0);
+$([
+  D({ type: Boolean })
+], Xi.prototype, "hasHeader", void 0);
+$([
+  D({ reflect: !0 })
+], Xi.prototype, "type", void 0);
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-LIcense-Identifier: Apache-2.0
+ */
+const Xu = le`.mdc-drawer{border-color:rgba(0, 0, 0, 0.12);background-color:#fff;background-color:var(--mdc-theme-surface, #fff);border-top-left-radius:0;border-top-right-radius:0;border-top-right-radius:var(--mdc-shape-large, 0);border-bottom-right-radius:0;border-bottom-right-radius:var(--mdc-shape-large, 0);border-bottom-left-radius:0;z-index:6;width:256px;display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;height:100%;border-right-width:1px;border-right-style:solid;overflow:hidden;transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1)}.mdc-drawer .mdc-drawer__title{color:rgba(0, 0, 0, 0.87)}.mdc-drawer .mdc-deprecated-list-group__subheader{color:rgba(0, 0, 0, 0.6)}.mdc-drawer .mdc-drawer__subtitle{color:rgba(0, 0, 0, 0.6)}.mdc-drawer .mdc-deprecated-list-item__graphic{color:rgba(0, 0, 0, 0.6)}.mdc-drawer .mdc-deprecated-list-item{color:rgba(0, 0, 0, 0.87)}.mdc-drawer .mdc-deprecated-list-item--activated .mdc-deprecated-list-item__graphic{color:#6200ee}.mdc-drawer .mdc-deprecated-list-item--activated{color:rgba(98, 0, 238, 0.87)}[dir=rtl] .mdc-drawer,.mdc-drawer[dir=rtl]{border-top-left-radius:0;border-top-left-radius:var(--mdc-shape-large, 0);border-top-right-radius:0;border-bottom-right-radius:0;border-bottom-left-radius:0;border-bottom-left-radius:var(--mdc-shape-large, 0)}.mdc-drawer .mdc-deprecated-list-item{border-radius:4px;border-radius:var(--mdc-shape-small, 4px)}.mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content{margin-left:256px;margin-right:0}[dir=rtl] .mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content,.mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content[dir=rtl]{margin-left:0;margin-right:256px}[dir=rtl] .mdc-drawer,.mdc-drawer[dir=rtl]{border-right-width:0;border-left-width:1px;border-right-style:none;border-left-style:solid}.mdc-drawer .mdc-deprecated-list-item{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-subtitle2-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:0.875rem;font-size:var(--mdc-typography-subtitle2-font-size, 0.875rem);line-height:1.375rem;line-height:var(--mdc-typography-subtitle2-line-height, 1.375rem);font-weight:500;font-weight:var(--mdc-typography-subtitle2-font-weight, 500);letter-spacing:0.0071428571em;letter-spacing:var(--mdc-typography-subtitle2-letter-spacing, 0.0071428571em);text-decoration:inherit;text-decoration:var(--mdc-typography-subtitle2-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-subtitle2-text-transform, inherit);height:calc(48px - 2 * 4px);margin:8px 8px;padding:0 8px}.mdc-drawer .mdc-deprecated-list-item:nth-child(1){margin-top:2px}.mdc-drawer .mdc-deprecated-list-item:nth-last-child(1){margin-bottom:0}.mdc-drawer .mdc-deprecated-list-group__subheader{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-body2-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:0.875rem;font-size:var(--mdc-typography-body2-font-size, 0.875rem);line-height:1.25rem;line-height:var(--mdc-typography-body2-line-height, 1.25rem);font-weight:400;font-weight:var(--mdc-typography-body2-font-weight, 400);letter-spacing:0.0178571429em;letter-spacing:var(--mdc-typography-body2-letter-spacing, 0.0178571429em);text-decoration:inherit;text-decoration:var(--mdc-typography-body2-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-body2-text-transform, inherit);display:block;margin-top:0;line-height:normal;margin:0;padding:0 16px}.mdc-drawer .mdc-deprecated-list-group__subheader::before{display:inline-block;width:0;height:24px;content:"";vertical-align:0}.mdc-drawer .mdc-deprecated-list-divider{margin:3px 0 4px}.mdc-drawer .mdc-deprecated-list-item__text,.mdc-drawer .mdc-deprecated-list-item__graphic{pointer-events:none}.mdc-drawer--animate{transform:translateX(-100%)}[dir=rtl] .mdc-drawer--animate,.mdc-drawer--animate[dir=rtl]{transform:translateX(100%)}.mdc-drawer--opening{transform:translateX(0);transition-duration:250ms}[dir=rtl] .mdc-drawer--opening,.mdc-drawer--opening[dir=rtl]{transform:translateX(0)}.mdc-drawer--closing{transform:translateX(-100%);transition-duration:200ms}[dir=rtl] .mdc-drawer--closing,.mdc-drawer--closing[dir=rtl]{transform:translateX(100%)}.mdc-drawer__header{flex-shrink:0;box-sizing:border-box;min-height:64px;padding:0 16px 4px}.mdc-drawer__title{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-headline6-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:1.25rem;font-size:var(--mdc-typography-headline6-font-size, 1.25rem);line-height:2rem;line-height:var(--mdc-typography-headline6-line-height, 2rem);font-weight:500;font-weight:var(--mdc-typography-headline6-font-weight, 500);letter-spacing:0.0125em;letter-spacing:var(--mdc-typography-headline6-letter-spacing, 0.0125em);text-decoration:inherit;text-decoration:var(--mdc-typography-headline6-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-headline6-text-transform, inherit);display:block;margin-top:0;line-height:normal;margin-bottom:-20px}.mdc-drawer__title::before{display:inline-block;width:0;height:36px;content:"";vertical-align:0}.mdc-drawer__title::after{display:inline-block;width:0;height:20px;content:"";vertical-align:-20px}.mdc-drawer__subtitle{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-body2-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:0.875rem;font-size:var(--mdc-typography-body2-font-size, 0.875rem);line-height:1.25rem;line-height:var(--mdc-typography-body2-line-height, 1.25rem);font-weight:400;font-weight:var(--mdc-typography-body2-font-weight, 400);letter-spacing:0.0178571429em;letter-spacing:var(--mdc-typography-body2-letter-spacing, 0.0178571429em);text-decoration:inherit;text-decoration:var(--mdc-typography-body2-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-body2-text-transform, inherit);display:block;margin-top:0;line-height:normal;margin-bottom:0}.mdc-drawer__subtitle::before{display:inline-block;width:0;height:20px;content:"";vertical-align:0}.mdc-drawer__content{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}.mdc-drawer--dismissible{left:0;right:initial;display:none;position:absolute}[dir=rtl] .mdc-drawer--dismissible,.mdc-drawer--dismissible[dir=rtl]{left:initial;right:0}.mdc-drawer--dismissible.mdc-drawer--open{display:flex}.mdc-drawer-app-content{margin-left:0;margin-right:0;position:relative}[dir=rtl] .mdc-drawer-app-content,.mdc-drawer-app-content[dir=rtl]{margin-left:0;margin-right:0}.mdc-drawer--modal{box-shadow:0px 8px 10px -5px rgba(0, 0, 0, 0.2),0px 16px 24px 2px rgba(0, 0, 0, 0.14),0px 6px 30px 5px rgba(0,0,0,.12);left:0;right:initial;display:none;position:fixed}.mdc-drawer--modal+.mdc-drawer-scrim{background-color:rgba(0, 0, 0, 0.32)}[dir=rtl] .mdc-drawer--modal,.mdc-drawer--modal[dir=rtl]{left:initial;right:0}.mdc-drawer--modal.mdc-drawer--open{display:flex}.mdc-drawer-scrim{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:5;transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1)}.mdc-drawer--open+.mdc-drawer-scrim{display:block}.mdc-drawer--animate+.mdc-drawer-scrim{opacity:0}.mdc-drawer--opening+.mdc-drawer-scrim{transition-duration:250ms;opacity:1}.mdc-drawer--closing+.mdc-drawer-scrim{transition-duration:200ms;opacity:0}.mdc-drawer-app-content{overflow:auto;flex:1}:host{display:flex;height:100%}.mdc-drawer{width:256px;width:var(--mdc-drawer-width, 256px)}.mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content{margin-left:256px;margin-left:var(--mdc-drawer-width, 256px);margin-right:0}[dir=rtl] .mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content,.mdc-drawer.mdc-drawer--open:not(.mdc-drawer--closing)+.mdc-drawer-app-content[dir=rtl]{margin-left:0;margin-right:256px;margin-right:var(--mdc-drawer-width, 256px)}`;
+let To = class extends Xi {
+};
+To.styles = [Xu];
+To = $([
+  te("mwc-drawer")
+], To);
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const ta = Symbol("selection controller");
+class Yu {
+  constructor() {
+    this.selected = null, this.ordered = null, this.set = /* @__PURE__ */ new Set();
+  }
+}
+class os {
+  constructor(e) {
+    this.sets = {}, this.focusedSet = null, this.mouseIsDown = !1, this.updating = !1, e.addEventListener("keydown", (t) => {
+      this.keyDownHandler(t);
+    }), e.addEventListener("mousedown", () => {
+      this.mousedownHandler();
+    }), e.addEventListener("mouseup", () => {
+      this.mouseupHandler();
+    });
+  }
+  /**
+   * Get a controller for the given element. If no controller exists, one will
+   * be created. Defaults to getting the controller scoped to the element's root
+   * node shadow root unless `element.global` is true. Then, it will get a
+   * `window.document`-scoped controller.
+   *
+   * @param element Element from which to get / create a SelectionController. If
+   *     `element.global` is true, it gets a selection controller scoped to
+   *     `window.document`.
+   */
+  static getController(e) {
+    const n = !("global" in e) || "global" in e && e.global ? document : e.getRootNode();
+    let s = n[ta];
+    return s === void 0 && (s = new os(n), n[ta] = s), s;
+  }
+  keyDownHandler(e) {
+    const t = e.target;
+    "checked" in t && this.has(t) && (e.key == "ArrowRight" || e.key == "ArrowDown" ? this.selectNext(t) : (e.key == "ArrowLeft" || e.key == "ArrowUp") && this.selectPrevious(t));
+  }
+  mousedownHandler() {
+    this.mouseIsDown = !0;
+  }
+  mouseupHandler() {
+    this.mouseIsDown = !1;
+  }
+  /**
+   * Whether or not the controller controls  the given element.
+   *
+   * @param element element to check
+   */
+  has(e) {
+    return this.getSet(e.name).set.has(e);
+  }
+  /**
+   * Selects and returns the controlled element previous to the given element in
+   * document position order. See
+   * [Node.compareDocumentPosition](https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition).
+   *
+   * @param element element relative from which preceding element is fetched
+   */
+  selectPrevious(e) {
+    const t = this.getOrdered(e), n = t.indexOf(e), s = t[n - 1] || t[t.length - 1];
+    return this.select(s), s;
+  }
+  /**
+   * Selects and returns the controlled element next to the given element in
+   * document position order. See
+   * [Node.compareDocumentPosition](https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition).
+   *
+   * @param element element relative from which following element is fetched
+   */
+  selectNext(e) {
+    const t = this.getOrdered(e), n = t.indexOf(e), s = t[n + 1] || t[0];
+    return this.select(s), s;
+  }
+  select(e) {
+    e.click();
+  }
+  /**
+   * Focuses the selected element in the given element's selection set. User's
+   * mouse selection will override this focus.
+   *
+   * @param element Element from which selection set is derived and subsequently
+   *     focused.
+   * @deprecated update() method now handles focus management by setting
+   *     appropriate tabindex to form element.
+   */
+  focus(e) {
+    if (this.mouseIsDown)
+      return;
+    const t = this.getSet(e.name), n = this.focusedSet;
+    this.focusedSet = t, n != t && t.selected && t.selected != e && t.selected.focus();
+  }
+  /**
+   * @return Returns true if atleast one radio is selected in the radio group.
+   */
+  isAnySelected(e) {
+    const t = this.getSet(e.name);
+    for (const n of t.set)
+      if (n.checked)
+        return !0;
+    return !1;
+  }
+  /**
+   * Returns the elements in the given element's selection set in document
+   * position order.
+   * [Node.compareDocumentPosition](https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition).
+   *
+   * @param element Element from which selection set is derived and subsequently
+   *     ordered.
+   */
+  getOrdered(e) {
+    const t = this.getSet(e.name);
+    return t.ordered || (t.ordered = Array.from(t.set), t.ordered.sort((n, s) => n.compareDocumentPosition(s) == Node.DOCUMENT_POSITION_PRECEDING ? 1 : 0)), t.ordered;
+  }
+  /**
+   * Gets the selection set of the given name and creates one if it does not yet
+   * exist.
+   *
+   * @param name Name of set
+   */
+  getSet(e) {
+    return this.sets[e] || (this.sets[e] = new Yu()), this.sets[e];
+  }
+  /**
+   * Register the element in the selection controller.
+   *
+   * @param element Element to register. Registers in set of `element.name`.
+   */
+  register(e) {
+    const t = e.name || e.getAttribute("name") || "", n = this.getSet(t);
+    n.set.add(e), n.ordered = null;
+  }
+  /**
+   * Unregister the element from selection controller.
+   *
+   * @param element Element to register. Registers in set of `element.name`.
+   */
+  unregister(e) {
+    const t = this.getSet(e.name);
+    t.set.delete(e), t.ordered = null, t.selected == e && (t.selected = null);
+  }
+  /**
+   * Unselects other elements in element's set if element is checked. Noop
+   * otherwise.
+   *
+   * @param element Element from which to calculate selection controller update.
+   */
+  update(e) {
+    if (this.updating)
+      return;
+    this.updating = !0;
+    const t = this.getSet(e.name);
+    if (e.checked) {
+      for (const n of t.set)
+        n != e && (n.checked = !1);
+      t.selected = e;
+    }
+    if (this.isAnySelected(e))
+      for (const n of t.set) {
+        if (n.formElementTabIndex === void 0)
+          break;
+        n.formElementTabIndex = n.checked ? 0 : -1;
+      }
+    this.updating = !1;
+  }
+}
+/**
+ * @license
+ * Copyright 2016 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Zu = {
+  NATIVE_CONTROL_SELECTOR: ".mdc-radio__native-control"
+}, Qu = {
+  DISABLED: "mdc-radio--disabled",
+  ROOT: "mdc-radio"
+};
+/**
+ * @license
+ * Copyright 2016 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+var Ju = (
+  /** @class */
+  function(i) {
+    xe(e, i);
+    function e(t) {
+      return i.call(this, oe(oe({}, e.defaultAdapter), t)) || this;
+    }
+    return Object.defineProperty(e, "cssClasses", {
+      get: function() {
+        return Qu;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "strings", {
+      get: function() {
+        return Zu;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(e, "defaultAdapter", {
+      get: function() {
+        return {
+          addClass: function() {
+          },
+          removeClass: function() {
+          },
+          setNativeControlDisabled: function() {
+          }
+        };
+      },
+      enumerable: !1,
+      configurable: !0
+    }), e.prototype.setDisabled = function(t) {
+      var n = e.cssClasses.DISABLED;
+      this.adapter.setNativeControlDisabled(t), t ? this.adapter.addClass(n) : this.adapter.removeClass(n);
+    }, e;
+  }(Fe)
+);
+class Xe extends Qt {
+  constructor() {
+    super(...arguments), this._checked = !1, this.useStateLayerCustomProperties = !1, this.global = !1, this.disabled = !1, this.value = "", this.name = "", this.reducedTouchTarget = !1, this.mdcFoundationClass = Ju, this.formElementTabIndex = 0, this.focused = !1, this.shouldRenderRipple = !1, this.rippleElement = null, this.rippleHandlers = new pi(() => (this.shouldRenderRipple = !0, this.ripple.then((e) => {
+      this.rippleElement = e;
+    }), this.ripple));
+  }
+  get checked() {
+    return this._checked;
+  }
+  /**
+   * We define our own getter/setter for `checked` because we need to track
+   * changes to it synchronously.
+   *
+   * The order in which the `checked` property is set across radio buttons
+   * within the same group is very important. However, we can't rely on
+   * UpdatingElement's `updated` callback to observe these changes (which is
+   * also what the `@observer` decorator uses), because it batches changes to
+   * all properties.
+   *
+   * Consider:
+   *
+   *   radio1.disabled = true;
+   *   radio2.checked = true;
+   *   radio1.checked = true;
+   *
+   * In this case we'd first see all changes for radio1, and then for radio2,
+   * and we couldn't tell that radio1 was the most recently checked.
+   */
+  set checked(e) {
+    var t, n;
+    const s = this._checked;
+    e !== s && (this._checked = e, this.formElement && (this.formElement.checked = e), (t = this._selectionController) === null || t === void 0 || t.update(this), e === !1 && ((n = this.formElement) === null || n === void 0 || n.blur()), this.requestUpdate("checked", s), this.dispatchEvent(new Event("checked", { bubbles: !0, composed: !0 })));
+  }
+  _handleUpdatedValue(e) {
+    this.formElement.value = e;
+  }
+  /** @soyTemplate */
+  renderRipple() {
+    return this.shouldRenderRipple ? R`<mwc-ripple unbounded accent
+        .internalUseStateLayerCustomProperties="${this.useStateLayerCustomProperties}"
+        .disabled="${this.disabled}"></mwc-ripple>` : "";
+  }
+  get isRippleActive() {
+    var e;
+    return ((e = this.rippleElement) === null || e === void 0 ? void 0 : e.isActive) || !1;
+  }
+  connectedCallback() {
+    super.connectedCallback(), this._selectionController = os.getController(this), this._selectionController.register(this), this._selectionController.update(this);
+  }
+  disconnectedCallback() {
+    this._selectionController.unregister(this), this._selectionController = void 0;
+  }
+  focus() {
+    this.formElement.focus();
+  }
+  createAdapter() {
+    return Object.assign(Object.assign({}, At(this.mdcRoot)), { setNativeControlDisabled: (e) => {
+      this.formElement.disabled = e;
+    } });
+  }
+  handleFocus() {
+    this.focused = !0, this.handleRippleFocus();
+  }
+  handleClick() {
+    this.formElement.focus();
+  }
+  handleBlur() {
+    this.focused = !1, this.formElement.blur(), this.rippleHandlers.endFocus();
+  }
+  /**
+   * @soyTemplate
+   * @soyAttributes radioAttributes: input
+   * @soyClasses radioClasses: .mdc-radio
+   */
+  render() {
+    const e = {
+      "mdc-radio--touch": !this.reducedTouchTarget,
+      "mdc-ripple-upgraded--background-focused": this.focused,
+      "mdc-radio--disabled": this.disabled
+    };
+    return R`
+      <div class="mdc-radio ${pe(e)}">
+        <input
+          tabindex="${this.formElementTabIndex}"
+          class="mdc-radio__native-control"
+          type="radio"
+          name="${this.name}"
+          aria-label="${ee(this.ariaLabel)}"
+          aria-labelledby="${ee(this.ariaLabelledBy)}"
+          .checked="${this.checked}"
+          .value="${this.value}"
+          ?disabled="${this.disabled}"
+          @change="${this.changeHandler}"
+          @focus="${this.handleFocus}"
+          @click="${this.handleClick}"
+          @blur="${this.handleBlur}"
+          @mousedown="${this.handleRippleMouseDown}"
+          @mouseenter="${this.handleRippleMouseEnter}"
+          @mouseleave="${this.handleRippleMouseLeave}"
+          @touchstart="${this.handleRippleTouchStart}"
+          @touchend="${this.handleRippleDeactivate}"
+          @touchcancel="${this.handleRippleDeactivate}">
+        <div class="mdc-radio__background">
+          <div class="mdc-radio__outer-circle"></div>
+          <div class="mdc-radio__inner-circle"></div>
+        </div>
+        ${this.renderRipple()}
+      </div>`;
+  }
+  handleRippleMouseDown(e) {
+    const t = () => {
+      window.removeEventListener("mouseup", t), this.handleRippleDeactivate();
+    };
+    window.addEventListener("mouseup", t), this.rippleHandlers.startPress(e);
+  }
+  handleRippleTouchStart(e) {
+    this.rippleHandlers.startPress(e);
+  }
+  handleRippleDeactivate() {
+    this.rippleHandlers.endPress();
+  }
+  handleRippleMouseEnter() {
+    this.rippleHandlers.startHover();
+  }
+  handleRippleMouseLeave() {
+    this.rippleHandlers.endHover();
+  }
+  handleRippleFocus() {
+    this.rippleHandlers.startFocus();
+  }
+  changeHandler() {
+    this.checked = this.formElement.checked;
+  }
+}
+$([
+  z(".mdc-radio")
+], Xe.prototype, "mdcRoot", void 0);
+$([
+  z("input")
+], Xe.prototype, "formElement", void 0);
+$([
+  j()
+], Xe.prototype, "useStateLayerCustomProperties", void 0);
+$([
+  D({ type: Boolean })
+], Xe.prototype, "global", void 0);
+$([
+  D({ type: Boolean, reflect: !0 })
+], Xe.prototype, "checked", null);
+$([
+  D({ type: Boolean }),
+  ae(function(i) {
+    this.mdcFoundation.setDisabled(i);
+  })
+], Xe.prototype, "disabled", void 0);
+$([
+  D({ type: String }),
+  ae(function(i) {
+    this._handleUpdatedValue(i);
+  })
+], Xe.prototype, "value", void 0);
+$([
+  D({ type: String })
+], Xe.prototype, "name", void 0);
+$([
+  D({ type: Boolean })
+], Xe.prototype, "reducedTouchTarget", void 0);
+$([
+  D({ type: Number })
+], Xe.prototype, "formElementTabIndex", void 0);
+$([
+  j()
+], Xe.prototype, "focused", void 0);
+$([
+  j()
+], Xe.prototype, "shouldRenderRipple", void 0);
+$([
+  mi("mwc-ripple")
+], Xe.prototype, "ripple", void 0);
+$([
+  Pt,
+  D({ attribute: "aria-label" })
+], Xe.prototype, "ariaLabel", void 0);
+$([
+  Pt,
+  D({ attribute: "aria-labelledby" })
+], Xe.prototype, "ariaLabelledBy", void 0);
+$([
+  xt({ passive: !0 })
+], Xe.prototype, "handleRippleTouchStart", null);
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-LIcense-Identifier: Apache-2.0
+ */
+const em = le`.mdc-touch-target-wrapper{display:inline}.mdc-radio{padding:calc((40px - 20px) / 2)}.mdc-radio .mdc-radio__native-control:enabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle{border-color:rgba(0, 0, 0, 0.54)}.mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background .mdc-radio__outer-circle{border-color:#018786;border-color:var(--mdc-theme-secondary, #018786)}.mdc-radio .mdc-radio__native-control:enabled+.mdc-radio__background .mdc-radio__inner-circle{border-color:#018786;border-color:var(--mdc-theme-secondary, #018786)}.mdc-radio [aria-disabled=true] .mdc-radio__native-control:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle{border-color:rgba(0, 0, 0, 0.38)}.mdc-radio [aria-disabled=true] .mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:checked+.mdc-radio__background .mdc-radio__outer-circle{border-color:rgba(0, 0, 0, 0.38)}.mdc-radio [aria-disabled=true] .mdc-radio__native-control+.mdc-radio__background .mdc-radio__inner-circle,.mdc-radio .mdc-radio__native-control:disabled+.mdc-radio__background .mdc-radio__inner-circle{border-color:rgba(0, 0, 0, 0.38)}.mdc-radio .mdc-radio__background::before{background-color:#018786;background-color:var(--mdc-theme-secondary, #018786)}.mdc-radio .mdc-radio__background::before{top:calc(-1 * (40px - 20px) / 2);left:calc(-1 * (40px - 20px) / 2);width:40px;height:40px}.mdc-radio .mdc-radio__native-control{top:calc((40px - 40px) / 2);right:calc((40px - 40px) / 2);left:calc((40px - 40px) / 2);width:40px;height:40px}@media screen and (forced-colors: active),(-ms-high-contrast: active){.mdc-radio [aria-disabled=true] .mdc-radio__native-control:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle{border-color:GrayText}.mdc-radio [aria-disabled=true] .mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:checked+.mdc-radio__background .mdc-radio__outer-circle{border-color:GrayText}.mdc-radio [aria-disabled=true] .mdc-radio__native-control+.mdc-radio__background .mdc-radio__inner-circle,.mdc-radio .mdc-radio__native-control:disabled+.mdc-radio__background .mdc-radio__inner-circle{border-color:GrayText}}.mdc-radio{display:inline-block;position:relative;flex:0 0 auto;box-sizing:content-box;width:20px;height:20px;cursor:pointer;will-change:opacity,transform,border-color,color}.mdc-radio__background{display:inline-block;position:relative;box-sizing:border-box;width:20px;height:20px}.mdc-radio__background::before{position:absolute;transform:scale(0, 0);border-radius:50%;opacity:0;pointer-events:none;content:"";transition:opacity 120ms 0ms cubic-bezier(0.4, 0, 0.6, 1),transform 120ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-radio__outer-circle{position:absolute;top:0;left:0;box-sizing:border-box;width:100%;height:100%;border-width:2px;border-style:solid;border-radius:50%;transition:border-color 120ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-radio__inner-circle{position:absolute;top:0;left:0;box-sizing:border-box;width:100%;height:100%;transform:scale(0, 0);border-width:10px;border-style:solid;border-radius:50%;transition:transform 120ms 0ms cubic-bezier(0.4, 0, 0.6, 1),border-color 120ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}.mdc-radio__native-control{position:absolute;margin:0;padding:0;opacity:0;cursor:inherit;z-index:1}.mdc-radio--touch{margin-top:4px;margin-bottom:4px;margin-right:4px;margin-left:4px}.mdc-radio--touch .mdc-radio__native-control{top:calc((40px - 48px) / 2);right:calc((40px - 48px) / 2);left:calc((40px - 48px) / 2);width:48px;height:48px}.mdc-radio__native-control:checked+.mdc-radio__background,.mdc-radio__native-control:disabled+.mdc-radio__background{transition:opacity 120ms 0ms cubic-bezier(0, 0, 0.2, 1),transform 120ms 0ms cubic-bezier(0, 0, 0.2, 1)}.mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio__native-control:disabled+.mdc-radio__background .mdc-radio__outer-circle{transition:border-color 120ms 0ms cubic-bezier(0, 0, 0.2, 1)}.mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__inner-circle,.mdc-radio__native-control:disabled+.mdc-radio__background .mdc-radio__inner-circle{transition:transform 120ms 0ms cubic-bezier(0, 0, 0.2, 1),border-color 120ms 0ms cubic-bezier(0, 0, 0.2, 1)}.mdc-radio--disabled{cursor:default;pointer-events:none}.mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__inner-circle{transform:scale(0.5);transition:transform 120ms 0ms cubic-bezier(0, 0, 0.2, 1),border-color 120ms 0ms cubic-bezier(0, 0, 0.2, 1)}.mdc-radio__native-control:disabled+.mdc-radio__background,[aria-disabled=true] .mdc-radio__native-control+.mdc-radio__background{cursor:default}.mdc-radio__native-control:focus+.mdc-radio__background::before{transform:scale(1);opacity:.12;transition:opacity 120ms 0ms cubic-bezier(0, 0, 0.2, 1),transform 120ms 0ms cubic-bezier(0, 0, 0.2, 1)}:host{display:inline-block;outline:none}.mdc-radio{vertical-align:bottom}.mdc-radio .mdc-radio__native-control:enabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle{border-color:var(--mdc-radio-unchecked-color, rgba(0, 0, 0, 0.54))}.mdc-radio [aria-disabled=true] .mdc-radio__native-control:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle{border-color:var(--mdc-radio-disabled-color, rgba(0, 0, 0, 0.38))}.mdc-radio [aria-disabled=true] .mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__outer-circle,.mdc-radio .mdc-radio__native-control:disabled:checked+.mdc-radio__background .mdc-radio__outer-circle{border-color:var(--mdc-radio-disabled-color, rgba(0, 0, 0, 0.38))}.mdc-radio [aria-disabled=true] .mdc-radio__native-control+.mdc-radio__background .mdc-radio__inner-circle,.mdc-radio .mdc-radio__native-control:disabled+.mdc-radio__background .mdc-radio__inner-circle{border-color:var(--mdc-radio-disabled-color, rgba(0, 0, 0, 0.38))}`;
+let Io = class extends Xe {
+};
+Io.styles = [em];
+Io = $([
+  te("mwc-radio")
+], Io);
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+class En extends We {
+  constructor() {
+    super(...arguments), this.left = !1, this.graphic = "control", this._changeFromClick = !1;
+  }
+  render() {
+    const e = {
+      "mdc-deprecated-list-item__graphic": this.left,
+      "mdc-deprecated-list-item__meta": !this.left
+    }, t = this.renderText(), n = this.graphic && this.graphic !== "control" && !this.left ? this.renderGraphic() : R``, s = this.hasMeta && this.left ? this.renderMeta() : R``, a = this.renderRipple();
+    return R`
+      ${a}
+      ${n}
+      ${this.left ? "" : t}
+      <mwc-radio
+          global
+          class=${pe(e)}
+          tabindex=${this.tabindex}
+          name=${ee(this.group === null ? void 0 : this.group)}
+          .checked=${this.selected}
+          ?disabled=${this.disabled}
+          @checked=${this.onChange}>
+      </mwc-radio>
+      ${this.left ? t : ""}
+      ${s}`;
+  }
+  onClick() {
+    this._changeFromClick = !0, super.onClick();
+  }
+  async onChange(e) {
+    const t = e.target;
+    this.selected === t.checked || (this._skipPropRequest = !0, this.selected = t.checked, await this.updateComplete, this._skipPropRequest = !1, this._changeFromClick || this.fireRequestSelected(this.selected, "interaction")), this._changeFromClick = !1;
+  }
+}
+$([
+  z("slot")
+], En.prototype, "slotElement", void 0);
+$([
+  z("mwc-radio")
+], En.prototype, "radioElement", void 0);
+$([
+  D({ type: Boolean })
+], En.prototype, "left", void 0);
+$([
+  D({ type: String, reflect: !0 })
+], En.prototype, "graphic", void 0);
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+let Lo = class extends En {
+};
+Lo.styles = [Zo, ml];
+Lo = $([
+  te("mwc-radio-list-item")
+], Lo);
+function tm(i) {
+  return document.body.style.cssText = im[i], R`
+    ${nm[i]}
+    <style>
+      * {
+        --primary: var(--cyan);
+        --secondary: var(--violet);
+        --mdc-theme-primary: var(--primary);
+        --mdc-theme-secondary: var(--secondary);
+        --mdc-theme-background: var(--base3);
+        --mdc-theme-surface: var(--base3);
+        --mdc-theme-on-primary: var(--base2);
+        --mdc-theme-on-secondary: var(--base2);
+        --mdc-theme-on-background: var(--base00);
+        --mdc-theme-on-surface: var(--base00);
+        --mdc-theme-text-primary-on-background: var(--base01);
+        --mdc-theme-text-secondary-on-background: var(--base00);
+        --mdc-theme-text-icon-on-background: var(--base00);
+        --mdc-theme-error: var(--red);
+
+        --mdc-button-disabled-ink-color: var(--base1);
+
+        --mdc-drawer-heading-ink-color: var(--base00);
+
+        --mdc-text-field-fill-color: var(--base2);
+        --mdc-text-field-disabled-fill-color: var(--base3);
+        --mdc-text-field-ink-color: var(--base00);
+        --mdc-text-field-label-ink-color: var(--base00);
+
+        --mdc-select-fill-color: var(--base2);
+        --mdc-select-disabled-fill-color: var(--base3);
+        --mdc-select-ink-color: var(--base00);
+
+        --mdc-dialog-heading-ink-color: var(--base00);
+
+        --mdc-icon-font: 'Material Icons Outlined';
+
+        --oscd-primary: var(--oscd-theme-primary, var(--cyan));
+        --oscd-secondary: var(--oscd-theme-secondary, var(--violet));
+        --oscd-error: var(--oscd-theme-error, var(--red));
+
+        --oscd-base03: var(--oscd-theme-base03, var(--base03));
+        --oscd-base02: var(--oscd-theme-base02, var(--base02));
+        --oscd-base01: var(--oscd-theme-base01, var(--base01));
+        --oscd-base00: var(--oscd-theme-base00, var(--base00));
+        --oscd-base0: var(--oscd-theme-base0, var(--base0));
+        --oscd-base1: var(--oscd-theme-base1, var(--base1));
+        --oscd-base2: var(--oscd-theme-base2, var(--base2));
+        --oscd-base3: var(--oscd-theme-base3, var(--base3));
+
+        --oscd-text-font: var(--oscd-theme-text-font, 'Roboto');
+        --oscd-icon-font: var(--oscd-theme-icon-font, 'Material Icons');
+      }
+
+      .mdc-drawer span.mdc-drawer__title {
+        color: var(--mdc-theme-text-primary-on-background) !important;
+      }
+
+      abbr {
+        text-decoration: none;
+        border-bottom: none;
+      }
+
+      mwc-textfield[iconTrailing='search'] {
+        --mdc-shape-small: 28px;
+      }
+    </style>
+  `;
+}
+const im = {
+  dark: "background: #073642",
+  light: "background: #eee8d5"
+}, nm = {
+  light: R`
+    <style>
+      * {
+        --base03: #002b36;
+        --base02: #073642;
+        --base01: #586e75;
+        --base00: #657b83;
+        --base0: #839496;
+        --base1: #93a1a1;
+        --base2: #eee8d5;
+        --base3: #fdf6e3;
+        --yellow: #b58900;
+        --orange: #cb4b16;
+        --red: #dc322f;
+        --magenta: #d33682;
+        --violet: #6c71c4;
+        --blue: #268bd2;
+        --cyan: #2aa198;
+        --green: #859900;
+      }
+    </style>
+  `,
+  dark: R`
+    <style>
+      * {
+        --base03: #fdf6e3;
+        --base02: #eee8d5;
+        --base01: #93a1a1;
+        --base00: #839496;
+        --base0: #657b83;
+        --base1: #586e75;
+        --base2: #073642;
+        --base3: #002b36;
+        --yellow: #b58900;
+        --orange: #cb4b16;
+        --red: #dc322f;
+        --magenta: #d33682;
+        --violet: #6c71c4;
+        --blue: #268bd2;
+        --cyan: #2aa198;
+        --green: #859900;
+      }
+    </style>
+  `
+}, Ro = { en: fl, de: pl };
+async function rm(i) {
   return Object.keys(Ro).includes(i) ? Ro[i] : {};
 }
-const xl = fetch("public/xml/IEC_61850-7-4_2007B3.nsd").then((i) => i.text()).then((i) => new DOMParser().parseFromString(i, "application/xml")), wl = fetch("public/xml/IEC_61850-7-3_2007B3.nsd").then((i) => i.text()).then((i) => new DOMParser().parseFromString(i, "application/xml")), _l = fetch("public/xml/IEC_61850-7-2_2007B3.nsd").then((i) => i.text()).then((i) => new DOMParser().parseFromString(i, "application/xml")), Sl = fetch("public/xml/IEC_61850-8-1_2003A2.nsd").then((i) => i.text()).then((i) => new DOMParser().parseFromString(i, "application/xml")), [tm, tn, Dr, Mr] = await Promise.all([_l, wl, xl, Sl]);
+const xl = fetch("public/xml/IEC_61850-7-4_2007B3.nsd").then((i) => i.text()).then((i) => new DOMParser().parseFromString(i, "application/xml")), wl = fetch("public/xml/IEC_61850-7-3_2007B3.nsd").then((i) => i.text()).then((i) => new DOMParser().parseFromString(i, "application/xml")), _l = fetch("public/xml/IEC_61850-7-2_2007B3.nsd").then((i) => i.text()).then((i) => new DOMParser().parseFromString(i, "application/xml")), Sl = fetch("public/xml/IEC_61850-8-1_2003A2.nsd").then((i) => i.text()).then((i) => new DOMParser().parseFromString(i, "application/xml")), [om, tn, Dr, Mr] = await Promise.all([_l, wl, xl, Sl]);
 let Or, nn, Un, Wn;
 function jn() {
   [Or, nn, Un, Wn] = [
@@ -16716,7 +17084,7 @@ function jn() {
     const c = o.getAttribute("name"), d = r?.filter((p) => p.tagName === "DA")[0], h = Mr.querySelector(`ServiceConstructedAttributes > ServiceConstructedAttribute[name="${d.getAttribute("name")}"]`);
     if (h) {
       if (h.querySelector(`SubDataAttribute[name="${r[0].getAttribute("name")}"]`)?.getAttribute("type") == "Originator") {
-        const p = tm.querySelector(`ConstructedAttributes > ConstructedAttribute[name="Originator"] > SubDataAttribute[name="${c}"]`);
+        const p = om.querySelector(`ConstructedAttributes > ConstructedAttribute[name="Originator"] > SubDataAttribute[name="${c}"]`);
         return {
           label: oi(Or, p?.getAttribute("descID")) ?? c
         };
@@ -16756,12 +17124,12 @@ function jn() {
 function oi(i, e) {
   return i?.querySelector(`NSDoc > Doc[id="${e ?? ""}"]`)?.textContent;
 }
-var im = Object.defineProperty, nm = Object.getOwnPropertyDescriptor, Rt = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? nm(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+var sm = Object.defineProperty, am = Object.getOwnPropertyDescriptor, Rt = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? am(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && im(e, t, s), s;
+  return n && s && sm(e, t, s), s;
 };
-const rm = {
+const lm = {
   language: "en",
   theme: "light",
   mode: "safe",
@@ -16773,7 +17141,7 @@ const rm = {
 };
 let yt = class extends ge {
   constructor() {
-    super(), this.nsdoc = jn(), this.nsdUploadButton = !0, Fa({ loader: em, empty: (i) => i }), eo(this.settings.language);
+    super(), this.nsdoc = jn(), this.nsdUploadButton = !0, Fa({ loader: rm, empty: (i) => i }), eo(this.settings.language);
   }
   get settings() {
     return {
@@ -16827,7 +17195,7 @@ let yt = class extends ge {
     };
   }
   getSetting(i) {
-    return localStorage.getItem(i) ?? rm[i];
+    return localStorage.getItem(i) ?? lm[i];
   }
   /** Update the `value` of `setting`, storing to `localStorage`. */
   setSetting(i, e) {
@@ -16871,7 +17239,7 @@ let yt = class extends ge {
     if (e.length != 0) {
       for (const t of e) {
         const n = await t.text();
-        this.dispatchEvent(Cu(n, t.name));
+        this.dispatchEvent($u(n, t.name));
       }
       this.nsdocFileUI.value = "", this.requestUpdate();
     }
@@ -17038,7 +17406,7 @@ let yt = class extends ge {
         </mwc-button>
       </mwc-dialog>
       <slot></slot>
-      ${Zu(this.settings.theme)}`;
+      ${tm(this.settings.theme)}`;
   }
 };
 yt.styles = le`
@@ -17166,10 +17534,10 @@ Rt([
 yt = Rt([
   te("oscd-settings")
 ], yt);
-var om = Object.defineProperty, sm = Object.getOwnPropertyDescriptor, Cl = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? sm(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+var cm = Object.defineProperty, dm = Object.getOwnPropertyDescriptor, Cl = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? dm(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && om(e, t, s), s;
+  return n && s && cm(e, t, s), s;
 };
 let Do = class extends ge {
   constructor() {
@@ -27911,7 +28279,7 @@ function Ri(i) {
     });
   };
 }
-function am(i) {
+function hm(i) {
   return function(e, t) {
     const n = ss(t);
     e.addObservedAttribute && e.addObservedAttribute(n), Object.defineProperty(e, t, {
@@ -27928,8 +28296,8 @@ function am(i) {
     });
   };
 }
-var lm = "ace-builds", cm = "1.4.12", dm = "ace-custom-element", hm = "1.6.5";
-function ta(i, e = 0) {
+var um = "ace-builds", mm = "1.4.12", pm = "ace-custom-element", fm = "1.6.5";
+function ia(i, e = 0) {
   let t;
   return function(...n) {
     window.clearTimeout(t);
@@ -27948,17 +28316,17 @@ var nr;
 (function(i) {
   i.start = "start", i.end = "end", i.select = "select";
 })(nr || (nr = {}));
-function um(i) {
+function gm(i) {
   return i === nr.start ? -1 : i === nr.end ? 1 : 0;
 }
 class Ue extends HTMLElement {
   constructor() {
-    super(...arguments), this.initializeEditor = ta(() => {
+    super(...arguments), this.initializeEditor = ia(() => {
       const e = this.basePath || import.meta.url.replace(/[^\/]+$/, "ace/");
       ace.config.set("basePath", e);
       const t = this._editor || ace.edit(this);
-      this.appendStyles(), t.session.setMode(this.mode || "ace/mode/javascript"), t.setTheme(this.theme || "ace/theme/eclipse"), (t.getValue() || "") !== this.value && t.setValue(this.value || "", um(this.valueUpdateMode)), t.getSession().setTabSize(this.tabSize || 2), t.getSession().setUseSoftTabs(!!this.softTabs), t.renderer.setShowGutter(!this.hideGutter), t.renderer.setShowPrintMargin(!this.hidePrintMargin), t.setHighlightActiveLine(!this.hideActiveLineHighlight), t.setHighlightGutterLine(!this.hideGutterLineHighlight), t.setReadOnly(!!this.readonly), this.readonly && (t.setHighlightActiveLine(!this.readonly), t.setHighlightGutterLine(!this.readonly)), t.getSession().setUseWrapMode(!!this.wrap), t.off("change", this.handleChange), t.on("change", this.handleChange), t.off("blur", this.handleBlur), t.on("blur", this.handleBlur), this.resize(), this._editor = t;
-    }), this.handleChange = ta(() => {
+      this.appendStyles(), t.session.setMode(this.mode || "ace/mode/javascript"), t.setTheme(this.theme || "ace/theme/eclipse"), (t.getValue() || "") !== this.value && t.setValue(this.value || "", gm(this.valueUpdateMode)), t.getSession().setTabSize(this.tabSize || 2), t.getSession().setUseSoftTabs(!!this.softTabs), t.renderer.setShowGutter(!this.hideGutter), t.renderer.setShowPrintMargin(!this.hidePrintMargin), t.setHighlightActiveLine(!this.hideActiveLineHighlight), t.setHighlightGutterLine(!this.hideGutterLineHighlight), t.setReadOnly(!!this.readonly), this.readonly && (t.setHighlightActiveLine(!this.readonly), t.setHighlightGutterLine(!this.readonly)), t.getSession().setUseWrapMode(!!this.wrap), t.off("change", this.handleChange), t.on("change", this.handleChange), t.off("blur", this.handleBlur), t.on("blur", this.handleBlur), this.resize(), this._editor = t;
+    }), this.handleChange = ia(() => {
       var e;
       const t = ((e = this._editor) === null || e === void 0 ? void 0 : e.getValue()) || "";
       t !== this.value && (t ? this.setAttribute("value", t) : this.removeAttribute("value"), this.dispatch("change", t));
@@ -27971,8 +28339,8 @@ class Ue extends HTMLElement {
   }
   get version() {
     return {
-      [dm]: hm,
-      [lm]: cm
+      [pm]: fm,
+      [um]: mm
     };
   }
   static get observedAttributes() {
@@ -28048,7 +28416,7 @@ St([
   An()
 ], Ue.prototype, "theme", void 0);
 St([
-  am()
+  hm()
 ], Ue.prototype, "tabSize", void 0);
 St([
   Ri()
@@ -28078,25 +28446,25 @@ St([
   An()
 ], Ue.prototype, "basePath", void 0);
 customElements.define("ace-editor", Ue);
-function mm(i) {
+function vm(i) {
   return i.old === void 0 && i.new?.parent !== void 0 && i.new?.element !== void 0;
 }
-function pm(i) {
+function bm(i) {
   return i.old?.parent !== void 0 && i.old?.element !== void 0 && i.new === void 0;
 }
-function fm(i) {
+function ym(i) {
   return i.old?.parent !== void 0 && i.old?.element !== void 0 && i.new?.parent !== void 0 && i.new?.element == null;
 }
-function gm(i) {
+function xm(i) {
   return i.old?.parent === void 0 && i.old?.element !== void 0 && i.new?.parent === void 0 && i.new?.element !== void 0;
 }
-function vm(i) {
+function wm(i) {
   return i.old === void 0 && i.new === void 0 && i.element !== void 0 && i.newAttributes !== void 0 && i.oldAttributes !== void 0;
 }
-function bm(i) {
+function _m(i) {
   return !(i.actions instanceof Array);
 }
-function ym(i, e = "user", t) {
+function Sm(i, e = "user", t) {
   return new CustomEvent("editor-action", {
     bubbles: !0,
     composed: !0,
@@ -28104,12 +28472,12 @@ function ym(i, e = "user", t) {
     detail: { action: i, initiator: e, ...t?.detail }
   });
 }
-var xm = Object.defineProperty, wm = Object.getOwnPropertyDescriptor, Di = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? wm(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+var Cm = Object.defineProperty, Em = Object.getOwnPropertyDescriptor, Di = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? Em(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && xm(e, t, s), s;
+  return n && s && Cm(e, t, s), s;
 };
-function _m(i) {
+function Am(i) {
   return i instanceof lr ? i : i.kind === "Checkbox" ? R`<wizard-checkbox
       ?nullable=${i.nullable}
       ?defaultChecked=${i.default}
@@ -28156,7 +28524,7 @@ function El(i) {
 function Nr(i) {
   return El(i).every(Qa);
 }
-function Sm(i) {
+function km(i) {
   return (e) => {
     const t = e[0].value;
     if (!t || !i.parentElement) return [];
@@ -28216,7 +28584,7 @@ let Jt = class extends ge {
       return this.pageIndex = this.firstInvalidPage, t.map(Ms), !1;
     const s = i(t, this, n);
     return s.length > 0 && (e ? this.wizard[this.pageIndex].primary = void 0 : this.wizard[this.pageIndex].secondary = void 0, this.dispatchEvent(Kn())), s.forEach(
-      (a) => Za(a) ? this.dispatchEvent(Kn(a)) : this.dispatchEvent(ym(a))
+      (a) => Za(a) ? this.dispatchEvent(Kn(a)) : this.dispatchEvent(Sm(a))
     ), !0;
   }
   /** Triggers menu action callback */
@@ -28286,7 +28654,7 @@ let Jt = class extends ge {
               value="${Hd(
       new XMLSerializer().serializeToString(i.element)
     )}"
-            ></ace-editor>` : i.content?.map(_m)}
+            ></ace-editor>` : i.content?.map(Am)}
       </div>
       ${e > 0 ? R`<mwc-button
             slot="secondaryAction"
@@ -28307,7 +28675,7 @@ let Jt = class extends ge {
           ></mwc-button>`}
       ${this.code && i.element ? R`<mwc-button
             slot="primaryAction"
-            @click=${() => this.act(Sm(i.element))}
+            @click=${() => this.act(km(i.element))}
             icon="code"
             label="${G("save")}"
             trailingIcon
@@ -28381,10 +28749,10 @@ Di([
 Jt = Di([
   te("wizard-dialog")
 ], Jt);
-var Cm = Object.defineProperty, Em = Object.getOwnPropertyDescriptor, gr = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? Em(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+var $m = Object.defineProperty, Tm = Object.getOwnPropertyDescriptor, gr = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? Tm(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && Cm(e, t, s), s;
+  return n && s && $m(e, t, s), s;
 };
 let mn = class extends ge {
   constructor() {
@@ -28431,7 +28799,7 @@ function Al(i) {
 function kl(i) {
   return i.parent !== void 0;
 }
-function Am(i) {
+function Im(i) {
   return i !== null && typeof i != "string";
 }
 function $l(i) {
@@ -28440,7 +28808,7 @@ function $l(i) {
 function Tl(i) {
   return i.parent === void 0 && i.node !== void 0;
 }
-function km(i, e = "user") {
+function Lm(i, e = "user") {
   return new CustomEvent("oscd-edit", {
     composed: !0,
     bubbles: !0,
@@ -28472,7 +28840,7 @@ function rr(i, e) {
     detail: { ...e, edit: i }
   });
 }
-function $m({
+function Rm({
   element: i,
   textContent: e
 }) {
@@ -28483,18 +28851,18 @@ function $m({
   }));
   return i.textContent = e, [{ element: i, textContent: "" }, ...n];
 }
-function Tm(i, e) {
+function Dm(i, e) {
   let t = 1;
   const n = Array.from(i.attributes), s = (u) => u.prefix === `ens${t}` && u.namespaceURI !== e, a = /* @__PURE__ */ new Set([null, e]), l = (u) => !a.has(i.lookupNamespaceURI(u));
   for (; l(`ens${t}`) || n.find(s); )
     t += 1;
   return `ens${t}`;
 }
-const Im = /^(?!xml|Xml|xMl|xmL|XMl|xML|XmL|XML)[A-Za-z_][A-Za-z0-9-_.]*(:[A-Za-z_][A-Za-z0-9-_.]*)?$/;
+const Mm = /^(?!xml|Xml|xMl|xmL|XMl|xML|XmL|XML)[A-Za-z_][A-Za-z0-9-_.]*(:[A-Za-z_][A-Za-z0-9-_.]*)?$/;
 function Fr(i) {
-  return Im.test(i);
+  return Mm.test(i);
 }
-function Lm({
+function Om({
   element: i,
   attributes: e,
   attributesNS: t
@@ -28533,7 +28901,7 @@ function Lm({
           let d = r;
           if (!d.includes(":")) {
             let h = i.lookupPrefix(l);
-            h || (h = Tm(i, l)), d = `${h}:${r}`;
+            h || (h = Dm(i, l)), d = `${h}:${r}`;
           }
           i.setAttributeNS(l, d, c);
         }
@@ -28547,7 +28915,7 @@ function Lm({
     attributesNS: s
   };
 }
-function Rm({ node: i }) {
+function Nm({ node: i }) {
   const { parentNode: e, nextSibling: t } = i;
   return i.parentNode?.removeChild(i), e ? {
     node: i,
@@ -28555,7 +28923,7 @@ function Rm({ node: i }) {
     reference: t
   } : [];
 }
-function Dm({
+function Fm({
   parent: i,
   node: e,
   reference: t
@@ -28572,32 +28940,32 @@ function Dm({
   }
 }
 function Ml(i) {
-  return Dl(i) ? Dm(i) : Ll(i) ? Rm(i) : Rl(i) ? Lm(i) : Il(i) ? $m(i) : Pi(i) ? i.map((e) => Ml(e)).reverse() : [];
+  return Dl(i) ? Fm(i) : Ll(i) ? Nm(i) : Rl(i) ? Om(i) : Il(i) ? Rm(i) : Pi(i) ? i.map((e) => Ml(e)).reverse() : [];
 }
-function ia(i) {
+function na(i) {
   return new CustomEvent("validate", {
     bubbles: !0,
     composed: !0,
     ...i
   });
 }
-function Mm(i) {
-  return bm(i) ? na(i) : i.actions.map(na);
+function Pm(i) {
+  return _m(i) ? ra(i) : i.actions.map(ra);
 }
-function na(i) {
-  if (mm(i))
-    return Om(i);
-  if (pm(i))
-    return Nm(i);
+function ra(i) {
   if (vm(i))
-    return Fm(i);
-  if (fm(i))
-    return Pm(i);
-  if (gm(i))
     return Bm(i);
+  if (bm(i))
+    return Hm(i);
+  if (wm(i))
+    return zm(i);
+  if (ym(i))
+    return Vm(i);
+  if (xm(i))
+    return Um(i);
   throw new Error("Unknown action type");
 }
-function Om(i) {
+function Bm(i) {
   let e = null;
   return i.new.reference === void 0 && i.new.element instanceof Element && i.new.parent instanceof Element ? e = al(
     i.new.parent,
@@ -28608,12 +28976,12 @@ function Om(i) {
     reference: e
   };
 }
-function Nm(i) {
+function Hm(i) {
   return {
     node: i.old.element
   };
 }
-function Fm(i) {
+function zm(i) {
   const e = {};
   Array.from(i.element.attributes).forEach((n) => {
     e[n.name] = null;
@@ -28627,7 +28995,7 @@ function Fm(i) {
     attributes: t
   };
 }
-function Pm(i) {
+function Vm(i) {
   return i.new.reference === void 0 && (i.new.reference = al(
     i.new.parent,
     i.old.element.tagName
@@ -28637,7 +29005,7 @@ function Pm(i) {
     reference: i.new.reference ?? null
   };
 }
-function Bm(i) {
+function Um(i) {
   const e = i.old.element.children, t = Array.from(e).map((o) => o.cloneNode(!0)), n = i.new.element.cloneNode(!0);
   n.append(...Array.from(t));
   const s = i.old.element.parentElement;
@@ -28661,23 +29029,23 @@ function Oo(i) {
   if (kl(i))
     return i;
   if ($l(i))
-    return Hm(i);
+    return Wm(i);
   throw new Error("Unknown edit type");
 }
-function Hm(i) {
+function Wm(i) {
   const e = {}, t = {};
   return Object.entries(i.attributes).forEach(([n, s]) => {
-    if (Am(s)) {
+    if (Im(s)) {
       const a = s.namespaceURI;
       if (!a) return;
       t[a] || (t[a] = {}), t[a][n] = s.value;
     } else e[n] = s;
   }), { element: i.element, attributes: e, attributesNS: t };
 }
-var zm = Object.defineProperty, Vm = Object.getOwnPropertyDescriptor, kn = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? Vm(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+var Gm = Object.defineProperty, Km = Object.getOwnPropertyDescriptor, kn = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? Km(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && zm(e, t, s), s;
+  return n && s && Gm(e, t, s), s;
 };
 let Ui = class extends ge {
   constructor() {
@@ -28700,11 +29068,11 @@ let Ui = class extends ge {
     return { title: "" };
   }
   onAction(i) {
-    const e = Mm(i.detail.action), t = Oo(e);
+    const e = Pm(i.detail.action), t = Oo(e);
     this.host.dispatchEvent(rr(t));
   }
   handleEditEvent(i) {
-    Um(i) && (i = Wm(i));
+    jm(i) && (i = qm(i));
     const e = i.detail.edit, t = Oo(e);
     this.host.dispatchEvent(rr(t));
   }
@@ -28713,7 +29081,7 @@ let Ui = class extends ge {
    * @deprecated [Move to handleOpenDoc instead]
    */
   async onOpenDoc(i) {
-    this.doc = i.detail.doc, this.docName = i.detail.docName, this.docId = i.detail.docId ?? "", await this.updateComplete, this.dispatchEvent(ia()), this.dispatchEvent(
+    this.doc = i.detail.doc, this.docName = i.detail.docName, this.docId = i.detail.docId ?? "", await this.updateComplete, this.dispatchEvent(na()), this.dispatchEvent(
       Zt({
         kind: "info",
         title: G("openSCD.loaded", { name: this.docName })
@@ -28742,7 +29110,7 @@ let Ui = class extends ge {
         squash: i.detail.squash
       }));
     }
-    await this.updateComplete, this.dispatchEvent(ia());
+    await this.updateComplete, this.dispatchEvent(na());
   }
 };
 kn([
@@ -28762,13 +29130,13 @@ kn([
 Ui = kn([
   te("oscd-editor")
 ], Ui);
-function Um(i) {
+function jm(i) {
   const e = i.detail;
   return Al(e) || kl(e) || $l(e) || Tl(e);
 }
-function Wm(i) {
+function qm(i) {
   const e = i.detail;
-  return km(e);
+  return Lm(e);
 }
 /**
  * @license
@@ -28845,7 +29213,7 @@ var qt = {
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-var ra = qt.OPENING, oa = qt.OPEN, sa = qt.CLOSING, Gm = as.REASON_ACTION, Pr = as.REASON_DISMISS, ls = (
+var oa = qt.OPENING, sa = qt.OPEN, aa = qt.CLOSING, Xm = as.REASON_ACTION, Pr = as.REASON_DISMISS, ls = (
   /** @class */
   function(i) {
     xe(e, i);
@@ -28893,11 +29261,11 @@ var ra = qt.OPENING, oa = qt.OPEN, sa = qt.CLOSING, Gm = as.REASON_ACTION, Pr = 
       enumerable: !1,
       configurable: !0
     }), e.prototype.destroy = function() {
-      this.clearAutoDismissTimer(), cancelAnimationFrame(this.animationFrame), this.animationFrame = 0, clearTimeout(this.animationTimer), this.animationTimer = 0, this.adapter.removeClass(ra), this.adapter.removeClass(oa), this.adapter.removeClass(sa);
+      this.clearAutoDismissTimer(), cancelAnimationFrame(this.animationFrame), this.animationFrame = 0, clearTimeout(this.animationTimer), this.animationTimer = 0, this.adapter.removeClass(oa), this.adapter.removeClass(sa), this.adapter.removeClass(aa);
     }, e.prototype.open = function() {
       var t = this;
-      this.clearAutoDismissTimer(), this.opened = !0, this.adapter.notifyOpening(), this.adapter.removeClass(sa), this.adapter.addClass(ra), this.adapter.announce(), this.runNextAnimationFrame(function() {
-        t.adapter.addClass(oa), t.animationTimer = setTimeout(function() {
+      this.clearAutoDismissTimer(), this.opened = !0, this.adapter.notifyOpening(), this.adapter.removeClass(aa), this.adapter.addClass(oa), this.adapter.announce(), this.runNextAnimationFrame(function() {
+        t.adapter.addClass(sa), t.animationTimer = setTimeout(function() {
           var n = t.getTimeoutMs();
           t.handleAnimationTimerEnd(), t.adapter.notifyOpened(), n !== Ut.INDETERMINATE && (t.autoDismissTimer = setTimeout(function() {
             t.close(Pr);
@@ -28929,7 +29297,7 @@ var ra = qt.OPENING, oa = qt.OPEN, sa = qt.CLOSING, Gm = as.REASON_ACTION, Pr = 
       var n = t.key === "Escape" || t.keyCode === 27;
       n && this.getCloseOnEscape() && this.close(Pr);
     }, e.prototype.handleActionButtonClick = function(t) {
-      this.close(Gm);
+      this.close(Xm);
     }, e.prototype.handleActionIconClick = function(t) {
       this.close(Pr);
     }, e.prototype.clearAutoDismissTimer = function() {
@@ -28957,7 +29325,7 @@ var ra = qt.OPENING, oa = qt.OPEN, sa = qt.CLOSING, Gm = as.REASON_ACTION, Pr = 
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-class Km extends Xo {
+class Ym extends Xo {
   constructor(e) {
     super(e), this._renderedYet = !1, this._legacyPart = e.legacyPart;
   }
@@ -29012,8 +29380,8 @@ class Km extends Xo {
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const { ARIA_LIVE_DELAY_MS: jm } = ls.numbers;
-class qm extends Km {
+const { ARIA_LIVE_DELAY_MS: Zm } = ls.numbers;
+class Qm extends Ym {
   constructor(e) {
     if (super(e), this.labelEl = null, this.timerId = null, this.previousPart = null, e.type !== Nt.CHILD)
       throw new Error("AccessibleSnackbarLabel only supports child parts.");
@@ -29033,14 +29401,14 @@ class qm extends Km {
     const l = R`<span style="display: inline-block; width: 0; height: 1px;">&nbsp;</span>`;
     return qr(l, a), a.setAttribute("data-mdc-snackbar-label-text", t), this.timerId !== null && clearTimeout(this.timerId), this.timerId = window.setTimeout(() => {
       this.timerId = null, a.setAttribute("aria-live", "polite"), a.removeAttribute("data-mdc-snackbar-label-text"), a.textContent = t, this.setValue(this.labelEl);
-    }, jm), a;
+    }, Zm), a;
   }
   render(e, t) {
     return t ? R`
       <div class="mdc-snackbar__label" role="status" aria-live="polite">${e}</div>` : R``;
   }
 }
-const Xm = Yo(qm), { OPENING_EVENT: Ym, OPENED_EVENT: Zm, CLOSING_EVENT: Qm, CLOSED_EVENT: Jm } = ls.strings;
+const Jm = Yo(Qm), { OPENING_EVENT: ep, OPENED_EVENT: tp, CLOSING_EVENT: ip, CLOSED_EVENT: np } = ls.strings;
 class ii extends ot {
   constructor() {
     super(...arguments), this.mdcFoundationClass = ls, this.open = !1, this.timeoutMs = 5e3, this.closeOnEscape = !1, this.labelText = "", this.stacked = !1, this.leading = !1, this.reason = "";
@@ -29053,7 +29421,7 @@ class ii extends ot {
     return R`
       <div class="mdc-snackbar ${pe(e)}" @keydown="${this._handleKeydown}">
         <div class="mdc-snackbar__surface">
-          ${Xm(this.labelText, this.open)}
+          ${Jm(this.labelText, this.open)}
           <div class="mdc-snackbar__actions">
             <slot name="action" @click="${this._handleActionClick}"></slot>
             <slot name="dismiss" @click="${this._handleDismissClick}"></slot>
@@ -29064,13 +29432,13 @@ class ii extends ot {
   createAdapter() {
     return Object.assign(Object.assign({}, At(this.mdcRoot)), { announce: () => {
     }, notifyClosed: (e) => {
-      this.dispatchEvent(new CustomEvent(Jm, { bubbles: !0, cancelable: !0, detail: { reason: e } }));
+      this.dispatchEvent(new CustomEvent(np, { bubbles: !0, cancelable: !0, detail: { reason: e } }));
     }, notifyClosing: (e) => {
-      this.open = !1, this.dispatchEvent(new CustomEvent(Qm, { bubbles: !0, cancelable: !0, detail: { reason: e } }));
+      this.open = !1, this.dispatchEvent(new CustomEvent(ip, { bubbles: !0, cancelable: !0, detail: { reason: e } }));
     }, notifyOpened: () => {
-      this.dispatchEvent(new CustomEvent(Zm, { bubbles: !0, cancelable: !0 }));
+      this.dispatchEvent(new CustomEvent(tp, { bubbles: !0, cancelable: !0 }));
     }, notifyOpening: () => {
-      this.open = !0, this.dispatchEvent(new CustomEvent(Ym, { bubbles: !0, cancelable: !0 }));
+      this.open = !0, this.dispatchEvent(new CustomEvent(ep, { bubbles: !0, cancelable: !0 }));
     } });
   }
   /** @export */
@@ -29132,10 +29500,10 @@ $([
  * Copyright 2021 Google LLC
  * SPDX-LIcense-Identifier: Apache-2.0
  */
-const ep = le`.mdc-snackbar{z-index:8;margin:8px;display:none;position:fixed;right:0;bottom:0;left:0;align-items:center;justify-content:center;box-sizing:border-box;pointer-events:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}.mdc-snackbar__surface{background-color:#333333}.mdc-snackbar__label{color:rgba(255, 255, 255, 0.87)}.mdc-snackbar__surface{min-width:344px}@media(max-width: 480px),(max-width: 344px){.mdc-snackbar__surface{min-width:100%}}.mdc-snackbar__surface{max-width:672px}.mdc-snackbar__surface{box-shadow:0px 3px 5px -1px rgba(0, 0, 0, 0.2),0px 6px 10px 0px rgba(0, 0, 0, 0.14),0px 1px 18px 0px rgba(0,0,0,.12)}.mdc-snackbar__surface{border-radius:4px;border-radius:var(--mdc-shape-small, 4px)}.mdc-snackbar--opening,.mdc-snackbar--open,.mdc-snackbar--closing{display:flex}.mdc-snackbar--open .mdc-snackbar__label,.mdc-snackbar--open .mdc-snackbar__actions{visibility:visible}.mdc-snackbar--leading{justify-content:flex-start}.mdc-snackbar--stacked .mdc-snackbar__label{padding-left:16px;padding-right:8px;padding-bottom:12px}[dir=rtl] .mdc-snackbar--stacked .mdc-snackbar__label,.mdc-snackbar--stacked .mdc-snackbar__label[dir=rtl]{padding-left:8px;padding-right:16px}.mdc-snackbar--stacked .mdc-snackbar__surface{flex-direction:column;align-items:flex-start}.mdc-snackbar--stacked .mdc-snackbar__actions{align-self:flex-end;margin-bottom:8px}.mdc-snackbar__surface{padding-left:0;padding-right:8px;display:flex;align-items:center;justify-content:flex-start;box-sizing:border-box;transform:scale(0.8);opacity:0}.mdc-snackbar__surface::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid transparent;border-radius:inherit;content:"";pointer-events:none}[dir=rtl] .mdc-snackbar__surface,.mdc-snackbar__surface[dir=rtl]{padding-left:8px;padding-right:0}.mdc-snackbar--open .mdc-snackbar__surface{transform:scale(1);opacity:1;pointer-events:auto;transition:opacity 150ms 0ms cubic-bezier(0, 0, 0.2, 1),transform 150ms 0ms cubic-bezier(0, 0, 0.2, 1)}.mdc-snackbar--closing .mdc-snackbar__surface{transform:scale(1);transition:opacity 75ms 0ms cubic-bezier(0.4, 0, 1, 1)}.mdc-snackbar__label{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-body2-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:0.875rem;font-size:var(--mdc-typography-body2-font-size, 0.875rem);line-height:1.25rem;line-height:var(--mdc-typography-body2-line-height, 1.25rem);font-weight:400;font-weight:var(--mdc-typography-body2-font-weight, 400);letter-spacing:0.0178571429em;letter-spacing:var(--mdc-typography-body2-letter-spacing, 0.0178571429em);text-decoration:inherit;text-decoration:var(--mdc-typography-body2-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-body2-text-transform, inherit);padding-left:16px;padding-right:8px;width:100%;flex-grow:1;box-sizing:border-box;margin:0;visibility:hidden;padding-top:14px;padding-bottom:14px}[dir=rtl] .mdc-snackbar__label,.mdc-snackbar__label[dir=rtl]{padding-left:8px;padding-right:16px}.mdc-snackbar__label::before{display:inline;content:attr(data-mdc-snackbar-label-text)}.mdc-snackbar__actions{display:flex;flex-shrink:0;align-items:center;box-sizing:border-box;visibility:hidden}.mdc-snackbar__action:not(:disabled){color:#bb86fc}.mdc-snackbar__action::before,.mdc-snackbar__action::after{background-color:#bb86fc;background-color:var(--mdc-ripple-color, #bb86fc)}.mdc-snackbar__action:hover::before,.mdc-snackbar__action.mdc-ripple-surface--hover::before{opacity:0.08;opacity:var(--mdc-ripple-hover-opacity, 0.08)}.mdc-snackbar__action.mdc-ripple-upgraded--background-focused::before,.mdc-snackbar__action:not(.mdc-ripple-upgraded):focus::before{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-focus-opacity, 0.24)}.mdc-snackbar__action:not(.mdc-ripple-upgraded)::after{transition:opacity 150ms linear}.mdc-snackbar__action:not(.mdc-ripple-upgraded):active::after{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-snackbar__action.mdc-ripple-upgraded{--mdc-ripple-fg-opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-snackbar__dismiss{color:rgba(255, 255, 255, 0.87)}.mdc-snackbar__dismiss .mdc-icon-button__ripple::before,.mdc-snackbar__dismiss .mdc-icon-button__ripple::after{background-color:rgba(255, 255, 255, 0.87);background-color:var(--mdc-ripple-color, rgba(255, 255, 255, 0.87))}.mdc-snackbar__dismiss:hover .mdc-icon-button__ripple::before,.mdc-snackbar__dismiss.mdc-ripple-surface--hover .mdc-icon-button__ripple::before{opacity:0.08;opacity:var(--mdc-ripple-hover-opacity, 0.08)}.mdc-snackbar__dismiss.mdc-ripple-upgraded--background-focused .mdc-icon-button__ripple::before,.mdc-snackbar__dismiss:not(.mdc-ripple-upgraded):focus .mdc-icon-button__ripple::before{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-focus-opacity, 0.24)}.mdc-snackbar__dismiss:not(.mdc-ripple-upgraded) .mdc-icon-button__ripple::after{transition:opacity 150ms linear}.mdc-snackbar__dismiss:not(.mdc-ripple-upgraded):active .mdc-icon-button__ripple::after{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-snackbar__dismiss.mdc-ripple-upgraded{--mdc-ripple-fg-opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-snackbar__dismiss.mdc-snackbar__dismiss{width:36px;height:36px;padding:6px;font-size:18px}.mdc-snackbar__action+.mdc-snackbar__dismiss{margin-left:8px;margin-right:0}[dir=rtl] .mdc-snackbar__action+.mdc-snackbar__dismiss,.mdc-snackbar__action+.mdc-snackbar__dismiss[dir=rtl]{margin-left:0;margin-right:8px}slot[name=action]::slotted(mwc-button){--mdc-theme-primary: var( --mdc-snackbar-action-color, #bb86fc )}slot[name=dismiss]::slotted(mwc-icon-button){--mdc-icon-size: 18px;--mdc-icon-button-size: 36px;color:rgba(255, 255, 255, 0.87);margin-left:8px;margin-right:0}[dir=rtl] slot[name=dismiss]::slotted(mwc-icon-button),::slotted(mwc-icon-buttonslot[name=dismiss][dir=rtl]){margin-left:0;margin-right:8px}`;
+const rp = le`.mdc-snackbar{z-index:8;margin:8px;display:none;position:fixed;right:0;bottom:0;left:0;align-items:center;justify-content:center;box-sizing:border-box;pointer-events:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}.mdc-snackbar__surface{background-color:#333333}.mdc-snackbar__label{color:rgba(255, 255, 255, 0.87)}.mdc-snackbar__surface{min-width:344px}@media(max-width: 480px),(max-width: 344px){.mdc-snackbar__surface{min-width:100%}}.mdc-snackbar__surface{max-width:672px}.mdc-snackbar__surface{box-shadow:0px 3px 5px -1px rgba(0, 0, 0, 0.2),0px 6px 10px 0px rgba(0, 0, 0, 0.14),0px 1px 18px 0px rgba(0,0,0,.12)}.mdc-snackbar__surface{border-radius:4px;border-radius:var(--mdc-shape-small, 4px)}.mdc-snackbar--opening,.mdc-snackbar--open,.mdc-snackbar--closing{display:flex}.mdc-snackbar--open .mdc-snackbar__label,.mdc-snackbar--open .mdc-snackbar__actions{visibility:visible}.mdc-snackbar--leading{justify-content:flex-start}.mdc-snackbar--stacked .mdc-snackbar__label{padding-left:16px;padding-right:8px;padding-bottom:12px}[dir=rtl] .mdc-snackbar--stacked .mdc-snackbar__label,.mdc-snackbar--stacked .mdc-snackbar__label[dir=rtl]{padding-left:8px;padding-right:16px}.mdc-snackbar--stacked .mdc-snackbar__surface{flex-direction:column;align-items:flex-start}.mdc-snackbar--stacked .mdc-snackbar__actions{align-self:flex-end;margin-bottom:8px}.mdc-snackbar__surface{padding-left:0;padding-right:8px;display:flex;align-items:center;justify-content:flex-start;box-sizing:border-box;transform:scale(0.8);opacity:0}.mdc-snackbar__surface::before{position:absolute;box-sizing:border-box;width:100%;height:100%;top:0;left:0;border:1px solid transparent;border-radius:inherit;content:"";pointer-events:none}[dir=rtl] .mdc-snackbar__surface,.mdc-snackbar__surface[dir=rtl]{padding-left:8px;padding-right:0}.mdc-snackbar--open .mdc-snackbar__surface{transform:scale(1);opacity:1;pointer-events:auto;transition:opacity 150ms 0ms cubic-bezier(0, 0, 0.2, 1),transform 150ms 0ms cubic-bezier(0, 0, 0.2, 1)}.mdc-snackbar--closing .mdc-snackbar__surface{transform:scale(1);transition:opacity 75ms 0ms cubic-bezier(0.4, 0, 1, 1)}.mdc-snackbar__label{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:Roboto, sans-serif;font-family:var(--mdc-typography-body2-font-family, var(--mdc-typography-font-family, Roboto, sans-serif));font-size:0.875rem;font-size:var(--mdc-typography-body2-font-size, 0.875rem);line-height:1.25rem;line-height:var(--mdc-typography-body2-line-height, 1.25rem);font-weight:400;font-weight:var(--mdc-typography-body2-font-weight, 400);letter-spacing:0.0178571429em;letter-spacing:var(--mdc-typography-body2-letter-spacing, 0.0178571429em);text-decoration:inherit;text-decoration:var(--mdc-typography-body2-text-decoration, inherit);text-transform:inherit;text-transform:var(--mdc-typography-body2-text-transform, inherit);padding-left:16px;padding-right:8px;width:100%;flex-grow:1;box-sizing:border-box;margin:0;visibility:hidden;padding-top:14px;padding-bottom:14px}[dir=rtl] .mdc-snackbar__label,.mdc-snackbar__label[dir=rtl]{padding-left:8px;padding-right:16px}.mdc-snackbar__label::before{display:inline;content:attr(data-mdc-snackbar-label-text)}.mdc-snackbar__actions{display:flex;flex-shrink:0;align-items:center;box-sizing:border-box;visibility:hidden}.mdc-snackbar__action:not(:disabled){color:#bb86fc}.mdc-snackbar__action::before,.mdc-snackbar__action::after{background-color:#bb86fc;background-color:var(--mdc-ripple-color, #bb86fc)}.mdc-snackbar__action:hover::before,.mdc-snackbar__action.mdc-ripple-surface--hover::before{opacity:0.08;opacity:var(--mdc-ripple-hover-opacity, 0.08)}.mdc-snackbar__action.mdc-ripple-upgraded--background-focused::before,.mdc-snackbar__action:not(.mdc-ripple-upgraded):focus::before{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-focus-opacity, 0.24)}.mdc-snackbar__action:not(.mdc-ripple-upgraded)::after{transition:opacity 150ms linear}.mdc-snackbar__action:not(.mdc-ripple-upgraded):active::after{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-snackbar__action.mdc-ripple-upgraded{--mdc-ripple-fg-opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-snackbar__dismiss{color:rgba(255, 255, 255, 0.87)}.mdc-snackbar__dismiss .mdc-icon-button__ripple::before,.mdc-snackbar__dismiss .mdc-icon-button__ripple::after{background-color:rgba(255, 255, 255, 0.87);background-color:var(--mdc-ripple-color, rgba(255, 255, 255, 0.87))}.mdc-snackbar__dismiss:hover .mdc-icon-button__ripple::before,.mdc-snackbar__dismiss.mdc-ripple-surface--hover .mdc-icon-button__ripple::before{opacity:0.08;opacity:var(--mdc-ripple-hover-opacity, 0.08)}.mdc-snackbar__dismiss.mdc-ripple-upgraded--background-focused .mdc-icon-button__ripple::before,.mdc-snackbar__dismiss:not(.mdc-ripple-upgraded):focus .mdc-icon-button__ripple::before{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-focus-opacity, 0.24)}.mdc-snackbar__dismiss:not(.mdc-ripple-upgraded) .mdc-icon-button__ripple::after{transition:opacity 150ms linear}.mdc-snackbar__dismiss:not(.mdc-ripple-upgraded):active .mdc-icon-button__ripple::after{transition-duration:75ms;opacity:0.24;opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-snackbar__dismiss.mdc-ripple-upgraded{--mdc-ripple-fg-opacity:var(--mdc-ripple-press-opacity, 0.24)}.mdc-snackbar__dismiss.mdc-snackbar__dismiss{width:36px;height:36px;padding:6px;font-size:18px}.mdc-snackbar__action+.mdc-snackbar__dismiss{margin-left:8px;margin-right:0}[dir=rtl] .mdc-snackbar__action+.mdc-snackbar__dismiss,.mdc-snackbar__action+.mdc-snackbar__dismiss[dir=rtl]{margin-left:0;margin-right:8px}slot[name=action]::slotted(mwc-button){--mdc-theme-primary: var( --mdc-snackbar-action-color, #bb86fc )}slot[name=dismiss]::slotted(mwc-icon-button){--mdc-icon-size: 18px;--mdc-icon-button-size: 36px;color:rgba(255, 255, 255, 0.87);margin-left:8px;margin-right:0}[dir=rtl] slot[name=dismiss]::slotted(mwc-icon-button),::slotted(mwc-icon-buttonslot[name=dismiss][dir=rtl]){margin-left:0;margin-right:8px}`;
 let No = class extends ii {
 };
-No.styles = [ep];
+No.styles = [rp];
 No = $([
   te("mwc-snackbar")
 ], No);
@@ -29200,7 +29568,7 @@ const or = {
   }
 };
 Gn("dAIcon"), Gn("dOIcon"), Gn("enumIcon"), Gn("lNIcon");
-const aa = {
+const la = {
   info: "--cyan",
   warning: "--yellow",
   error: "--red",
@@ -29218,7 +29586,7 @@ function Gn(i) {
     ${Yi[i]}
   </svg> `;
 }
-function la(i, e) {
+function ca(i, e) {
   if (i === "reset") return R``;
   const t = or[i]?.height ?? 24, n = or[i]?.width ?? 24;
   return R`<svg
@@ -29733,21 +30101,21 @@ Se`<svg id="Laag_1" data-name="Laag 1" xmlns="http://www.w3.org/2000/svg" viewBo
 </g>
 <rect class="cls-2" width="24" height="24"/>
 </svg>`;
-var tp = Object.defineProperty, ip = Object.getOwnPropertyDescriptor, ft = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? ip(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+var op = Object.defineProperty, sp = Object.getOwnPropertyDescriptor, ft = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? sp(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && tp(e, t, s), s;
+  return n && s && op(e, t, s), s;
 };
 const Ol = "history-state";
-function np(i) {
+function ap(i) {
   return new CustomEvent(Ol, { detail: i });
 }
-const ca = {
+const da = {
   info: "info",
   warning: "warning",
   error: "report"
 };
-function rp(i) {
+function lp(i) {
   let e = localStorage.getItem("plugins");
   e || (e = "[]");
   const n = JSON.parse(e).find((a) => a.src === i);
@@ -29858,7 +30226,7 @@ let rt = class extends ge {
   }
   dispatchHistoryStateEvent() {
     this.host.dispatchEvent(
-      np({
+      ap({
         editCount: this.editCount,
         canUndo: this.canUndo,
         canRedo: this.canRedo
@@ -29927,8 +30295,8 @@ let rt = class extends ge {
         <span slot="secondary">${i.message}</span>
         <mwc-icon
           slot="graphic"
-          style="--mdc-theme-text-icon-on-background:var(${aa[i.kind]})"
-          >${ca[i.kind]}</mwc-icon
+          style="--mdc-theme-text-icon-on-background:var(${la[i.kind]})"
+          >${da[i.kind]}</mwc-icon
         >
       </mwc-list-item></abbr
     >`;
@@ -29949,7 +30317,7 @@ let rt = class extends ge {
         <span slot="secondary">${i.message}</span>
         <mwc-icon
           slot="graphic"
-          style="--mdc-theme-text-icon-on-background:var(${aa[i.kind]})"
+          style="--mdc-theme-text-icon-on-background:var(${la[i.kind]})"
           >history</mwc-icon
         >
       </mwc-list-item></abbr
@@ -29980,7 +30348,7 @@ let rt = class extends ge {
     return i.length === 0 ? [R``] : [
       R`
         <mwc-list-item noninteractive>
-          ${rp(i[0].validatorId)}
+          ${lp(i[0].validatorId)}
         </mwc-list-item>
       `,
       R`<li divider padded role="separator"></li>`,
@@ -29999,10 +30367,10 @@ let rt = class extends ge {
         </mwc-list-item>`;
   }
   renderFilterButtons() {
-    return Object.keys(ca).map(
+    return Object.keys(da).map(
       (i) => R`<mwc-icon-button-toggle id="${i}filter" on
-        >${la(i, !1)}
-        ${la(i, !0)}</mwc-icon-button-toggle
+        >${ca(i, !1)}
+        ${ca(i, !0)}</mwc-icon-button-toggle
       >`
     );
   }
@@ -30203,8 +30571,8 @@ rt = ft([
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const qn = window, cs = qn.ShadowRoot && (qn.ShadyCSS === void 0 || qn.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, Bl = Symbol(), da = /* @__PURE__ */ new WeakMap();
-let op = class {
+const qn = window, cs = qn.ShadowRoot && (qn.ShadyCSS === void 0 || qn.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, Bl = Symbol(), ha = /* @__PURE__ */ new WeakMap();
+let cp = class {
   constructor(e, t, n) {
     if (this._$cssResult$ = !0, n !== Bl) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
     this.cssText = e, this.t = t;
@@ -30214,7 +30582,7 @@ let op = class {
     const t = this.t;
     if (cs && e === void 0) {
       const n = t !== void 0 && t.length === 1;
-      n && (e = da.get(t)), e === void 0 && ((this.o = e = new CSSStyleSheet()).replaceSync(this.cssText), n && da.set(t, e));
+      n && (e = ha.get(t)), e === void 0 && ((this.o = e = new CSSStyleSheet()).replaceSync(this.cssText), n && ha.set(t, e));
     }
     return e;
   }
@@ -30222,15 +30590,15 @@ let op = class {
     return this.cssText;
   }
 };
-const sp = (i) => new op(typeof i == "string" ? i : i + "", void 0, Bl), ap = (i, e) => {
+const dp = (i) => new cp(typeof i == "string" ? i : i + "", void 0, Bl), hp = (i, e) => {
   cs ? i.adoptedStyleSheets = e.map((t) => t instanceof CSSStyleSheet ? t : t.styleSheet) : e.forEach((t) => {
     const n = document.createElement("style"), s = qn.litNonce;
     s !== void 0 && n.setAttribute("nonce", s), n.textContent = t.cssText, i.appendChild(n);
   });
-}, ha = cs ? (i) => i : (i) => i instanceof CSSStyleSheet ? ((e) => {
+}, ua = cs ? (i) => i : (i) => i instanceof CSSStyleSheet ? ((e) => {
   let t = "";
   for (const n of e.cssRules) t += n.cssText;
-  return sp(t);
+  return dp(t);
 })(i) : i;
 /**
  * @license
@@ -30238,10 +30606,10 @@ const sp = (i) => new op(typeof i == "string" ? i : i + "", void 0, Bl), ap = (i
  * SPDX-License-Identifier: BSD-3-Clause
  */
 var Br;
-const sr = window, ua = sr.trustedTypes, lp = ua ? ua.emptyScript : "", ma = sr.reactiveElementPolyfillSupport, Fo = { toAttribute(i, e) {
+const sr = window, ma = sr.trustedTypes, up = ma ? ma.emptyScript : "", pa = sr.reactiveElementPolyfillSupport, Fo = { toAttribute(i, e) {
   switch (e) {
     case Boolean:
-      i = i ? lp : null;
+      i = i ? up : null;
       break;
     case Object:
     case Array:
@@ -30314,8 +30682,8 @@ let Ni = class extends HTMLElement {
     const t = [];
     if (Array.isArray(e)) {
       const n = new Set(e.flat(1 / 0).reverse());
-      for (const s of n) t.unshift(ha(s));
-    } else e !== void 0 && t.push(ha(e));
+      for (const s of n) t.unshift(ua(s));
+    } else e !== void 0 && t.push(ua(e));
     return t;
   }
   static _$Ep(e, t) {
@@ -30342,7 +30710,7 @@ let Ni = class extends HTMLElement {
   createRenderRoot() {
     var e;
     const t = (e = this.shadowRoot) !== null && e !== void 0 ? e : this.attachShadow(this.constructor.shadowRootOptions);
-    return ap(t, this.constructor.elementStyles), t;
+    return hp(t, this.constructor.elementStyles), t;
   }
   connectedCallback() {
     var e;
@@ -30441,29 +30809,29 @@ let Ni = class extends HTMLElement {
   firstUpdated(e) {
   }
 };
-Ni[Po] = !0, Ni.elementProperties = /* @__PURE__ */ new Map(), Ni.elementStyles = [], Ni.shadowRootOptions = { mode: "open" }, ma?.({ ReactiveElement: Ni }), ((Br = sr.reactiveElementVersions) !== null && Br !== void 0 ? Br : sr.reactiveElementVersions = []).push("1.6.3");
+Ni[Po] = !0, Ni.elementProperties = /* @__PURE__ */ new Map(), Ni.elementStyles = [], Ni.shadowRootOptions = { mode: "open" }, pa?.({ ReactiveElement: Ni }), ((Br = sr.reactiveElementVersions) !== null && Br !== void 0 ? Br : sr.reactiveElementVersions = []).push("1.6.3");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
 var zr;
-const ar = window, Wi = ar.trustedTypes, pa = Wi ? Wi.createPolicy("lit-html", { createHTML: (i) => i }) : void 0, Bo = "$lit$", li = `lit$${(Math.random() + "").slice(9)}$`, zl = "?" + li, cp = `<${zl}>`, Ai = document, pn = () => Ai.createComment(""), fn = (i) => i === null || typeof i != "object" && typeof i != "function", Vl = Array.isArray, dp = (i) => Vl(i) || typeof i?.[Symbol.iterator] == "function", Vr = `[ 	
-\f\r]`, rn = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, fa = /-->/g, ga = />/g, xi = RegExp(`>|${Vr}(?:([^\\s"'>=/]+)(${Vr}*=${Vr}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), va = /'/g, ba = /"/g, Ul = /^(?:script|style|textarea|title)$/i, Gi = Symbol.for("lit-noChange"), Oe = Symbol.for("lit-nothing"), ya = /* @__PURE__ */ new WeakMap(), Si = Ai.createTreeWalker(Ai, 129, null, !1);
+const ar = window, Wi = ar.trustedTypes, fa = Wi ? Wi.createPolicy("lit-html", { createHTML: (i) => i }) : void 0, Bo = "$lit$", li = `lit$${(Math.random() + "").slice(9)}$`, zl = "?" + li, mp = `<${zl}>`, Ai = document, pn = () => Ai.createComment(""), fn = (i) => i === null || typeof i != "object" && typeof i != "function", Vl = Array.isArray, pp = (i) => Vl(i) || typeof i?.[Symbol.iterator] == "function", Vr = `[ 	
+\f\r]`, rn = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, ga = /-->/g, va = />/g, xi = RegExp(`>|${Vr}(?:([^\\s"'>=/]+)(${Vr}*=${Vr}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`, "g"), ba = /'/g, ya = /"/g, Ul = /^(?:script|style|textarea|title)$/i, Gi = Symbol.for("lit-noChange"), Oe = Symbol.for("lit-nothing"), xa = /* @__PURE__ */ new WeakMap(), Si = Ai.createTreeWalker(Ai, 129, null, !1);
 function Wl(i, e) {
   if (!Array.isArray(i) || !i.hasOwnProperty("raw")) throw Error("invalid template strings array");
-  return pa !== void 0 ? pa.createHTML(e) : e;
+  return fa !== void 0 ? fa.createHTML(e) : e;
 }
-const hp = (i, e) => {
+const fp = (i, e) => {
   const t = i.length - 1, n = [];
   let s, a = e === 2 ? "<svg>" : "", l = rn;
   for (let u = 0; u < t; u++) {
     const o = i[u];
     let r, c, d = -1, h = 0;
-    for (; h < o.length && (l.lastIndex = h, c = l.exec(o), c !== null); ) h = l.lastIndex, l === rn ? c[1] === "!--" ? l = fa : c[1] !== void 0 ? l = ga : c[2] !== void 0 ? (Ul.test(c[2]) && (s = RegExp("</" + c[2], "g")), l = xi) : c[3] !== void 0 && (l = xi) : l === xi ? c[0] === ">" ? (l = s ?? rn, d = -1) : c[1] === void 0 ? d = -2 : (d = l.lastIndex - c[2].length, r = c[1], l = c[3] === void 0 ? xi : c[3] === '"' ? ba : va) : l === ba || l === va ? l = xi : l === fa || l === ga ? l = rn : (l = xi, s = void 0);
+    for (; h < o.length && (l.lastIndex = h, c = l.exec(o), c !== null); ) h = l.lastIndex, l === rn ? c[1] === "!--" ? l = ga : c[1] !== void 0 ? l = va : c[2] !== void 0 ? (Ul.test(c[2]) && (s = RegExp("</" + c[2], "g")), l = xi) : c[3] !== void 0 && (l = xi) : l === xi ? c[0] === ">" ? (l = s ?? rn, d = -1) : c[1] === void 0 ? d = -2 : (d = l.lastIndex - c[2].length, r = c[1], l = c[3] === void 0 ? xi : c[3] === '"' ? ya : ba) : l === ya || l === ba ? l = xi : l === ga || l === va ? l = rn : (l = xi, s = void 0);
     const p = l === xi && i[u + 1].startsWith("/>") ? " " : "";
-    a += l === rn ? o + cp : d >= 0 ? (n.push(r), o.slice(0, d) + Bo + o.slice(d) + li + p) : o + li + (d === -2 ? (n.push(void 0), u) : p);
+    a += l === rn ? o + mp : d >= 0 ? (n.push(r), o.slice(0, d) + Bo + o.slice(d) + li + p) : o + li + (d === -2 ? (n.push(void 0), u) : p);
   }
   return [Wl(i, a + (i[t] || "<?>") + (e === 2 ? "</svg>" : "")), n];
 };
@@ -30472,7 +30840,7 @@ class gn {
     let s;
     this.parts = [];
     let a = 0, l = 0;
-    const u = e.length - 1, o = this.parts, [r, c] = hp(e, t);
+    const u = e.length - 1, o = this.parts, [r, c] = fp(e, t);
     if (this.el = gn.createElement(r, n), Si.currentNode = this.el.content, t === 2) {
       const d = this.el.content, h = d.firstChild;
       h.remove(), d.append(...h.childNodes);
@@ -30485,7 +30853,7 @@ class gn {
             const p = c[l++];
             if (d.push(h), p !== void 0) {
               const g = s.getAttribute(p.toLowerCase() + Bo).split(li), x = /([.?@])?(.*)/.exec(p);
-              o.push({ type: 1, index: a, name: x[2], strings: g, ctor: x[1] === "." ? mp : x[1] === "?" ? fp : x[1] === "@" ? gp : vr });
+              o.push({ type: 1, index: a, name: x[2], strings: g, ctor: x[1] === "." ? vp : x[1] === "?" ? yp : x[1] === "@" ? xp : vr });
             } else o.push({ type: 6, index: a });
           }
           for (const h of d) s.removeAttribute(h);
@@ -30518,7 +30886,7 @@ function Ki(i, e, t = i, n) {
   const r = fn(e) ? void 0 : e._$litDirective$;
   return o?.constructor !== r && ((a = o?._$AO) === null || a === void 0 || a.call(o, !1), r === void 0 ? o = void 0 : (o = new r(i), o._$AT(i, t, n)), n !== void 0 ? ((l = (u = t)._$Co) !== null && l !== void 0 ? l : u._$Co = [])[n] = o : t._$Cl = o), o !== void 0 && (e = Ki(i, o._$AS(i, e.values), o, n)), e;
 }
-class up {
+class gp {
   constructor(e, t) {
     this._$AV = [], this._$AN = void 0, this._$AD = e, this._$AM = t;
   }
@@ -30536,7 +30904,7 @@ class up {
     for (; r !== void 0; ) {
       if (u === r.index) {
         let c;
-        r.type === 2 ? c = new $n(l, l.nextSibling, this, e) : r.type === 1 ? c = new r.ctor(l, r.name, r.strings, this, e) : r.type === 6 && (c = new vp(l, this, e)), this._$AV.push(c), r = s[++o];
+        r.type === 2 ? c = new $n(l, l.nextSibling, this, e) : r.type === 1 ? c = new r.ctor(l, r.name, r.strings, this, e) : r.type === 6 && (c = new wp(l, this, e)), this._$AV.push(c), r = s[++o];
       }
       u !== r?.index && (l = Si.nextNode(), u++);
     }
@@ -30568,7 +30936,7 @@ class $n {
     return this._$AB;
   }
   _$AI(e, t = this) {
-    e = Ki(this, e, t), fn(e) ? e === Oe || e == null || e === "" ? (this._$AH !== Oe && this._$AR(), this._$AH = Oe) : e !== this._$AH && e !== Gi && this._(e) : e._$litType$ !== void 0 ? this.g(e) : e.nodeType !== void 0 ? this.$(e) : dp(e) ? this.T(e) : this._(e);
+    e = Ki(this, e, t), fn(e) ? e === Oe || e == null || e === "" ? (this._$AH !== Oe && this._$AR(), this._$AH = Oe) : e !== this._$AH && e !== Gi && this._(e) : e._$litType$ !== void 0 ? this.g(e) : e.nodeType !== void 0 ? this.$(e) : pp(e) ? this.T(e) : this._(e);
   }
   k(e) {
     return this._$AA.parentNode.insertBefore(e, this._$AB);
@@ -30584,13 +30952,13 @@ class $n {
     const { values: n, _$litType$: s } = e, a = typeof s == "number" ? this._$AC(e) : (s.el === void 0 && (s.el = gn.createElement(Wl(s.h, s.h[0]), this.options)), s);
     if (((t = this._$AH) === null || t === void 0 ? void 0 : t._$AD) === a) this._$AH.v(n);
     else {
-      const l = new up(a, this), u = l.u(this.options);
+      const l = new gp(a, this), u = l.u(this.options);
       l.v(n), this.$(u), this._$AH = l;
     }
   }
   _$AC(e) {
-    let t = ya.get(e.strings);
-    return t === void 0 && ya.set(e.strings, t = new gn(e)), t;
+    let t = xa.get(e.strings);
+    return t === void 0 && xa.set(e.strings, t = new gn(e)), t;
   }
   T(e) {
     Vl(this._$AH) || (this._$AH = [], this._$AR());
@@ -30636,7 +31004,7 @@ class vr {
     e === Oe ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, e ?? "");
   }
 }
-class mp extends vr {
+class vp extends vr {
   constructor() {
     super(...arguments), this.type = 3;
   }
@@ -30644,16 +31012,16 @@ class mp extends vr {
     this.element[this.name] = e === Oe ? void 0 : e;
   }
 }
-const pp = Wi ? Wi.emptyScript : "";
-class fp extends vr {
+const bp = Wi ? Wi.emptyScript : "";
+class yp extends vr {
   constructor() {
     super(...arguments), this.type = 4;
   }
   j(e) {
-    e && e !== Oe ? this.element.setAttribute(this.name, pp) : this.element.removeAttribute(this.name);
+    e && e !== Oe ? this.element.setAttribute(this.name, bp) : this.element.removeAttribute(this.name);
   }
 }
-class gp extends vr {
+class xp extends vr {
   constructor(e, t, n, s, a) {
     super(e, t, n, s, a), this.type = 5;
   }
@@ -30668,7 +31036,7 @@ class gp extends vr {
     typeof this._$AH == "function" ? this._$AH.call((n = (t = this.options) === null || t === void 0 ? void 0 : t.host) !== null && n !== void 0 ? n : this.element, e) : this._$AH.handleEvent(e);
   }
 }
-class vp {
+class wp {
   constructor(e, t, n) {
     this.element = e, this.type = 6, this._$AN = void 0, this._$AM = t, this.options = n;
   }
@@ -30679,9 +31047,9 @@ class vp {
     Ki(this, e);
   }
 }
-const xa = ar.litHtmlPolyfillSupport;
-xa?.(gn, $n), ((zr = ar.litHtmlVersions) !== null && zr !== void 0 ? zr : ar.litHtmlVersions = []).push("2.8.0");
-const bp = (i, e, t) => {
+const wa = ar.litHtmlPolyfillSupport;
+wa?.(gn, $n), ((zr = ar.litHtmlVersions) !== null && zr !== void 0 ? zr : ar.litHtmlVersions = []).push("2.8.0");
+const _p = (i, e, t) => {
   var n, s;
   const a = (n = t?.renderBefore) !== null && n !== void 0 ? n : e;
   let l = a._$litPart$;
@@ -30708,7 +31076,7 @@ class Xn extends Ni {
   }
   update(e) {
     const t = this.render();
-    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = bp(t, this.renderRoot, this.renderOptions);
+    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = _p(t, this.renderRoot, this.renderOptions);
   }
   connectedCallback() {
     var e;
@@ -30723,13 +31091,13 @@ class Xn extends Ni {
   }
 }
 Xn.finalized = !0, Xn._$litElement$ = !0, (Ur = globalThis.litElementHydrateSupport) === null || Ur === void 0 || Ur.call(globalThis, { LitElement: Xn });
-const wa = globalThis.litElementPolyfillSupport;
-wa?.({ LitElement: Xn });
+const _a = globalThis.litElementPolyfillSupport;
+_a?.({ LitElement: Xn });
 ((Wr = globalThis.litElementVersions) !== null && Wr !== void 0 ? Wr : globalThis.litElementVersions = []).push("3.3.3");
-var yp = Object.defineProperty, xp = Object.getOwnPropertyDescriptor, br = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? xp(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+var Sp = Object.defineProperty, Cp = Object.getOwnPropertyDescriptor, br = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? Cp(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && yp(e, t, s), s;
+  return n && s && Sp(e, t, s), s;
 };
 let ji = class extends ge {
   constructor() {
@@ -30747,7 +31115,7 @@ let ji = class extends ge {
             multi
             @selected=${(i) => {
       const e = this.pluginList.items.filter((t, n) => i.detail.index.has(n)).map((t) => t.plugin);
-      this.dispatchEvent(Dp(e));
+      this.dispatchEvent(Fp(e));
     }}
           >
             <mwc-list-item graphic="avatar" noninteractive>
@@ -30788,7 +31156,7 @@ let ji = class extends ge {
             icon="refresh"
             label="${G("reset")}"
             @click=${async () => {
-      this.dispatchEvent(Lp()), this.requestUpdate();
+      this.dispatchEvent(Op()), this.requestUpdate();
     }}
             style="--mdc-theme-primary: var(--mdc-theme-error)"
           >
@@ -30869,11 +31237,11 @@ br([
 ji = br([
   te("oscd-plugin-manager")
 ], ji);
-const wp = ["top", "middle", "bottom"];
-var _p = Object.defineProperty, Sp = Object.getOwnPropertyDescriptor, vi = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? Sp(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+const Ep = ["top", "middle", "bottom"];
+var Ap = Object.defineProperty, kp = Object.getOwnPropertyDescriptor, vi = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? kp(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && _p(e, t, s), s;
+  return n && s && Ap(e, t, s), s;
 };
 let Ft = class extends ge {
   render() {
@@ -30916,7 +31284,7 @@ let Ft = class extends ge {
                 <mwc-switch id="requireDoc" checked></mwc-switch>
               </mwc-formfield>
               <mwc-select id="positionList" value="middle" fixedpositionList>
-                ${Object.values(wp).map(
+                ${Object.values(Ep).map(
       (i) => R`<mwc-list-item value="${i}"
                       >${G("plugins." + i)}</mwc-list-item
                     >`
@@ -30982,7 +31350,7 @@ let Ft = class extends ge {
   }
   handleAddPlugin() {
     this.pluginSrcInput.checkValidity() && this.pluginNameInput.checkValidity() && this.pluginKindList.selected && this.requireDoc && this.positionList.selected && (this.dispatchEvent(
-      Rp({
+      Np({
         src: this.pluginSrcInput.value,
         name: this.pluginNameInput.value,
         kind: this.pluginKindList.selected.value,
@@ -31035,10 +31403,10 @@ vi([
 Ft = vi([
   te("oscd-custom-plugin-dialog")
 ], Ft);
-var Cp = Object.defineProperty, Ep = Object.getOwnPropertyDescriptor, gt = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? Ep(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+var $p = Object.defineProperty, Tp = Object.getOwnPropertyDescriptor, gt = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? Tp(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && Cp(e, t, s), s;
+  return n && s && $p(e, t, s), s;
 };
 let Ze = class extends ge {
   constructor() {
@@ -31159,7 +31527,7 @@ let Ze = class extends ge {
         icon: "settings",
         name: "settings.title",
         action: () => {
-          this.dispatchEvent(pl(!0));
+          this.dispatchEvent(gl(!0));
         },
         kind: "static",
         content: () => R``
@@ -31239,7 +31607,7 @@ let Ze = class extends ge {
   }
   renderMenuItem(i) {
     const e = i !== "divider" && i.actionItem;
-    return Ap(i) ? R`<li divider padded role="separator"></li>` : e ? R`` : R`
+    return Ip(i) ? R`<li divider padded role="separator"></li>` : e ? R`` : R`
       <mwc-list-item
         class="${i.kind}"
         iconid="${i.icon}"
@@ -31517,13 +31885,13 @@ gt([
 Ze = gt([
   te("oscd-layout")
 ], Ze);
-function Ap(i) {
+function Ip(i) {
   return i === "divider";
 }
 function he(i) {
   return location.origin + location.pathname + i;
 }
-const kp = [
+const Lp = [
   {
     name: "IED",
     src: he("plugins/src/editors/IED.js"),
@@ -31791,17 +32159,17 @@ const kp = [
     position: "middle"
   }
 ];
-function $p(i, e, t) {
+function Rp(i, e, t) {
   return new CustomEvent("oscd-configure-plugin", {
     bubbles: !0,
     composed: !0,
     detail: { name: i, kind: e, config: t }
   });
 }
-var Tp = Object.defineProperty, Ip = Object.getOwnPropertyDescriptor, Dt = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? Ip(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+var Dp = Object.defineProperty, Mp = Object.getOwnPropertyDescriptor, Dt = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? Mp(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && Tp(e, t, s), s;
+  return n && s && Dp(e, t, s), s;
 };
 let Et = class extends ge {
   constructor() {
@@ -31860,7 +32228,7 @@ let Et = class extends ge {
    */
   handleAddExternalPlugin(i) {
     this.addExternalPlugin(i.detail.plugin);
-    const { name: e, kind: t } = i.detail.plugin, n = $p(e, t, i.detail.plugin);
+    const { name: e, kind: t } = i.detail.plugin, n = Rp(e, t, i.detail.plugin);
     this.handleConfigurationPluginEvent(n);
   }
   handleConfigurationPluginEvent(i) {
@@ -31959,7 +32327,7 @@ let Et = class extends ge {
   }
   storePlugins(i) {
     this.storedPlugins = i;
-    const e = JSON.stringify(i.map(Op));
+    const e = JSON.stringify(i.map(Bp));
     localStorage.setItem("plugins", e);
   }
   getPluginConfigsFromLocalStorage() {
@@ -32000,7 +32368,7 @@ let Et = class extends ge {
     e.push(i), this.storePlugins(e);
   }
   getBuiltInPlugins() {
-    return kp;
+    return Lp;
   }
   addContent(i) {
     const e = this.pluginTag(i.src);
@@ -32008,7 +32376,7 @@ let Et = class extends ge {
       customElements.define(e, t.default);
     })), {
       ...i,
-      content: () => Mp`<${e}
+      content: () => Pp`<${e}
             .doc=${this.doc}
             .docName=${this.docName}
             .editCount=${this.historyState.editCount}
@@ -32078,24 +32446,24 @@ Dt([
 Et = Dt([
   te("original-open-scd")
 ], Et);
-function Lp() {
+function Op() {
   return new CustomEvent("reset-plugins", { bubbles: !0, composed: !0 });
 }
-function Rp(i) {
+function Np(i) {
   return new CustomEvent("add-external-plugin", {
     bubbles: !0,
     composed: !0,
     detail: { plugin: i }
   });
 }
-function Dp(i) {
+function Fp(i) {
   return new CustomEvent("set-plugins", {
     bubbles: !0,
     composed: !0,
     detail: { selectedPlugins: i }
   });
 }
-function Mp(i, ...e) {
+function Pp(i, ...e) {
   const t = [...e], n = t.shift(), s = t.pop();
   if (n !== s)
     throw new Error(
@@ -32104,7 +32472,7 @@ function Mp(i, ...e) {
   const a = [...i], l = a.shift(), u = a.shift(), o = a.pop(), r = a.pop();
   return a.unshift(`${l}${n}${u}`), a.push(`${r}${s}${o}`), R(a, ...t);
 }
-function Op(i) {
+function Bp(i) {
   return { ...i, content: void 0 };
 }
 const Ot = {
@@ -32115,12 +32483,12 @@ const Ot = {
   middle: "play_circle",
   bottom: "play_circle"
 };
-var Np = Object.defineProperty, Fp = Object.getOwnPropertyDescriptor, ct = (i, e, t, n) => {
-  for (var s = n > 1 ? void 0 : n ? Fp(e, t) : e, a = i.length - 1, l; a >= 0; a--)
+var Hp = Object.defineProperty, zp = Object.getOwnPropertyDescriptor, ct = (i, e, t, n) => {
+  for (var s = n > 1 ? void 0 : n ? zp(e, t) : e, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = (n ? l(e, t, s) : l(s)) || s);
-  return n && s && Np(e, t, s), s;
+  return n && s && Hp(e, t, s), s;
 };
-function Pp() {
+function Vp() {
   return new CustomEvent("open-drawer", { bubbles: !0, composed: !0 });
 }
 let je = class extends ge {
@@ -32242,7 +32610,7 @@ let je = class extends ge {
         icon: "settings",
         name: "settings.title",
         action: () => {
-          this.dispatchEvent(pl(!0));
+          this.dispatchEvent(gl(!0));
         },
         kind: "static",
         content: () => R``
@@ -32327,7 +32695,7 @@ let je = class extends ge {
   }
   renderMenuItem(i) {
     const e = i !== "divider" && i.actionItem;
-    return Bp(i) ? R`<li divider padded role="separator"></li>` : e ? R`` : R`
+    return Up(i) ? R`<li divider padded role="separator"></li>` : e ? R`` : R`
       <mwc-list-item
         class="${i.kind}"
         iconid="${i.icon}"
@@ -32616,377 +32984,9 @@ ct([
 je = ct([
   te("compas-layout")
 ], je);
-function Bp(i) {
+function Up(i) {
   return i === "divider";
 }
-const Hp = {
-  userinfo: {
-    loggedInAs: "???"
-  },
-  compas: {
-    loading: "???",
-    comment: "???",
-    newLabel: "???",
-    notExists: "???",
-    noSclTypes: "???",
-    noScls: "???",
-    sclFilter: "???:",
-    noFilteredScls: "???",
-    noSclVersions: "???",
-    sclType: "???",
-    error: {
-      type: "???",
-      server: "???",
-      serverDetails: "{{type}}: {{message}}"
-    },
-    warning: {
-      nsdoc: "NSDoc-Datei konnte nicht geladen werden",
-      nsdocDetails: "Die {{url}} kann nicht geladen werden"
-    },
-    changeset: {
-      major: "???",
-      minor: "???",
-      patch: "???"
-    },
-    import: {
-      title: "???"
-    },
-    label: {
-      selectLabels: "???"
-    },
-    open: {
-      title: "???",
-      localTitle: "???",
-      selectFileButton: "???",
-      compasTitle: "CoMPAS",
-      listSclTypes: "???",
-      listScls: "??? ({{ type }})",
-      otherTypeButton: "???"
-    },
-    save: {
-      saveTitle: "???",
-      saveAsTitle: "???",
-      saveAsVersionTitle: "???",
-      localTitle: "???",
-      saveFileButton: "???",
-      compasTitle: "CoMPAS",
-      labelsTitle: "CoMPAS ???",
-      addSuccess: "???",
-      updateSuccess: "???"
-    },
-    updateSubstation: {
-      title: "???"
-    },
-    importIEDS: {
-      title: "???"
-    },
-    merge: {
-      title: "???"
-    },
-    autoAlignment: {
-      title: "???",
-      button: "???",
-      missing: "???",
-      success: "???"
-    },
-    uploadVersion: {
-      title: "???",
-      selectButton: "???...",
-      filename: "???",
-      updateSuccess: "???"
-    },
-    versions: {
-      title: "???",
-      sclInfo: "???: {{name}}, ???: {{version}}",
-      addVersionButton: "???",
-      confirmRestoreTitle: "???",
-      confirmRestore: "??? {{version}}?",
-      restoreVersionSuccess: "??? {{version}}",
-      deleteProjectButton: "???",
-      confirmDeleteTitle: "???",
-      confirmDelete: "???",
-      deleteSuccess: "???",
-      confirmDeleteVersionTitle: "???",
-      confirmDeleteVersion: "??? {{version}}?",
-      deleteVersionSuccess: "??? {{version}}",
-      confirmButton: "???",
-      compareButton: "???",
-      selectTwoVersionsTitle: "???",
-      selectTwoVersionsMessage: "???",
-      compareCurrentButton: "???",
-      selectOneVersionsTitle: "???",
-      selectOneVersionsMessage: "???"
-    },
-    scl: {
-      wizardTitle: "???",
-      filenameHelper: "???",
-      labelsTitle: "CoMPAS ???",
-      updateAction: "???"
-    },
-    compare: {
-      title: "???",
-      titleCurrent: "???",
-      noDiff: "???",
-      attributes: "Attribute",
-      children: "Kindelemente"
-    },
-    settings: {
-      title: "CoMPAS Einstellungen",
-      sclDataServiceUrl: "CoMPAS SCL Data Service URL",
-      sclValidatorServiceUrl: "CoMPAS SCL Validator Service URL",
-      cimMappingServiceUrl: "CoMPAS CIM Mapping Service URL",
-      sclAutoAlignmentServiceUrl: "CoMPAS SCL Auto Alignment Service URL",
-      useWebsockets: "???"
-    },
-    exportIEDParams: {
-      noIEDs: "Keine IEDs in Projekt"
-    },
-    session: {
-      headingExpiring: "???",
-      explainExpiring: "???",
-      continue: "???",
-      headingExpired: "???",
-      explainExpiredWithProject: "???",
-      explainExpiredWithoutProject: "???",
-      saveProject: "???"
-    },
-    autogensubstation: {
-      substationAmount: "???",
-      voltagelevelAmount: "???",
-      bayAmount: "???",
-      substationGen: "???"
-    },
-    export104: {
-      noSignalsFound: "Export 104 hat keine Signale gefunden",
-      invalidSignalWarning: "Export 104 hat ein ungültiges Signal gefunden",
-      errors: {
-        tiOrIoaInvalid: 'ti or ioa fehlen oder ioa hat weniger als 4 Zeichen, ti: "{{ ti }}", ioa: "{{ ioa }}"',
-        unknownSignalType: 'Unbekannter Signaltyp für ti: "{{ ti }}", ioa: "{{ ioa }}"',
-        noDoi: 'Es wurde kein Eltern DOI Element gefunden für ioa: "{{ ioa }}"',
-        noBay: 'Es wurde kein Bay Element mit dem Namen "{{ bayName }}" für ioa: "{{ ioa }}" gefunden',
-        noVoltageLevel: 'Es wurde kein VoltageLevel Element für Bay "{{ bayName }}" gefunden für ioa "{{ ioa }}"',
-        noSubstation: 'Es wurde kein Substation Element gefunden für VoltageLevel "{{ voltageLevelName }}" für ioa "{{ ioa }}"'
-      }
-    }
-  },
-  locamation: {
-    vmu: {
-      ied: {
-        title: "???",
-        missing: "???",
-        name: "???"
-      },
-      ldevice: {
-        name: "???"
-      },
-      ln: {
-        title: "???",
-        editTitle: "???",
-        name: "???"
-      },
-      version: "???",
-      identifier: "???",
-      identifierHelper: "???",
-      sum: "???",
-      sumHelper: "???",
-      channel: "???",
-      channelHelper: "???",
-      transformPrimary: "???",
-      transformPrimaryHelper: "???",
-      transformSecondary: "???",
-      transformSecondaryHelper: "???",
-      updateAction: "???"
-    }
-  }
-}, zp = {
-  userinfo: {
-    loggedInAs: "Logged in as {{name}}"
-  },
-  compas: {
-    loading: "Loading...",
-    comment: "Comment",
-    newLabel: "Add new label",
-    notExists: "Project no longer exists in CoMPAS!",
-    noSclTypes: "No types found in CoMPAS",
-    noScls: "No projects found in CoMPAS",
-    sclFilter: "Filter on:",
-    noFilteredScls: "No projects found matching the filter(s)",
-    noSclVersions: "No versions found for this project in CoMPAS",
-    sclType: "SCL Type",
-    error: {
-      type: "Unable to determine type from document name!",
-      server: "Error communicating with CoMPAS Ecosystem",
-      serverDetails: "{{type}}: {{message}}"
-    },
-    warning: {
-      nsdoc: "Could not load NSDoc file",
-      nsdocDetails: "Cannot load {{url}}"
-    },
-    changeset: {
-      major: "Major change",
-      minor: "Minor change",
-      patch: "Patch change"
-    },
-    import: {
-      title: "Import from API"
-    },
-    label: {
-      selectLabels: "Select labels to be show"
-    },
-    open: {
-      title: "Open project",
-      localTitle: "Local",
-      selectFileButton: "Open file...",
-      compasTitle: "CoMPAS",
-      listSclTypes: "Select type of project",
-      listScls: "Select project ({{ type }})",
-      otherTypeButton: "Other type..."
-    },
-    save: {
-      saveTitle: "Save project",
-      saveAsTitle: "Save as new project",
-      saveAsVersionTitle: "Save as new version to existing project",
-      localTitle: "Local",
-      saveFileButton: "Save to file...",
-      compasTitle: "CoMPAS",
-      labelsTitle: "CoMPAS Labels",
-      addSuccess: "Project added to CoMPAS.",
-      updateSuccess: "Project updated in CoMPAS"
-    },
-    updateSubstation: {
-      title: "Update substation"
-    },
-    importIEDS: {
-      title: "Import IED's"
-    },
-    merge: {
-      title: "Merge project"
-    },
-    autoAlignment: {
-      title: "Auto align SLD for selected substations",
-      button: "Execute",
-      missing: "No substations",
-      success: "Updated X/Y Coordinates for substation(s)"
-    },
-    uploadVersion: {
-      title: "Upload new version of project to CoMPAS",
-      selectButton: "Select file...",
-      filename: "Filename",
-      updateSuccess: "Project uploaded in CoMPAS"
-    },
-    versions: {
-      title: "CoMPAS Versions",
-      sclInfo: "Current project - Name: {{name}}, Version: {{version}}",
-      addVersionButton: "Add version",
-      confirmRestoreTitle: "Restore version?",
-      confirmRestore: "Are you sure to restore version {{version}}?",
-      restoreVersionSuccess: "Restored version {{version}} of project",
-      deleteProjectButton: "Delete project",
-      confirmDeleteTitle: "Delete project?",
-      confirmDelete: "Are you sure to delete all version(s)?",
-      deleteSuccess: "Removed project from CoMPAS",
-      confirmDeleteVersionTitle: "Delete version?",
-      confirmDeleteVersion: "Are you sure to delete version {{version}}?",
-      deleteVersionSuccess: "Removed version {{version}} of project from CoMPAS",
-      confirmButton: "Confirm",
-      compareButton: "Compare versions",
-      selectTwoVersionsTitle: "Select two versions?",
-      selectTwoVersionsMessage: "Select maximum two versions to compare with each other. Currently selected: {{size}}.",
-      compareCurrentButton: "Compare version (current)",
-      selectOneVersionsTitle: "Select one version?",
-      selectOneVersionsMessage: "Select maximum one version to compare the current project against. Currently selected: {{size}}."
-    },
-    scl: {
-      wizardTitle: "Edit SCL",
-      filenameHelper: "Filename used by CoMPAS when saving to a filesystem",
-      labelsTitle: "CoMPAS Labels",
-      updateAction: "Updated CoMPAS Private Element for SCL Element"
-    },
-    compare: {
-      title: "Compare version {{newVersion}} against version {{oldVersion}}",
-      titleCurrent: "Compare current project against version {{oldVersion}}",
-      noDiff: "No difference between versions",
-      attributes: "Attributes from",
-      children: "Child elements from"
-    },
-    settings: {
-      title: "CoMPAS Settings",
-      sclDataServiceUrl: "CoMPAS SCL Data Service URL",
-      sclValidatorServiceUrl: "CoMPAS SCL Validator Service URL",
-      cimMappingServiceUrl: "CoMPAS CIM Mapping Service URL",
-      sclAutoAlignmentServiceUrl: "CoMPAS SCL Auto Alignment Service URL",
-      useWebsockets: "Use Websockets"
-    },
-    exportIEDParams: {
-      noIEDs: "No IEDs found"
-    },
-    session: {
-      headingExpiring: "Your session is about to expire!",
-      explainExpiring: "Because of inactivity ({{expiringSessionWarning}} minutes), your session with the CoMPAS Systems is about to expire. <br>If you want to continue working press the button 'Continue'. Otherwise the session will expire in {{timeTillExpire}} minutes.",
-      continue: "Continue",
-      headingExpired: "Your session is expired!",
-      explainExpiredWithProject: "Because of inactivity ({{expiredSessionMessage}} minutes), your session with the CoMPAS Systems is expired. <br>To continue working you need to reload the browser to login again, but modifications to the project are lost. <br>To prevent this you can first save the project to your local filesystem using the button 'Save project'. <br>After loading the original project from CoMPAS you can add this file as new version using the tab 'CoMPAS Versions'.",
-      explainExpiredWithoutProject: "Because of inactivity ({{expiredSessionMessage}} minutes), your session with the CoMPAS Systems is expired. <br>To continue working you need to reload the browser to login again.",
-      saveProject: "Save project"
-    },
-    autogensubstation: {
-      substationAmount: "Found {{amount}} substation(s) to be created!",
-      voltagelevelAmount: "Generating {{amount}} Voltage Level(s) for {{substationname}} substation!",
-      bayAmount: "Generating {{amount}} Bay Element(s) for {{voltagelevelname}} Voltage Level!",
-      substationGen: "Generated {{substationname}} substation with content!"
-    },
-    export104: {
-      noSignalsFound: "Export 104 found no signals",
-      invalidSignalWarning: "Export 104 found invalid signal",
-      errors: {
-        tiOrIoaInvalid: 'ti or ioa are missing or ioa is less than 4 digits, ti: "{{ ti }}", ioa: "{{ ioa }}"',
-        unknownSignalType: 'Unknown signal type for ti: "{{ ti }}", ioa: "{{ ioa }}"',
-        noDoi: 'No parent DOI found for address with ioa: "{{ ioa }}"',
-        noBay: 'No Bay found bayname: "{{ bayName }}" for address with ioa: "{{ ioa }}"',
-        noVoltageLevel: 'No parent voltage level found for bay "{{ bayName }}" for ioa "{{ ioa }}"',
-        noSubstation: 'No parent substation found for voltage level "{{ voltageLevelName }}" for ioa "{{ ioa }}"'
-      }
-    }
-  },
-  locamation: {
-    vmu: {
-      ied: {
-        title: "Configure Locamation VMUs",
-        missing: "No Locamation IEDs with Logica Devices found",
-        name: "IED"
-      },
-      ldevice: {
-        name: "Logical Device"
-      },
-      ln: {
-        title: "Configure Locamation VMUs (IED)",
-        editTitle: "Edit VMU",
-        name: "Logical Node"
-      },
-      version: "Locamation VMU Version",
-      identifier: "Identifier",
-      identifierHelper: "The address of the sensor. The address is constructed of 3 numbers, separated by dots. The range of each number is 0-255.",
-      sum: "Sum",
-      sumHelper: "The collection of three channel numbers for which the sum of currents or voltages will be calculated. The numbers are separated by commas. Values for the current sensor range from 0 - 5, for the voltage sensor 0-2.",
-      channel: "Channel",
-      channelHelper: "The channel number on the sensor. Values for the current sensor range from 0 - 5, for the voltage sensor 0-2.",
-      transformPrimary: "TransformPrimary",
-      transformPrimaryHelper: "The nominator of the ratio of the measement transformer.",
-      transformSecondary: "TransformSecondary",
-      transformSecondaryHelper: "The denominator of the ratio of the measement transformer.",
-      updateAction: "Locamation private fields updated for Logica Node {{lnName}}"
-    }
-  }
-}, _a = {
-  en: { ...yl, ...zp },
-  de: { ...bl, ...Hp }
-};
-async function Vp(i) {
-  return Object.keys(_a).includes(i) ? _a[i] : {};
-}
-Fa({ loader: Vp, empty: (i) => i });
-const Up = localStorage.getItem("language") || "en";
-eo(Up);
 var Wp = Object.defineProperty, Gl = (i, e, t, n) => {
   for (var s = void 0, a = i.length - 1, l; a >= 0; a--)
     (l = i[a]) && (s = l(e, t, s) || s);
@@ -32994,7 +32994,7 @@ var Wp = Object.defineProperty, Gl = (i, e, t, n) => {
 };
 class Kl extends ge {
   async run() {
-    this.compasOpenElement.selectedType = void 0, await this.compasOpenElement.requestUpdate(), this.dispatchEvent(Pp()), this.dialog.show();
+    this.compasOpenElement.selectedType = void 0, await this.compasOpenElement.requestUpdate(), this.dispatchEvent(Vp()), this.dialog.show();
   }
   async openDoc(e) {
     e.detail.localFile ? (this.dispatchEvent(Zt({ kind: "reset" })), this.dispatchEvent(
