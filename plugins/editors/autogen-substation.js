@@ -11,7 +11,7 @@
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-const Q = typeof window < "u" && window.customElements != null && window.customElements.polyfillWrapFlushCallback !== void 0, Z = (n, e, t = null) => {
+const Y = typeof window < "u" && window.customElements != null && window.customElements.polyfillWrapFlushCallback !== void 0, Z = (n, e, t = null) => {
   for (; e !== t; ) {
     const i = e.nextSibling;
     n.removeChild(e), e = i;
@@ -30,67 +30,67 @@ const Q = typeof window < "u" && window.customElements != null && window.customE
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-const g = `{{lit-${String(Math.random()).slice(2)}}}`, re = `<!--${g}-->`, Y = new RegExp(`${g}|${re}`), A = "$lit$";
+const g = `{{lit-${String(Math.random()).slice(2)}}}`, re = `<!--${g}-->`, Q = new RegExp(`${g}|${re}`), A = "$lit$";
 class ae {
   constructor(e, t) {
     this.parts = [], this.element = t;
     const i = [], r = [], a = document.createTreeWalker(t.content, 133, null, !1);
-    let o = 0, s = -1, l = 0;
+    let s = 0, o = -1, d = 0;
     const { strings: c, values: { length: u } } = e;
-    for (; l < u; ) {
-      const d = a.nextNode();
-      if (d === null) {
+    for (; d < u; ) {
+      const l = a.nextNode();
+      if (l === null) {
         a.currentNode = r.pop();
         continue;
       }
-      if (s++, d.nodeType === 1) {
-        if (d.hasAttributes()) {
-          const m = d.attributes, { length: P } = m;
-          let f = 0;
-          for (let p = 0; p < P; p++)
-            J(m[p].name, A) && f++;
-          for (; f-- > 0; ) {
-            const p = c[l], y = G.exec(p)[2], N = y.toLowerCase() + A, S = d.getAttribute(N);
-            d.removeAttribute(N);
-            const h = S.split(Y);
-            this.parts.push({ type: "attribute", index: s, name: y, strings: h }), l += h.length - 1;
+      if (o++, l.nodeType === 1) {
+        if (l.hasAttributes()) {
+          const m = l.attributes, { length: L } = m;
+          let b = 0;
+          for (let p = 0; p < L; p++)
+            J(m[p].name, A) && b++;
+          for (; b-- > 0; ) {
+            const p = c[d], y = j.exec(p)[2], w = y.toLowerCase() + A, S = l.getAttribute(w);
+            l.removeAttribute(w);
+            const h = S.split(Q);
+            this.parts.push({ type: "attribute", index: o, name: y, strings: h }), d += h.length - 1;
           }
         }
-        d.tagName === "TEMPLATE" && (r.push(d), a.currentNode = d.content);
-      } else if (d.nodeType === 3) {
-        const m = d.data;
+        l.tagName === "TEMPLATE" && (r.push(l), a.currentNode = l.content);
+      } else if (l.nodeType === 3) {
+        const m = l.data;
         if (m.indexOf(g) >= 0) {
-          const P = d.parentNode, f = m.split(Y), p = f.length - 1;
+          const L = l.parentNode, b = m.split(Q), p = b.length - 1;
           for (let y = 0; y < p; y++) {
-            let N, S = f[y];
+            let w, S = b[y];
             if (S === "")
-              N = b();
+              w = f();
             else {
-              const h = G.exec(S);
-              h !== null && J(h[2], A) && (S = S.slice(0, h.index) + h[1] + h[2].slice(0, -A.length) + h[3]), N = document.createTextNode(S);
+              const h = j.exec(S);
+              h !== null && J(h[2], A) && (S = S.slice(0, h.index) + h[1] + h[2].slice(0, -A.length) + h[3]), w = document.createTextNode(S);
             }
-            P.insertBefore(N, d), this.parts.push({ type: "node", index: ++s });
+            L.insertBefore(w, l), this.parts.push({ type: "node", index: ++o });
           }
-          f[p] === "" ? (P.insertBefore(b(), d), i.push(d)) : d.data = f[p], l += p;
+          b[p] === "" ? (L.insertBefore(f(), l), i.push(l)) : l.data = b[p], d += p;
         }
-      } else if (d.nodeType === 8)
-        if (d.data === g) {
-          const m = d.parentNode;
-          (d.previousSibling === null || s === o) && (s++, m.insertBefore(b(), d)), o = s, this.parts.push({ type: "node", index: s }), d.nextSibling === null ? d.data = "" : (i.push(d), s--), l++;
+      } else if (l.nodeType === 8)
+        if (l.data === g) {
+          const m = l.parentNode;
+          (l.previousSibling === null || o === s) && (o++, m.insertBefore(f(), l)), s = o, this.parts.push({ type: "node", index: o }), l.nextSibling === null ? l.data = "" : (i.push(l), o--), d++;
         } else {
           let m = -1;
-          for (; (m = d.data.indexOf(g, m + 1)) !== -1; )
-            this.parts.push({ type: "node", index: -1 }), l++;
+          for (; (m = l.data.indexOf(g, m + 1)) !== -1; )
+            this.parts.push({ type: "node", index: -1 }), d++;
         }
     }
-    for (const d of i)
-      d.parentNode.removeChild(d);
+    for (const l of i)
+      l.parentNode.removeChild(l);
   }
 }
 const J = (n, e) => {
   const t = n.length - e.length;
   return t >= 0 && n.slice(t) === e;
-}, se = (n) => n.index !== -1, b = () => document.createComment(""), G = (
+}, oe = (n) => n.index !== -1, f = () => document.createComment(""), j = (
   // eslint-disable-next-line no-control-regex
   /([ \x09\x0a\x0c\x0d])([^\0-\x1F\x7F-\x9F "'>=/]+)([ \x09\x0a\x0c\x0d]*=[ \x09\x0a\x0c\x0d]*(?:[^ \x09\x0a\x0c\x0d"'`<>=]*|"[^"]*|'[^']*))$/
 );
@@ -108,18 +108,18 @@ const J = (n, e) => {
  * http://polymer.github.io/PATENTS.txt
  */
 const X = 133;
-function oe(n, e) {
+function se(n, e) {
   const { element: { content: t }, parts: i } = n, r = document.createTreeWalker(t, X, null, !1);
-  let a = C(i), o = i[a], s = -1, l = 0;
+  let a = C(i), s = i[a], o = -1, d = 0;
   const c = [];
   let u = null;
   for (; r.nextNode(); ) {
-    s++;
-    const d = r.currentNode;
-    for (d.previousSibling === u && (u = null), e.has(d) && (c.push(d), u === null && (u = d)), u !== null && l++; o !== void 0 && o.index === s; )
-      o.index = u !== null ? -1 : o.index - l, a = C(i, a), o = i[a];
+    o++;
+    const l = r.currentNode;
+    for (l.previousSibling === u && (u = null), e.has(l) && (c.push(l), u === null && (u = l)), u !== null && d++; s !== void 0 && s.index === o; )
+      s.index = u !== null ? -1 : s.index - d, a = C(i, a), s = i[a];
   }
-  c.forEach((d) => d.parentNode.removeChild(d));
+  c.forEach((l) => l.parentNode.removeChild(l));
 }
 const Se = (n) => {
   let e = n.nodeType === 11 ? 0 : 1;
@@ -130,7 +130,7 @@ const Se = (n) => {
 }, C = (n, e = -1) => {
   for (let t = e + 1; t < n.length; t++) {
     const i = n[t];
-    if (se(i))
+    if (oe(i))
       return t;
   }
   return -1;
@@ -142,15 +142,15 @@ function ye(n, e, t = null) {
     return;
   }
   const a = document.createTreeWalker(i, X, null, !1);
-  let o = C(r), s = 0, l = -1;
+  let s = C(r), o = 0, d = -1;
   for (; a.nextNode(); )
-    for (l++, a.currentNode === t && (s = Se(e), t.parentNode.insertBefore(e, t)); o !== -1 && r[o].index === l; ) {
-      if (s > 0) {
-        for (; o !== -1; )
-          r[o].index += s, o = C(r, o);
+    for (d++, a.currentNode === t && (o = Se(e), t.parentNode.insertBefore(e, t)); s !== -1 && r[s].index === d; ) {
+      if (o > 0) {
+        for (; s !== -1; )
+          r[s].index += o, s = C(r, s);
         return;
       }
-      o = C(r, o);
+      s = C(r, s);
     }
 }
 /**
@@ -166,7 +166,7 @@ function ye(n, e, t = null) {
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-const Ne = /* @__PURE__ */ new WeakMap(), K = (n) => typeof n == "function" && Ne.has(n);
+const we = /* @__PURE__ */ new WeakMap(), U = (n) => typeof n == "function" && we.has(n);
 /**
  * @license
  * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
@@ -180,7 +180,7 @@ const Ne = /* @__PURE__ */ new WeakMap(), K = (n) => typeof n == "function" && N
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-const E = {}, ee = {};
+const D = {}, ee = {};
 /**
  * @license
  * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
@@ -194,7 +194,7 @@ const E = {}, ee = {};
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-class q {
+class G {
   constructor(e, t, i) {
     this.__parts = [], this.template = e, this.processor = t, this.options = i;
   }
@@ -206,23 +206,23 @@ class q {
       i !== void 0 && i.commit();
   }
   _clone() {
-    const e = Q ? this.template.element.content.cloneNode(!0) : document.importNode(this.template.element.content, !0), t = [], i = this.template.parts, r = document.createTreeWalker(e, 133, null, !1);
-    let a = 0, o = 0, s, l = r.nextNode();
+    const e = Y ? this.template.element.content.cloneNode(!0) : document.importNode(this.template.element.content, !0), t = [], i = this.template.parts, r = document.createTreeWalker(e, 133, null, !1);
+    let a = 0, s = 0, o, d = r.nextNode();
     for (; a < i.length; ) {
-      if (s = i[a], !se(s)) {
+      if (o = i[a], !oe(o)) {
         this.__parts.push(void 0), a++;
         continue;
       }
-      for (; o < s.index; )
-        o++, l.nodeName === "TEMPLATE" && (t.push(l), r.currentNode = l.content), (l = r.nextNode()) === null && (r.currentNode = t.pop(), l = r.nextNode());
-      if (s.type === "node") {
+      for (; s < o.index; )
+        s++, d.nodeName === "TEMPLATE" && (t.push(d), r.currentNode = d.content), (d = r.nextNode()) === null && (r.currentNode = t.pop(), d = r.nextNode());
+      if (o.type === "node") {
         const c = this.processor.handleTextExpression(this.options);
-        c.insertAfterNode(l.previousSibling), this.__parts.push(c);
+        c.insertAfterNode(d.previousSibling), this.__parts.push(c);
       } else
-        this.__parts.push(...this.processor.handleAttributeExpressions(l, s.name, s.strings, this.options));
+        this.__parts.push(...this.processor.handleAttributeExpressions(d, o.name, o.strings, this.options));
       a++;
     }
-    return Q && (document.adoptNode(e), customElements.upgrade(e)), e;
+    return Y && (document.adoptNode(e), customElements.upgrade(e)), e;
   }
 }
 /**
@@ -238,8 +238,8 @@ class q {
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-const te = window.trustedTypes && trustedTypes.createPolicy("lit-html", { createHTML: (n) => n }), we = ` ${g} `;
-class De {
+const te = window.trustedTypes && trustedTypes.createPolicy("lit-html", { createHTML: (n) => n }), Ne = ` ${g} `;
+class ve {
   constructor(e, t, i, r) {
     this.strings = e, this.values = t, this.type = i, this.processor = r;
   }
@@ -250,10 +250,10 @@ class De {
     const e = this.strings.length - 1;
     let t = "", i = !1;
     for (let r = 0; r < e; r++) {
-      const a = this.strings[r], o = a.lastIndexOf("<!--");
-      i = (o > -1 || i) && a.indexOf("-->", o + 1) === -1;
-      const s = G.exec(a);
-      s === null ? t += a + (i ? we : re) : t += a.substr(0, s.index) + s[1] + s[2] + A + s[3] + g;
+      const a = this.strings[r], s = a.lastIndexOf("<!--");
+      i = (s > -1 || i) && a.indexOf("-->", s + 1) === -1;
+      const o = j.exec(a);
+      o === null ? t += a + (i ? Ne : re) : t += a.substr(0, o.index) + o[1] + o[2] + A + o[3] + g;
     }
     return t += this.strings[e], t;
   }
@@ -276,24 +276,24 @@ class De {
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-const de = (n) => n === null || !(typeof n == "object" || typeof n == "function"), Ae = (n) => Array.isArray(n) || // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const le = (n) => n === null || !(typeof n == "object" || typeof n == "function"), Ae = (n) => Array.isArray(n) || // eslint-disable-next-line @typescript-eslint/no-explicit-any
 !!(n && n[Symbol.iterator]);
 class Ce {
   constructor(e) {
     this.value = void 0, this.committer = e;
   }
   setValue(e) {
-    e !== E && (!de(e) || e !== this.value) && (this.value = e, K(e) || (this.committer.dirty = !0));
+    e !== D && (!le(e) || e !== this.value) && (this.value = e, U(e) || (this.committer.dirty = !0));
   }
   commit() {
-    for (; K(this.value); ) {
+    for (; U(this.value); ) {
       const e = this.value;
-      this.value = E, e(this);
+      this.value = D, e(this);
     }
-    this.value !== E && this.committer.commit();
+    this.value !== D && this.committer.commit();
   }
 }
-class x {
+class V {
   constructor(e) {
     this.value = void 0, this.__pendingValue = void 0, this.options = e;
   }
@@ -303,7 +303,7 @@ class x {
    * This part must be empty, as its contents are not automatically moved.
    */
   appendInto(e) {
-    this.startNode = e.appendChild(b()), this.endNode = e.appendChild(b());
+    this.startNode = e.appendChild(f()), this.endNode = e.appendChild(f());
   }
   /**
    * Inserts this part after the `ref` node (between `ref` and `ref`'s next
@@ -321,7 +321,7 @@ class x {
    * This part must be empty, as its contents are not automatically moved.
    */
   appendIntoPart(e) {
-    e.__insert(this.startNode = b()), e.__insert(this.endNode = b());
+    e.__insert(this.startNode = f()), e.__insert(this.endNode = f());
   }
   /**
    * Inserts this part after the `ref` part.
@@ -329,7 +329,7 @@ class x {
    * This part must be empty, as its contents are not automatically moved.
    */
   insertAfterPart(e) {
-    e.__insert(this.startNode = b()), this.endNode = e.endNode, e.endNode = this.startNode;
+    e.__insert(this.startNode = f()), this.endNode = e.endNode, e.endNode = this.startNode;
   }
   setValue(e) {
     this.__pendingValue = e;
@@ -337,12 +337,12 @@ class x {
   commit() {
     if (this.startNode.parentNode === null)
       return;
-    for (; K(this.__pendingValue); ) {
+    for (; U(this.__pendingValue); ) {
       const t = this.__pendingValue;
-      this.__pendingValue = E, t(this);
+      this.__pendingValue = D, t(this);
     }
     const e = this.__pendingValue;
-    e !== E && (de(e) ? e !== this.value && this.__commitText(e) : e instanceof De ? this.__commitTemplateResult(e) : e instanceof Node ? this.__commitNode(e) : Ae(e) ? this.__commitIterable(e) : e === ee ? (this.value = ee, this.clear()) : this.__commitText(e));
+    e !== D && (le(e) ? e !== this.value && this.__commitText(e) : e instanceof ve ? this.__commitTemplateResult(e) : e instanceof Node ? this.__commitNode(e) : Ae(e) ? this.__commitIterable(e) : e === ee ? (this.value = ee, this.clear()) : this.__commitText(e));
   }
   __insert(e) {
     this.endNode.parentNode.insertBefore(e, this.endNode);
@@ -358,10 +358,10 @@ class x {
   }
   __commitTemplateResult(e) {
     const t = this.options.templateFactory(e);
-    if (this.value instanceof q && this.value.template === t)
+    if (this.value instanceof G && this.value.template === t)
       this.value.update(e.values);
     else {
-      const i = new q(t, e.processor, this.options), r = i._clone();
+      const i = new G(t, e.processor, this.options), r = i._clone();
       i.update(e.values), this.__commitNode(r), this.value = i;
     }
   }
@@ -370,19 +370,19 @@ class x {
     const t = this.value;
     let i = 0, r;
     for (const a of e)
-      r = t[i], r === void 0 && (r = new x(this.options), t.push(r), i === 0 ? r.appendIntoPart(this) : r.insertAfterPart(t[i - 1])), r.setValue(a), r.commit(), i++;
+      r = t[i], r === void 0 && (r = new V(this.options), t.push(r), i === 0 ? r.appendIntoPart(this) : r.insertAfterPart(t[i - 1])), r.setValue(a), r.commit(), i++;
     i < t.length && (t.length = i, this.clear(r && r.endNode));
   }
   clear(e = this.startNode) {
     Z(this.startNode.parentNode, e.nextSibling, this.endNode);
   }
 }
-let Ee = !1;
+let De = !1;
 (() => {
   try {
     const n = {
       get capture() {
-        return Ee = !0, !1;
+        return De = !0, !1;
       }
     };
     window.addEventListener("test", n, n), window.removeEventListener("test", n, n);
@@ -402,19 +402,19 @@ let Ee = !1;
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-function ve(n) {
-  let e = v.get(n.type);
+function Ee(n) {
+  let e = E.get(n.type);
   e === void 0 && (e = {
     stringsArray: /* @__PURE__ */ new WeakMap(),
     keyString: /* @__PURE__ */ new Map()
-  }, v.set(n.type, e));
+  }, E.set(n.type, e));
   let t = e.stringsArray.get(n.strings);
   if (t !== void 0)
     return t;
   const i = n.strings.join(g);
   return t = e.keyString.get(i), t === void 0 && (t = new ae(n, n.getTemplateElement()), e.keyString.set(i, t)), e.stringsArray.set(n.strings, t), t;
 }
-const v = /* @__PURE__ */ new Map();
+const E = /* @__PURE__ */ new Map();
 /**
  * @license
  * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
@@ -428,9 +428,9 @@ const v = /* @__PURE__ */ new Map();
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-const D = /* @__PURE__ */ new WeakMap(), Te = (n, e, t) => {
-  let i = D.get(e);
-  i === void 0 && (Z(e, e.firstChild), D.set(e, i = new x(Object.assign({ templateFactory: ve }, t))), i.appendInto(e)), i.setValue(n), i.commit();
+const v = /* @__PURE__ */ new WeakMap(), Te = (n, e, t) => {
+  let i = v.get(e);
+  i === void 0 && (Z(e, e.firstChild), v.set(e, i = new V(Object.assign({ templateFactory: Ee }, t))), i.appendInto(e)), i.setValue(n), i.commit();
 };
 /**
  * @license
@@ -459,67 +459,67 @@ typeof window < "u" && (window.litHtmlVersions || (window.litHtmlVersions = []))
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-const le = (n, e) => `${n}--${e}`;
-let _ = !0;
-typeof window.ShadyCSS > "u" ? _ = !1 : typeof window.ShadyCSS.prepareTemplateDom > "u" && (console.warn("Incompatible ShadyCSS version detected. Please update to at least @webcomponents/webcomponentsjs@2.0.2 and @webcomponents/shadycss@1.3.1."), _ = !1);
-const ke = (n) => (e) => {
-  const t = le(e.type, n);
-  let i = v.get(t);
+const de = (n, e) => `${n}--${e}`;
+let x = !0;
+typeof window.ShadyCSS > "u" ? x = !1 : typeof window.ShadyCSS.prepareTemplateDom > "u" && (console.warn("Incompatible ShadyCSS version detected. Please update to at least @webcomponents/webcomponentsjs@2.0.2 and @webcomponents/shadycss@1.3.1."), x = !1);
+const Pe = (n) => (e) => {
+  const t = de(e.type, n);
+  let i = E.get(t);
   i === void 0 && (i = {
     stringsArray: /* @__PURE__ */ new WeakMap(),
     keyString: /* @__PURE__ */ new Map()
-  }, v.set(t, i));
+  }, E.set(t, i));
   let r = i.stringsArray.get(e.strings);
   if (r !== void 0)
     return r;
   const a = e.strings.join(g);
   if (r = i.keyString.get(a), r === void 0) {
-    const o = e.getTemplateElement();
-    _ && window.ShadyCSS.prepareTemplateDom(o, n), r = new ae(e, o), i.keyString.set(a, r);
+    const s = e.getTemplateElement();
+    x && window.ShadyCSS.prepareTemplateDom(s, n), r = new ae(e, s), i.keyString.set(a, r);
   }
   return i.stringsArray.set(e.strings, r), r;
-}, Ie = ["html", "svg"], Le = (n) => {
+}, Ie = ["html", "svg"], ke = (n) => {
   Ie.forEach((e) => {
-    const t = v.get(le(e, n));
+    const t = E.get(de(e, n));
     t !== void 0 && t.keyString.forEach((i) => {
       const { element: { content: r } } = i, a = /* @__PURE__ */ new Set();
-      Array.from(r.querySelectorAll("style")).forEach((o) => {
-        a.add(o);
-      }), oe(i, a);
+      Array.from(r.querySelectorAll("style")).forEach((s) => {
+        a.add(s);
+      }), se(i, a);
     });
   });
-}, ce = /* @__PURE__ */ new Set(), Pe = (n, e, t) => {
+}, ce = /* @__PURE__ */ new Set(), Le = (n, e, t) => {
   ce.add(n);
   const i = t ? t.element : document.createElement("template"), r = e.querySelectorAll("style"), { length: a } = r;
   if (a === 0) {
     window.ShadyCSS.prepareTemplateStyles(i, n);
     return;
   }
-  const o = document.createElement("style");
+  const s = document.createElement("style");
   for (let c = 0; c < a; c++) {
     const u = r[c];
-    u.parentNode.removeChild(u), o.textContent += u.textContent;
+    u.parentNode.removeChild(u), s.textContent += u.textContent;
   }
-  Le(n);
-  const s = i.content;
-  t ? ye(t, o, s.firstChild) : s.insertBefore(o, s.firstChild), window.ShadyCSS.prepareTemplateStyles(i, n);
-  const l = s.querySelector("style");
-  if (window.ShadyCSS.nativeShadow && l !== null)
-    e.insertBefore(l.cloneNode(!0), e.firstChild);
+  ke(n);
+  const o = i.content;
+  t ? ye(t, s, o.firstChild) : o.insertBefore(s, o.firstChild), window.ShadyCSS.prepareTemplateStyles(i, n);
+  const d = o.querySelector("style");
+  if (window.ShadyCSS.nativeShadow && d !== null)
+    e.insertBefore(d.cloneNode(!0), e.firstChild);
   else if (t) {
-    s.insertBefore(o, s.firstChild);
+    o.insertBefore(s, o.firstChild);
     const c = /* @__PURE__ */ new Set();
-    c.add(o), oe(t, c);
+    c.add(s), se(t, c);
   }
 }, ze = (n, e, t) => {
   if (!t || typeof t != "object" || !t.scopeName)
     throw new Error("The `scopeName` option is required.");
-  const i = t.scopeName, r = D.has(e), a = _ && e.nodeType === 11 && !!e.host, o = a && !ce.has(i), s = o ? document.createDocumentFragment() : e;
-  if (Te(n, s, Object.assign({ templateFactory: ke(i) }, t)), o) {
-    const l = D.get(s);
-    D.delete(s);
-    const c = l.value instanceof q ? l.value.template : void 0;
-    Pe(i, s, c), Z(e, e.firstChild), e.appendChild(s), D.set(e, l);
+  const i = t.scopeName, r = v.has(e), a = x && e.nodeType === 11 && !!e.host, s = a && !ce.has(i), o = s ? document.createDocumentFragment() : e;
+  if (Te(n, o, Object.assign({ templateFactory: Pe(i) }, t)), s) {
+    const d = v.get(o);
+    v.delete(o);
+    const c = d.value instanceof G ? d.value.template : void 0;
+    Le(i, o, c), Z(e, e.firstChild), e.appendChild(o), v.set(e, d);
   }
   !r && a && window.ShadyCSS.styleElement(e.host);
 };
@@ -561,13 +561,13 @@ const F = {
     }
     return n;
   }
-}, me = (n, e) => e !== n && (e === e || n === n), V = {
+}, me = (n, e) => e !== n && (e === e || n === n), M = {
   attribute: !0,
   type: String,
   converter: F,
   reflect: !1,
   hasChanged: me
-}, H = 1, O = 4, M = 8, B = 16, U = "finalized";
+}, R = 1, H = 4, O = 8, B = 16, K = "finalized";
 class pe extends HTMLElement {
   constructor() {
     super(), this.initialize();
@@ -619,7 +619,7 @@ class pe extends HTMLElement {
    *
    * @nocollapse
    */
-  static createProperty(e, t = V) {
+  static createProperty(e, t = M) {
     if (this._ensureClassProperties(), this._classProperties.set(e, t), t.noAccessor || this.prototype.hasOwnProperty(e))
       return;
     const i = typeof e == "symbol" ? Symbol() : `__${e}`, r = this.getPropertyDescriptor(e, i, t);
@@ -676,7 +676,7 @@ class pe extends HTMLElement {
    * @final
    */
   static getPropertyOptions(e) {
-    return this._classProperties && this._classProperties.get(e) || V;
+    return this._classProperties && this._classProperties.get(e) || M;
   }
   /**
    * Creates property accessors for registered properties and ensures
@@ -685,7 +685,7 @@ class pe extends HTMLElement {
    */
   static finalize() {
     const e = Object.getPrototypeOf(this);
-    if (e.hasOwnProperty(U) || e.finalize(), this[U] = !0, this._ensureClassProperties(), this._attributeToPropertyMap = /* @__PURE__ */ new Map(), this.hasOwnProperty(JSCompiler_renameProperty("properties", this))) {
+    if (e.hasOwnProperty(K) || e.finalize(), this[K] = !0, this._ensureClassProperties(), this._attributeToPropertyMap = /* @__PURE__ */ new Map(), this.hasOwnProperty(JSCompiler_renameProperty("properties", this))) {
       const t = this.properties, i = [
         ...Object.getOwnPropertyNames(t),
         ...typeof Object.getOwnPropertySymbols == "function" ? Object.getOwnPropertySymbols(t) : []
@@ -787,17 +787,17 @@ class pe extends HTMLElement {
   attributeChangedCallback(e, t, i) {
     t !== i && this._attributeToProperty(e, i);
   }
-  _propertyToAttribute(e, t, i = V) {
+  _propertyToAttribute(e, t, i = M) {
     const r = this.constructor, a = r._attributeNameForProperty(e, i);
     if (a !== void 0) {
-      const o = r._propertyValueToAttribute(t, i);
-      if (o === void 0)
+      const s = r._propertyValueToAttribute(t, i);
+      if (s === void 0)
         return;
-      this._updateState = this._updateState | M, o == null ? this.removeAttribute(a) : this.setAttribute(a, o), this._updateState = this._updateState & ~M;
+      this._updateState = this._updateState | O, s == null ? this.removeAttribute(a) : this.setAttribute(a, s), this._updateState = this._updateState & ~O;
     }
   }
   _attributeToProperty(e, t) {
-    if (this._updateState & M)
+    if (this._updateState & O)
       return;
     const i = this.constructor, r = i._attributeToPropertyMap.get(e);
     if (r !== void 0) {
@@ -839,7 +839,7 @@ class pe extends HTMLElement {
    * Sets up the element to asynchronously update.
    */
   async _enqueueUpdate() {
-    this._updateState = this._updateState | O;
+    this._updateState = this._updateState | H;
     try {
       await this._updatePromise;
     } catch {
@@ -848,10 +848,10 @@ class pe extends HTMLElement {
     return e != null && await e, !this._hasRequestedUpdate;
   }
   get _hasRequestedUpdate() {
-    return this._updateState & O;
+    return this._updateState & H;
   }
   get hasUpdated() {
-    return this._updateState & H;
+    return this._updateState & R;
   }
   /**
    * Performs an element update. Note, if an exception is thrown during the
@@ -880,10 +880,10 @@ class pe extends HTMLElement {
     } catch (i) {
       throw e = !1, this._markUpdated(), i;
     }
-    e && (this._updateState & H || (this._updateState = this._updateState | H, this.firstUpdated(t)), this.updated(t));
+    e && (this._updateState & R || (this._updateState = this._updateState | R, this.firstUpdated(t)), this.updated(t));
   }
   _markUpdated() {
-    this._changedProperties = /* @__PURE__ */ new Map(), this._updateState = this._updateState & ~O;
+    this._changedProperties = /* @__PURE__ */ new Map(), this._updateState = this._updateState & ~H;
   }
   /**
    * Returns a Promise that resolves when the element has completed updating.
@@ -987,7 +987,7 @@ class pe extends HTMLElement {
   firstUpdated(e) {
   }
 }
-ue = U;
+ue = K;
 pe[ue] = !0;
 /**
  * @license
@@ -1002,7 +1002,7 @@ pe[ue] = !0;
  * subject to an additional IP rights grant found at
  * http://polymer.github.io/PATENTS.txt
  */
-const _e = (n, e) => e.kind === "method" && e.descriptor && !("value" in e.descriptor) ? Object.assign(Object.assign({}, e), { finisher(t) {
+const xe = (n, e) => e.kind === "method" && e.descriptor && !("value" in e.descriptor) ? Object.assign(Object.assign({}, e), { finisher(t) {
   t.createProperty(e.key, n);
 } }) : {
   kind: "field",
@@ -1024,11 +1024,11 @@ const _e = (n, e) => e.kind === "method" && e.descriptor && !("value" in e.descr
   finisher(t) {
     t.createProperty(e.key, n);
   }
-}, xe = (n, e, t) => {
+}, Ve = (n, e, t) => {
   e.constructor.createProperty(t, n);
 };
-function k(n) {
-  return (e, t) => t !== void 0 ? xe(n, e, t) : _e(n, e);
+function P(n) {
+  return (e, t) => t !== void 0 ? Ve(n, e, t) : xe(n, e);
 }
 /**
 @license
@@ -1040,8 +1040,8 @@ found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
 part of the polymer project is also subject to an additional IP rights grant
 found at http://polymer.github.io/PATENTS.txt
 */
-const j = window.ShadowRoot && (window.ShadyCSS === void 0 || window.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, he = Symbol();
-class Re {
+const q = window.ShadowRoot && (window.ShadyCSS === void 0 || window.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, he = Symbol();
+class _e {
   constructor(e, t) {
     if (t !== he)
       throw new Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
@@ -1050,13 +1050,13 @@ class Re {
   // Note, this is a getter so that it's lazy. In practice, this means
   // stylesheets are not created until the first element instance is made.
   get styleSheet() {
-    return this._styleSheet === void 0 && (j ? (this._styleSheet = new CSSStyleSheet(), this._styleSheet.replaceSync(this.cssText)) : this._styleSheet = null), this._styleSheet;
+    return this._styleSheet === void 0 && (q ? (this._styleSheet = new CSSStyleSheet(), this._styleSheet.replaceSync(this.cssText)) : this._styleSheet = null), this._styleSheet;
   }
   toString() {
     return this.cssText;
   }
 }
-const Ve = (n) => new Re(String(n), he);
+const Me = (n) => new _e(String(n), he);
 /**
  * @license
  * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
@@ -1072,7 +1072,7 @@ const Ve = (n) => new Re(String(n), he);
  */
 (window.litElementVersions || (window.litElementVersions = [])).push("2.5.1");
 const ne = {};
-class R extends pe {
+class _ extends pe {
   /**
    * Return the array of styles to apply to the element.
    * Override this method to integrate into a style management system.
@@ -1088,17 +1088,17 @@ class R extends pe {
       return;
     const e = this.getStyles();
     if (Array.isArray(e)) {
-      const t = (a, o) => a.reduceRight((s, l) => (
+      const t = (a, s) => a.reduceRight((o, d) => (
         // Note: On IE set.add() does not return the set
-        Array.isArray(l) ? t(l, s) : (s.add(l), s)
-      ), o), i = t(e, /* @__PURE__ */ new Set()), r = [];
+        Array.isArray(d) ? t(d, o) : (o.add(d), o)
+      ), s), i = t(e, /* @__PURE__ */ new Set()), r = [];
       i.forEach((a) => r.unshift(a)), this._styles = r;
     } else
       this._styles = e === void 0 ? [] : [e];
     this._styles = this._styles.map((t) => {
-      if (t instanceof CSSStyleSheet && !j) {
+      if (t instanceof CSSStyleSheet && !q) {
         const i = Array.prototype.slice.call(t.cssRules).reduce((r, a) => r + a.cssText, "");
-        return Ve(i);
+        return Me(i);
       }
       return t;
     });
@@ -1132,7 +1132,7 @@ class R extends pe {
    */
   adoptStyles() {
     const e = this.constructor._styles;
-    e.length !== 0 && (window.ShadyCSS !== void 0 && !window.ShadyCSS.nativeShadow ? window.ShadyCSS.ScopingShim.prepareAdoptedCssText(e.map((t) => t.cssText), this.localName) : j ? this.renderRoot.adoptedStyleSheets = e.map((t) => t instanceof CSSStyleSheet ? t : t.styleSheet) : this._needsShimAdoptedStyleSheets = !0);
+    e.length !== 0 && (window.ShadyCSS !== void 0 && !window.ShadyCSS.nativeShadow ? window.ShadyCSS.ScopingShim.prepareAdoptedCssText(e.map((t) => t.cssText), this.localName) : q ? this.renderRoot.adoptedStyleSheets = e.map((t) => t instanceof CSSStyleSheet ? t : t.styleSheet) : this._needsShimAdoptedStyleSheets = !0);
   }
   connectedCallback() {
     super.connectedCallback(), this.hasUpdated && window.ShadyCSS !== void 0 && window.ShadyCSS.styleElement(this);
@@ -1160,10 +1160,10 @@ class R extends pe {
     return ne;
   }
 }
-R.finalized = !0;
-R.render = ze;
-R.shadowRootOptions = { mode: "open" };
-function He(n, e = "user", t) {
+_.finalized = !0;
+_.render = ze;
+_.shadowRootOptions = { mode: "open" };
+function Re(n, e = "user", t) {
   return new CustomEvent("editor-action", {
     bubbles: !0,
     composed: !0,
@@ -1171,11 +1171,11 @@ function He(n, e = "user", t) {
     detail: { action: n, initiator: e, ...t?.detail }
   });
 }
-function w(n, e, t) {
+function N(n, e, t) {
   const i = n.createElementNS(n.documentElement.namespaceURI, e);
   return Object.entries(t).filter(([r, a]) => a !== null).forEach(([r, a]) => i.setAttribute(r, a)), i;
 }
-function Oe(n, e) {
+function He(n, e) {
   return new CustomEvent("log", {
     bubbles: !0,
     composed: !0,
@@ -1183,11 +1183,11 @@ function Oe(n, e) {
     detail: { ...n, ...e?.detail }
   });
 }
-const Me = 1e3 * 60, W = "langChanged";
+const Oe = 1e3 * 60, W = "langChanged";
 function Be(n, e, t) {
   return Object.entries($(e || {})).reduce((i, [r, a]) => i.replace(new RegExp(`{{[  ]*${r}[  ]*}}`, "gm"), String($(a))), n);
 }
-function Ge(n, e) {
+function je(n, e) {
   const t = n.split(".");
   let i = e.strings;
   for (; i != null && t.length > 0; )
@@ -1197,21 +1197,21 @@ function Ge(n, e) {
 function $(n) {
   return typeof n == "function" ? n() : n;
 }
-const Ke = () => ({
+const Ue = () => ({
   loader: () => Promise.resolve({}),
   empty: (n) => `[${n}]`,
-  lookup: Ge,
+  lookup: je,
   interpolate: Be,
   translationCache: {}
 });
-let T = Ke();
-function qe(n) {
+let T = Ue();
+function Ge(n) {
   return T = Object.assign(Object.assign({}, T), n);
 }
 function Fe(n) {
   window.dispatchEvent(new CustomEvent(W, { detail: n }));
 }
-function Ue(n, e, t = T) {
+function Ke(n, e, t = T) {
   Fe({
     previousStrings: t.strings,
     previousLang: t.lang,
@@ -1219,20 +1219,20 @@ function Ue(n, e, t = T) {
     strings: t.strings = e
   });
 }
-function je(n, e) {
+function qe(n, e) {
   const t = (i) => n(i.detail);
   return window.addEventListener(W, t, e), () => window.removeEventListener(W, t);
 }
 async function We(n, e = T) {
   const t = await e.loader(n, e);
-  e.translationCache = {}, Ue(n, t, e);
+  e.translationCache = {}, Ke(n, t, e);
 }
 function z(n, e, t = T) {
   let i = t.translationCache[n] || (t.translationCache[n] = t.lookup(n, t) || t.empty(n, t));
   return e = e != null ? $(e) : null, e != null ? t.interpolate(i, e, t) : i;
 }
 function ge(n) {
-  return n instanceof x ? n.startNode.isConnected : n instanceof Ce ? n.committer.element.isConnected : n.element.isConnected;
+  return n instanceof V ? n.startNode.isConnected : n instanceof Ce ? n.committer.element.isConnected : n.element.isConnected;
 }
 function $e(n) {
   for (const [e] of n)
@@ -1244,20 +1244,378 @@ function Ze(n) {
 function Xe(n, e) {
   setInterval(() => Ze(() => $e(n)), e);
 }
-const be = /* @__PURE__ */ new Map();
-function Qe() {
-  je((n) => {
-    for (const [e, t] of be)
-      ge(e) && Ye(e, t, n);
+const fe = /* @__PURE__ */ new Map();
+function Ye() {
+  qe((n) => {
+    for (const [e, t] of fe)
+      ge(e) && Qe(e, t, n);
   });
 }
-Qe();
-Xe(be, Me);
-function Ye(n, e, t) {
+Ye();
+Xe(fe, Oe);
+function Qe(n, e, t) {
   const i = e(t);
   n.value !== i && (n.setValue(i), n.commit());
 }
 const Je = {
+  userinfo: {
+    loggedInAs: "???"
+  },
+  compas: {
+    loading: "???",
+    comment: "???",
+    newLabel: "???",
+    notExists: "???",
+    noSclTypes: "???",
+    noScls: "???",
+    sclFilter: "???:",
+    noFilteredScls: "???",
+    noSclVersions: "???",
+    sclType: "???",
+    error: {
+      type: "???",
+      server: "???",
+      serverDetails: "{{type}}: {{message}}"
+    },
+    warning: {
+      nsdoc: "NSDoc-Datei konnte nicht geladen werden",
+      nsdocDetails: "Die {{url}} kann nicht geladen werden"
+    },
+    changeset: {
+      major: "???",
+      minor: "???",
+      patch: "???"
+    },
+    import: {
+      title: "???"
+    },
+    label: {
+      selectLabels: "???"
+    },
+    open: {
+      title: "???",
+      localTitle: "???",
+      selectFileButton: "???",
+      compasTitle: "CoMPAS",
+      listSclTypes: "???",
+      listScls: "??? ({{ type }})",
+      otherTypeButton: "???"
+    },
+    save: {
+      saveTitle: "???",
+      saveAsTitle: "???",
+      saveAsVersionTitle: "???",
+      localTitle: "???",
+      saveFileButton: "???",
+      compasTitle: "CoMPAS",
+      labelsTitle: "CoMPAS ???",
+      addSuccess: "???",
+      updateSuccess: "???"
+    },
+    updateSubstation: {
+      title: "???"
+    },
+    importIEDS: {
+      title: "???"
+    },
+    merge: {
+      title: "???"
+    },
+    autoAlignment: {
+      title: "???",
+      button: "???",
+      missing: "???",
+      success: "???"
+    },
+    uploadVersion: {
+      title: "???",
+      selectButton: "???...",
+      filename: "???",
+      updateSuccess: "???"
+    },
+    versions: {
+      title: "???",
+      sclInfo: "???: {{name}}, ???: {{version}}",
+      addVersionButton: "???",
+      confirmRestoreTitle: "???",
+      confirmRestore: "??? {{version}}?",
+      restoreVersionSuccess: "??? {{version}}",
+      deleteProjectButton: "???",
+      confirmDeleteTitle: "???",
+      confirmDelete: "???",
+      deleteSuccess: "???",
+      confirmDeleteVersionTitle: "???",
+      confirmDeleteVersion: "??? {{version}}?",
+      deleteVersionSuccess: "??? {{version}}",
+      confirmButton: "???",
+      compareButton: "???",
+      selectTwoVersionsTitle: "???",
+      selectTwoVersionsMessage: "???",
+      compareCurrentButton: "???",
+      selectOneVersionsTitle: "???",
+      selectOneVersionsMessage: "???"
+    },
+    scl: {
+      wizardTitle: "???",
+      filenameHelper: "???",
+      labelsTitle: "CoMPAS ???",
+      updateAction: "???"
+    },
+    compare: {
+      title: "???",
+      titleCurrent: "???",
+      noDiff: "???",
+      attributes: "Attribute",
+      children: "Kindelemente"
+    },
+    settings: {
+      title: "CoMPAS Einstellungen",
+      sclDataServiceUrl: "CoMPAS SCL Data Service URL",
+      sclValidatorServiceUrl: "CoMPAS SCL Validator Service URL",
+      cimMappingServiceUrl: "CoMPAS CIM Mapping Service URL",
+      sclAutoAlignmentServiceUrl: "CoMPAS SCL Auto Alignment Service URL",
+      useWebsockets: "???"
+    },
+    exportIEDParams: {
+      noIEDs: "Keine IEDs in Projekt"
+    },
+    session: {
+      headingExpiring: "???",
+      explainExpiring: "???",
+      continue: "???",
+      headingExpired: "???",
+      explainExpiredWithProject: "???",
+      explainExpiredWithoutProject: "???",
+      saveProject: "???"
+    },
+    autogensubstation: {
+      substationAmount: "???",
+      voltagelevelAmount: "???",
+      bayAmount: "???",
+      substationGen: "???"
+    },
+    export104: {
+      noSignalsFound: "Export 104 hat keine Signale gefunden",
+      invalidSignalWarning: "Export 104 hat ein ungültiges Signal gefunden",
+      errors: {
+        tiOrIoaInvalid: 'ti or ioa fehlen oder ioa hat weniger als 4 Zeichen, ti: "{{ ti }}", ioa: "{{ ioa }}"',
+        unknownSignalType: 'Unbekannter Signaltyp für ti: "{{ ti }}", ioa: "{{ ioa }}"',
+        noDoi: 'Es wurde kein Eltern DOI Element gefunden für ioa: "{{ ioa }}"',
+        noBay: 'Es wurde kein Bay Element mit dem Namen "{{ bayName }}" für ioa: "{{ ioa }}" gefunden',
+        noVoltageLevel: 'Es wurde kein VoltageLevel Element für Bay "{{ bayName }}" gefunden für ioa "{{ ioa }}"',
+        noSubstation: 'Es wurde kein Substation Element gefunden für VoltageLevel "{{ voltageLevelName }}" für ioa "{{ ioa }}"'
+      }
+    }
+  },
+  locamation: {
+    vmu: {
+      ied: {
+        title: "???",
+        missing: "???",
+        name: "???"
+      },
+      ldevice: {
+        name: "???"
+      },
+      ln: {
+        title: "???",
+        editTitle: "???",
+        name: "???"
+      },
+      version: "???",
+      identifier: "???",
+      identifierHelper: "???",
+      sum: "???",
+      sumHelper: "???",
+      channel: "???",
+      channelHelper: "???",
+      transformPrimary: "???",
+      transformPrimaryHelper: "???",
+      transformSecondary: "???",
+      transformSecondaryHelper: "???",
+      updateAction: "???"
+    }
+  }
+}, et = {
+  userinfo: {
+    loggedInAs: "Logged in as {{name}}"
+  },
+  compas: {
+    loading: "Loading...",
+    comment: "Comment",
+    newLabel: "Add new label",
+    notExists: "Project no longer exists in CoMPAS!",
+    noSclTypes: "No types found in CoMPAS",
+    noScls: "No projects found in CoMPAS",
+    sclFilter: "Filter on:",
+    noFilteredScls: "No projects found matching the filter(s)",
+    noSclVersions: "No versions found for this project in CoMPAS",
+    sclType: "SCL Type",
+    error: {
+      type: "Unable to determine type from document name!",
+      server: "Error communicating with CoMPAS Ecosystem",
+      serverDetails: "{{type}}: {{message}}"
+    },
+    warning: {
+      nsdoc: "Could not load NSDoc file",
+      nsdocDetails: "Cannot load {{url}}"
+    },
+    changeset: {
+      major: "Major change",
+      minor: "Minor change",
+      patch: "Patch change"
+    },
+    import: {
+      title: "Import from API"
+    },
+    label: {
+      selectLabels: "Select labels to be show"
+    },
+    open: {
+      title: "Open project",
+      localTitle: "Local",
+      selectFileButton: "Open file...",
+      compasTitle: "CoMPAS",
+      listSclTypes: "Select type of project",
+      listScls: "Select project ({{ type }})",
+      otherTypeButton: "Other type..."
+    },
+    save: {
+      saveTitle: "Save project",
+      saveAsTitle: "Save as new project",
+      saveAsVersionTitle: "Save as new version to existing project",
+      localTitle: "Local",
+      saveFileButton: "Save to file...",
+      compasTitle: "CoMPAS",
+      labelsTitle: "CoMPAS Labels",
+      addSuccess: "Project added to CoMPAS.",
+      updateSuccess: "Project updated in CoMPAS"
+    },
+    updateSubstation: {
+      title: "Update substation"
+    },
+    importIEDS: {
+      title: "Import IED's"
+    },
+    merge: {
+      title: "Merge project"
+    },
+    autoAlignment: {
+      title: "Auto align SLD for selected substations",
+      button: "Execute",
+      missing: "No substations",
+      success: "Updated X/Y Coordinates for substation(s)"
+    },
+    uploadVersion: {
+      title: "Upload new version of project to CoMPAS",
+      selectButton: "Select file...",
+      filename: "Filename",
+      updateSuccess: "Project uploaded in CoMPAS"
+    },
+    versions: {
+      title: "CoMPAS Versions",
+      sclInfo: "Current project - Name: {{name}}, Version: {{version}}",
+      addVersionButton: "Add version",
+      confirmRestoreTitle: "Restore version?",
+      confirmRestore: "Are you sure to restore version {{version}}?",
+      restoreVersionSuccess: "Restored version {{version}} of project",
+      deleteProjectButton: "Delete project",
+      confirmDeleteTitle: "Delete project?",
+      confirmDelete: "Are you sure to delete all version(s)?",
+      deleteSuccess: "Removed project from CoMPAS",
+      confirmDeleteVersionTitle: "Delete version?",
+      confirmDeleteVersion: "Are you sure to delete version {{version}}?",
+      deleteVersionSuccess: "Removed version {{version}} of project from CoMPAS",
+      confirmButton: "Confirm",
+      compareButton: "Compare versions",
+      selectTwoVersionsTitle: "Select two versions?",
+      selectTwoVersionsMessage: "Select maximum two versions to compare with each other. Currently selected: {{size}}.",
+      compareCurrentButton: "Compare version (current)",
+      selectOneVersionsTitle: "Select one version?",
+      selectOneVersionsMessage: "Select maximum one version to compare the current project against. Currently selected: {{size}}."
+    },
+    scl: {
+      wizardTitle: "Edit SCL",
+      filenameHelper: "Filename used by CoMPAS when saving to a filesystem",
+      labelsTitle: "CoMPAS Labels",
+      updateAction: "Updated CoMPAS Private Element for SCL Element"
+    },
+    compare: {
+      title: "Compare version {{newVersion}} against version {{oldVersion}}",
+      titleCurrent: "Compare current project against version {{oldVersion}}",
+      noDiff: "No difference between versions",
+      attributes: "Attributes from",
+      children: "Child elements from"
+    },
+    settings: {
+      title: "CoMPAS Settings",
+      sclDataServiceUrl: "CoMPAS SCL Data Service URL",
+      sclValidatorServiceUrl: "CoMPAS SCL Validator Service URL",
+      cimMappingServiceUrl: "CoMPAS CIM Mapping Service URL",
+      sclAutoAlignmentServiceUrl: "CoMPAS SCL Auto Alignment Service URL",
+      useWebsockets: "Use Websockets"
+    },
+    exportIEDParams: {
+      noIEDs: "No IEDs found"
+    },
+    session: {
+      headingExpiring: "Your session is about to expire!",
+      explainExpiring: "Because of inactivity ({{expiringSessionWarning}} minutes), your session with the CoMPAS Systems is about to expire. <br>If you want to continue working press the button 'Continue'. Otherwise the session will expire in {{timeTillExpire}} minutes.",
+      continue: "Continue",
+      headingExpired: "Your session is expired!",
+      explainExpiredWithProject: "Because of inactivity ({{expiredSessionMessage}} minutes), your session with the CoMPAS Systems is expired. <br>To continue working you need to reload the browser to login again, but modifications to the project are lost. <br>To prevent this you can first save the project to your local filesystem using the button 'Save project'. <br>After loading the original project from CoMPAS you can add this file as new version using the tab 'CoMPAS Versions'.",
+      explainExpiredWithoutProject: "Because of inactivity ({{expiredSessionMessage}} minutes), your session with the CoMPAS Systems is expired. <br>To continue working you need to reload the browser to login again.",
+      saveProject: "Save project"
+    },
+    autogensubstation: {
+      substationAmount: "Found {{amount}} substation(s) to be created!",
+      voltagelevelAmount: "Generating {{amount}} Voltage Level(s) for {{substationname}} substation!",
+      bayAmount: "Generating {{amount}} Bay Element(s) for {{voltagelevelname}} Voltage Level!",
+      substationGen: "Generated {{substationname}} substation with content!"
+    },
+    export104: {
+      noSignalsFound: "Export 104 found no signals",
+      invalidSignalWarning: "Export 104 found invalid signal",
+      errors: {
+        tiOrIoaInvalid: 'ti or ioa are missing or ioa is less than 4 digits, ti: "{{ ti }}", ioa: "{{ ioa }}"',
+        unknownSignalType: 'Unknown signal type for ti: "{{ ti }}", ioa: "{{ ioa }}"',
+        noDoi: 'No parent DOI found for address with ioa: "{{ ioa }}"',
+        noBay: 'No Bay found bayname: "{{ bayName }}" for address with ioa: "{{ ioa }}"',
+        noVoltageLevel: 'No parent voltage level found for bay "{{ bayName }}" for ioa "{{ ioa }}"',
+        noSubstation: 'No parent substation found for voltage level "{{ voltageLevelName }}" for ioa "{{ ioa }}"'
+      }
+    }
+  },
+  locamation: {
+    vmu: {
+      ied: {
+        title: "Configure Locamation VMUs",
+        missing: "No Locamation IEDs with Logica Devices found",
+        name: "IED"
+      },
+      ldevice: {
+        name: "Logical Device"
+      },
+      ln: {
+        title: "Configure Locamation VMUs (IED)",
+        editTitle: "Edit VMU",
+        name: "Logical Node"
+      },
+      version: "Locamation VMU Version",
+      identifier: "Identifier",
+      identifierHelper: "The address of the sensor. The address is constructed of 3 numbers, separated by dots. The range of each number is 0-255.",
+      sum: "Sum",
+      sumHelper: "The collection of three channel numbers for which the sum of currents or voltages will be calculated. The numbers are separated by commas. Values for the current sensor range from 0 - 5, for the voltage sensor 0-2.",
+      channel: "Channel",
+      channelHelper: "The channel number on the sensor. Values for the current sensor range from 0 - 5, for the voltage sensor 0-2.",
+      transformPrimary: "TransformPrimary",
+      transformPrimaryHelper: "The nominator of the ratio of the measement transformer.",
+      transformSecondary: "TransformSecondary",
+      transformSecondaryHelper: "The denominator of the ratio of the measement transformer.",
+      updateAction: "Locamation private fields updated for Logica Node {{lnName}}"
+    }
+  }
+}, tt = {
   scl: {
     id: "ID",
     name: "Name",
@@ -2160,7 +2518,7 @@ const Je = {
   connect: "Verbinden",
   disconnect: "Trennen",
   next: "Weiter"
-}, et = {
+}, nt = {
   scl: {
     id: "ID",
     name: "Name",
@@ -3059,25 +3417,28 @@ const Je = {
   connect: "Connect",
   disconnect: "Disconnect",
   next: "Next"
-}, ie = { en: et, de: Je };
-async function tt(n) {
+}, ie = {
+  en: { ...nt, ...et },
+  de: { ...tt, ...Je }
+};
+async function it(n) {
   return Object.keys(ie).includes(n) ? ie[n] : {};
 }
-qe({ loader: tt, empty: (n) => n });
-const nt = localStorage.getItem("language") || "en";
-We(nt);
-var it = Object.defineProperty, I = (n, e, t, i) => {
-  for (var r = void 0, a = n.length - 1, o; a >= 0; a--)
-    (o = n[a]) && (r = o(e, t, r) || r);
-  return r && it(e, t, r), r;
+Ge({ loader: it, empty: (n) => n });
+const rt = localStorage.getItem("language") || "en";
+We(rt);
+var at = Object.defineProperty, I = (n, e, t, i) => {
+  for (var r = void 0, a = n.length - 1, s; a >= 0; a--)
+    (s = n[a]) && (r = s(e, t, r) || r);
+  return r && at(e, t, r), r;
 };
-let rt = 1, at = 1;
-function st(n, e) {
+let ot = 1, st = 1;
+function lt(n, e) {
   return e.parentElement?.querySelectorAll(
     `LN[lnClass="CSWI"]${e.getAttribute("prefix") ? `[prefix="${e.getAttribute("prefix")}"]` : ""}${e.getAttribute("inst") ? `[inst="${e.getAttribute("inst")}"]` : ""},LN[lnClass="CILO"]${e.getAttribute("prefix") ? `[prefix="${e.getAttribute("prefix")}"]` : ""}${e.getAttribute("inst") ? `[inst="${e.getAttribute("inst")}"]` : ""},LN[lnClass="XCBR"]${e.getAttribute("prefix") ? `[prefix="${e.getAttribute("prefix")}"]` : ""}${e.getAttribute("inst") ? `[inst="${e.getAttribute("inst")}"]` : ""},LN[lnClass="XSWI"]${e.getAttribute("prefix") ? `[prefix="${e.getAttribute("prefix")}"]` : ""}${e.getAttribute("inst") ? `[inst="${e.getAttribute("inst")}"]` : ""}`
   ).forEach((t) => {
     n.appendChild(
-      w(e.ownerDocument, "LNode", {
+      N(e.ownerDocument, "LNode", {
         iedName: t.parentElement?.parentElement?.parentElement?.parentElement?.getAttribute(
           "name"
         ) ?? null,
@@ -3089,15 +3450,15 @@ function st(n, e) {
     );
   }), n;
 }
-function fe(n) {
+function be(n) {
   return n.parentElement?.querySelector(
     `LN[lnClass="XCBR"]${n.getAttribute("prefix") ? `[prefix="${n.getAttribute("prefix")}"]` : ""}${n.getAttribute("inst") ? `[inst="${n.getAttribute("inst")}"]` : ""}`
   ) ? "CBR" : "DIS";
 }
-function ot(n) {
-  return n.getAttribute("prefix") && n.getAttribute("inst") ? n.getAttribute("prefix") + n.getAttribute("inst") : n.getAttribute("inst") && fe(n) === "CBR" ? "QA" + rt++ : "QB" + at++;
+function dt(n) {
+  return n.getAttribute("prefix") && n.getAttribute("inst") ? n.getAttribute("prefix") + n.getAttribute("inst") : n.getAttribute("inst") && be(n) === "CBR" ? "QA" + ot++ : "QB" + st++;
 }
-function dt(n, e) {
+function ct(n, e) {
   if (Array.from(
     n.querySelectorAll('DOI[name="Pos"] > DAI[name="ctlModel"] > Val')
   ).filter((i) => e.includes(i.innerHTML.trim())).length)
@@ -3117,15 +3478,15 @@ function dt(n, e) {
     )
   ).filter((i) => e.includes(i.innerHTML.trim())).length > 0;
 }
-function lt(n) {
+function ut(n) {
   return Array.from(
     n.querySelectorAll('AccessPoint > Server > LDevice > LN[lnClass="CSWI"]')
   );
 }
-function ct(n, e) {
-  return n.parentElement ? lt(n).filter((t) => dt(t, e)) : [];
+function mt(n, e) {
+  return n.parentElement ? ut(n).filter((t) => ct(t, e)) : [];
 }
-class L extends R {
+class k extends _ {
   constructor() {
     super(...arguments), this.substationNameLength = 5, this.voltageLevelNameLength = 3, this.iedStartChar = "A";
   }
@@ -3161,7 +3522,7 @@ class L extends R {
   createSubstations(e) {
     e.forEach(async (t) => {
       if (this.doc.querySelector(`Substation[name=${t}]`) === null) {
-        const r = w(this.doc, "Substation", {
+        const r = N(this.doc, "Substation", {
           name: t,
           desc: "Substation generated by CoMPAS"
         });
@@ -3169,7 +3530,7 @@ class L extends R {
           r,
           t + "_".repeat(this.substationNameLength - t.length)
         ), this.dispatchEvent(
-          He({
+          Re({
             new: {
               parent: this.doc.querySelector("SCL"),
               element: r
@@ -3208,7 +3569,7 @@ class L extends R {
         substationname: t.replace(/_/g, "")
       })
     ), r.length != 0 && r.forEach((a) => {
-      const c = w(
+      const c = N(
         e.ownerDocument,
         "VoltageLevel",
         {
@@ -3217,8 +3578,8 @@ class L extends R {
           nomFreq: "50.0",
           numPhases: "3"
         }
-      ), u = i.filter((d) => d?.startsWith(a)).map(
-        (d) => d?.substring(this.voltageLevelNameLength, d.length)
+      ), u = i.filter((l) => l?.startsWith(a)).map(
+        (l) => l?.substring(this.voltageLevelNameLength, l.length)
       );
       this.createBays(c, u, t + a), e.appendChild(c);
     });
@@ -3247,7 +3608,7 @@ class L extends R {
         )
       })
     ), r.forEach((a) => {
-      const s = w(e.ownerDocument, "Bay", {
+      const o = N(e.ownerDocument, "Bay", {
         name: a,
         desc: "Bay generated by CoMPAS"
       });
@@ -3256,11 +3617,11 @@ class L extends R {
       ).forEach((c) => {
         const u = this.doc.querySelector(
           `IED[name=${i + c}]`
-        ), d = this.createLNodeElements(u, [
+        ), l = this.createLNodeElements(u, [
           "sbo-with-enhanced-security"
         ]);
-        d ? d.forEach((m) => s.appendChild(m)) : s.prepend(this.addDefaultLNodes(u));
-      }), e.appendChild(s);
+        l ? l.forEach((m) => o.appendChild(m)) : o.prepend(this.addDefaultLNodes(u));
+      }), e.appendChild(o);
     });
   }
   /**
@@ -3270,11 +3631,11 @@ class L extends R {
    * @returns ConductingEquipment with LNode child elements or null
    */
   createLNodeElements(e, t) {
-    const i = ct(e, t);
-    return i.length ? i.map((a) => st(
-      w(e.ownerDocument, "ConductingEquipment", {
-        name: ot(a),
-        type: fe(a)
+    const i = mt(e, t);
+    return i.length ? i.map((a) => lt(
+      N(e.ownerDocument, "ConductingEquipment", {
+        name: dt(a),
+        type: be(a)
       }),
       a
     )) : null;
@@ -3286,7 +3647,7 @@ class L extends R {
    */
   addDefaultLNodes(e) {
     const t = e.querySelector("LN0");
-    return w(e.ownerDocument, "LNode", {
+    return N(e.ownerDocument, "LNode", {
       iedName: e.getAttribute("name"),
       ldInst: e.parentElement?.getAttribute("inst") ?? null,
       prefix: t?.getAttribute("prefix") ?? null,
@@ -3306,7 +3667,7 @@ class L extends R {
   }
   createLog(e, t) {
     this.dispatchEvent(
-      Oe({
+      He({
         kind: e == 0 ? "info" : "error",
         title: t
       })
@@ -3314,20 +3675,20 @@ class L extends R {
   }
 }
 I([
-  k()
-], L.prototype, "doc");
+  P()
+], k.prototype, "doc");
 I([
-  k()
-], L.prototype, "iedNames");
+  P()
+], k.prototype, "iedNames");
 I([
-  k()
-], L.prototype, "substationNameLength");
+  P()
+], k.prototype, "substationNameLength");
 I([
-  k()
-], L.prototype, "voltageLevelNameLength");
+  P()
+], k.prototype, "voltageLevelNameLength");
 I([
-  k()
-], L.prototype, "iedStartChar");
+  P()
+], k.prototype, "iedStartChar");
 export {
-  L as default
+  k as default
 };
